@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Jonah Gabry and Ben Goodrich" />
+
+<meta name="date" content="2015-01-06" />
+
+<title>Estimating Generalized Linear Models for Continuous Data with rstanarm</title>
+
+<script src="continuous_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="continuous_files/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet" />
+<script src="continuous_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="continuous_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="continuous_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="continuous_files/highlight/default.css"
+      type="text/css" />
+<script src="continuous_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Estimating Generalized Linear Models for Continuous Data with rstanarm</h1>
+<h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
+<h4 class="date"><em>01/06/2015</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#likelihood">Likelihood</a></li>
+<li><a href="#priors">Priors</a></li>
+<li><a href="#posterior">Posterior</a></li>
+<li><a href="#linear-regression-example">Linear Regression Example</a><ul>
+<li><a href="#model-comparison">Model comparison</a></li>
+<li><a href="#the-posterior-predictive-distribution">The posterior predictive distribution</a><ul>
+<li><a href="#graphical-posterior-predictive-checks">Graphical posterior predictive checks</a></li>
+<li><a href="#generating-predictions">Generating predictions</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#gamma-regression-example">Gamma Regression Example</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{stan_glm: GLMs for Continuous Data}
+-->
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This vignette explains how to estimate linear and generalized linear models (GLMs) for continuous response variables using the <code>stan_glm</code> function in the <strong>rstanarm</strong> package. For GLMs for discrete outcomes see the vigettes for binary/binomial and count outcomes.</p>
+<p>The four steps of a Bayesian analysis are</p>
+<ol style="list-style-type: decimal">
+<li>Specify a joint distribution for the outcome(s) and all the unknowns, which typically takes the form of a marginal prior distribution for the unknowns multiplied by a likelihood for the outcome(s) conditional on the unknowns. This joint distribution is proportional to a posterior distribution of the unknowns conditional on the observed data</li>
+<li>Draw from posterior distribution using Markov Chain Monte Carlo (MCMC).</li>
+<li>Evaluate how well the model fits the data and possibly revise the model.</li>
+<li>Draw from the posterior predictive distribution of the outcome(s) given interesting values of the predictors in order to visualize how a manipulation of a predictor affects (a function of) the outcome(s).</li>
+</ol>
+<p>This vignette primarily focuses on Steps 1 and 2 when the likelihood is the product of conditionally independent continuous distributions. Steps 3 and 4 are covered in more depth by the vignette entitled “How to Use the <strong>rstanarm</strong> Package”, although this vignette does also give a few examples of model checking and generating predictions.</p>
+</div>
+<div id="likelihood" class="section level1">
+<h1>Likelihood</h1>
+<p>In the simplest case a GLM for a continuous outcome is simply a linear model and the likelihood for one observation is a conditionally normal PDF <span class="math display">\[\frac{1}{\sigma \sqrt{2 \pi}} e^{-\frac{1}{2} 
+\left(\frac{y - \mu}{\sigma}\right)^2},\]</span> where <span class="math inline">\(\mu = \alpha + \mathbf{x}^\top \boldsymbol{\beta}\)</span> is a linear predictor and <span class="math inline">\(\sigma\)</span> is the standard deviation of the error in predicting the outcome, <span class="math inline">\(y\)</span>.</p>
+<p>More generally, a linear predictor <span class="math inline">\(\eta = \alpha + \mathbf{x}^\top \boldsymbol{\beta}\)</span> can be related to the conditional mean of the outcome via a link function <span class="math inline">\(g\)</span> that serves as a map between the range of values on which the outcome is defined and the space on which the linear predictor is defined. For the linear model described above no transformation is needed and so the link function is taken to be the identity function. However, there are cases in which a link function is used for Gaussian models; the log link, for example, can be used to log transform the (conditional) expected value of the outcome when it is constrained to be positive.</p>
+<p>Like the <code>glm</code> function, the <code>stan_glm</code> function uses R’s family objects. The family objects for continuous outcomes compatible with <code>stan_glm</code> are the <code>gaussian</code>, <code>Gamma</code>, and <code>inverse.gaussian</code> distributions. All of the link functions provided by these family objects are also compatible with <code>stan_glm</code>. For example, for a Gamma GLM, where we assume that observations are conditionally independent Gamma random variables, common link functions are the log and inverse links.</p>
+<p>Regardless of the distribution and link function, the likelihood for the entire sample is the product of the likelihood contributions of the individual observations.</p>
+</div>
+<div id="priors" class="section level1">
+<h1>Priors</h1>
+<p>A full Bayesian analysis requires specifying prior distributions <span class="math inline">\(f(\alpha)\)</span> and <span class="math inline">\(f(\boldsymbol{\beta})\)</span> for the intercept and vector of regression coefficients. When using <code>stan_glm</code>, these distributions can be set using the <code>prior_intercept</code> and <code>prior</code> arguments. The <code>stan_glm</code> function supports a variety of prior distributions, which are explained in the <strong>rstanarm</strong> documentation (<code>help(priors, package = 'rstanarm')</code>).</p>
+<p>As an example, suppose we have <span class="math inline">\(K\)</span> predictors and believe — prior to seeing the data — that <span class="math inline">\(\alpha, \beta_1, \dots, \beta_K\)</span> are as likely to be positive as they are to be negative, but are highly unlikely to be far from zero. These beliefs can be represented by normal distributions with mean zero and a small scale (standard deviation). To give <span class="math inline">\(\alpha\)</span> and each of the <span class="math inline">\(\beta\)</span>s this prior (with a scale of 1, say), in the call to <code>stan_glm</code> we would include the arguments <code>prior_intercept = normal(0,1)</code> and <code>prior = normal(0,1)</code>.</p>
+<p>If, on the other hand, we have less a priori confidence that the parameters will be close to zero then we could use a larger scale for the normal distribution and/or a distribution with heavier tails than the normal like the Student t distribution. <strong>Step 1</strong> in the “How to Use the <strong>rstanarm</strong> Package” vignette discusses one such example.</p>
+</div>
+<div id="posterior" class="section level1">
+<h1>Posterior</h1>
+<p>With independent prior distributions, the joint posterior distribution for <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\boldsymbol{\beta}\)</span> is proportional to the product of the priors and the <span class="math inline">\(N\)</span> likelihood contributions:</p>
+<p><span class="math display">\[f\left(\boldsymbol{\beta} | \mathbf{y},\mathbf{X}\right) \propto
+  f\left(\alpha\right) \times \prod_{k=1}^K f\left(\beta_k\right) \times
+  \prod_{i=1}^N {f(y_i|\eta_i)},\]</span></p>
+<p>where <span class="math inline">\(\mathbf{X}\)</span> is the matrix of predictors and <span class="math inline">\(\eta\)</span> the linear predictor. This is posterior distribution that <code>stan_glm</code> will draw from when using MCMC.</p>
+</div>
+<div id="linear-regression-example" class="section level1">
+<h1>Linear Regression Example</h1>
+<p>The <code>stan_lm</code> function (which has its own vignette) fits regularized linear models using a novel means of specifying priors for the regression coefficients. Here we focus using the <code>stan_glm</code> function, which can be used to estimate linear models with independent priors on the regression coefficients.</p>
+<p>To illustrate the usage of <code>stan_glm</code> and some of the post-processing functions in the <strong>rstanarm</strong> package we’ll use a simple example from Chapter 3 of <a href="http://www.stat.columbia.edu/~gelman/arm/">Gelman and Hill (2007)</a>:</p>
+<blockquote>
+<p>We shall fit a series of regressions predicting cognitive test scores of three- and four-year-old children given characteristics of their mothers, using data from a survey of adult American women and their children (a subsample from the National Longitudinal Survey of Youth).</p>
+</blockquote>
+<p>Using two predictors – a binary indicator for whether the mother has a high-school degree (<code>mom_hs</code>) and the mother’s score on an IQ test (<code>mom_iq</code>) – we will fit four contending models. The first two models will each use just one of the predictors, the third will use both, and the fourth will also include a term for the interaction of the two predictors.</p>
+<p>For these models we’ll use the default weakly informative priors for <code>stan_glm</code>, which are currently set to <code>normal(0,10)</code> for the intercept and <code>normal(0,5)</code> for the other regression coefficients. For an overview of the many other available prior distributions see <code>help(&quot;prior&quot;, package = &quot;rstanarm&quot;)</code>.</p>
+<pre class="r"><code>library(rstanarm)
+kid_iq &lt;- read.csv(file.path(&quot;data&quot;, &quot;kid_iq.csv.xz&quot;))
+
+post1 &lt;- stan_glm(kid_score ~ mom_hs, data = kid_iq, family = gaussian(link = &quot;identity&quot;), 
+                  chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+post2 &lt;- update(post1, formula = . ~ mom_iq)
+post3 &lt;- update(post1, formula = . ~ mom_hs + mom_iq)
+(post4 &lt;- update(post1, formula = . ~ mom_hs * mom_iq))</code></pre>
+<pre><code>stan_glm(formula = kid_score ~ mom_hs + mom_iq + mom_hs:mom_iq, 
+    family = gaussian(link = &quot;identity&quot;), data = kid_iq, chains = CHAINS, 
+    cores = CORES, seed = SEED, iter = ITER)
+
+Estimates:
+              Median MAD_SD
+(Intercept)   -9.9   13.2  
+mom_hs        49.2   14.2  
+mom_iq         1.0    0.1  
+mom_hs:mom_iq -0.5    0.1  
+sigma         18.0    0.6  
+
+Sample avg. posterior predictive 
+distribution of y (X = xbar):
+         Median MAD_SD
+mean_PPD 86.7    1.2  </code></pre>
+<p>Following Gelman and Hill’s example, we make some plots overlaying the estimated regression lines on the data.</p>
+<pre class="r"><code>base &lt;- ggplot(kid_iq, aes(x = mom_hs, y = kid_score)) + 
+  geom_point(size = 1, position = position_jitter(height = 0.05, width = 0.1)) + 
+  scale_x_continuous(breaks = c(0,1), labels = c(&quot;No HS&quot;, &quot;HS&quot;))
+  
+base + geom_abline(intercept = coef(post1)[1], slope = coef(post1)[2], 
+                   color = &quot;skyblue4&quot;, size = 1)</code></pre>
+<p><img src="SVGs/KIDIQ-plot1a-1.svg" title="" alt="" width="480" style="display: block; margin: auto;" /></p>
+<p>There several ways we could add the uncertainty in our estimates to the plot. One way is to also plot the estimated regression line at each draw from the posterior distribution. To do this we can extract the posterior draws from the fitted model object using the <code>as.matrix</code> or <code>as.data.frame</code> methods:</p>
+<pre class="r"><code>draws &lt;- as.data.frame(post1)
+colnames(draws)[1:2] &lt;- c(&quot;a&quot;, &quot;b&quot;)
+
+base + 
+  geom_abline(data = draws, aes(intercept = a, slope = b), 
+              color = &quot;skyblue&quot;, size = 0.2, alpha = 0.25) + 
+  geom_abline(intercept = coef(post1)[1], slope = coef(post1)[2], 
+              color = &quot;skyblue4&quot;, size = 1)</code></pre>
+<p><img src="SVGs/KIDIQ-plot1b-1.svg" title="" alt="" width="480" style="display: block; margin: auto;" /></p>
+<p>For the second model we can make the same plot but the x-axis will show the continuous predictor <code>mom_iq</code>:</p>
+<pre class="r"><code>draws &lt;- as.data.frame(as.matrix(post2))
+colnames(draws)[1:2] &lt;- c(&quot;a&quot;, &quot;b&quot;)
+ggplot(kid_iq, aes(x = mom_iq, y = kid_score)) + 
+  geom_point(size = 1) +
+  geom_abline(data = draws, aes(intercept = a, slope = b), 
+              color = &quot;skyblue&quot;, size = 0.2, alpha = 0.25) + 
+  geom_abline(intercept = coef(post2)[1], slope = coef(post2)[2], 
+              color = &quot;skyblue4&quot;, size = 1)</code></pre>
+<p><img src="SVGs/KIDIQ-plot2-1.svg" title="" alt="" width="480" style="display: block; margin: auto;" /></p>
+<p>For the third and fourth models, each of which uses both predictors, we can plot the continuous <code>mom_iq</code> on the x-axis and use color to indicate which points correspond to the different subpopulatations defined by <code>mom_hs</code>. We also now plot two regression lines, one for each subpopulation:</p>
+<pre class="r"><code>reg0 &lt;- function(x, ests) cbind(1, 0, x) %*% ests 
+reg1 &lt;- function(x, ests) cbind(1, 1, x) %*% ests
+
+args &lt;- list(ests = coef(post3))
+kid_iq$clr &lt;- factor(kid_iq$mom_hs, labels = c(&quot;No HS&quot;, &quot;HS&quot;))
+lgnd &lt;- guide_legend(title = NULL)
+base2 &lt;- ggplot(kid_iq, aes(x = mom_iq, fill = relevel(clr, ref = &quot;HS&quot;))) + 
+  geom_point(aes(y = kid_score), shape = 21, stroke = .2, size = 1) + 
+  guides(color = lgnd, fill = lgnd) + 
+  theme(legend.position = &quot;right&quot;)
+base2 + 
+  stat_function(fun = reg0, args = args, aes(color = &quot;No HS&quot;), size = 1.5) +
+  stat_function(fun = reg1, args = args, aes(color = &quot;HS&quot;), size = 1.5)</code></pre>
+<p><img src="SVGs/KIDIQ-plot3-1.svg" title="" alt="" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>reg0 &lt;- function(x, ests) cbind(1, 0, x, 0 * x) %*% ests 
+reg1 &lt;- function(x, ests) cbind(1, 1, x, 1 * x) %*% ests
+args &lt;- list(ests = coef(post4))
+base2 +
+  stat_function(fun = reg0, args = args, aes(color = &quot;No HS&quot;), size = 1.5) + 
+  stat_function(fun = reg1, args = args, aes(color = &quot;HS&quot;), size = 1.5)</code></pre>
+<p><img src="SVGs/KIDIQ-plot4-1.svg" title="" alt="" width="480" style="display: block; margin: auto;" /></p>
+<div id="model-comparison" class="section level2">
+<h2>Model comparison</h2>
+<p>One way we can compare the four contending models is to use an approximation to Leave-One-Out (LOO) cross-validation, which is implemented by the <code>loo</code> function in the <strong>loo</strong> package:</p>
+<pre class="r"><code># Compare them with loo
+loo1 &lt;- loo(post1)
+loo2 &lt;- loo(post2)
+loo3 &lt;- loo(post3)
+loo4 &lt;- loo(post4)
+compare(loo1, loo2, loo3, loo4)</code></pre>
+<pre><code>     looic   se_looic elpd_loo se_elpd_loo p_loo   se_p_loo weights
+loo4  3744.8    28.8  -1872.4     14.4         4.8     0.5      1.0
+loo3  3752.9    28.6  -1876.4     14.3         4.4     0.4      0.0
+loo2  3756.8    29.1  -1878.4     14.6         2.7     0.3      0.0
+loo1  3830.1    27.7  -1915.0     13.9         3.3     0.3      0.0</code></pre>
+<p>The <code>weights</code> column gives the estimated posterior probability that each model has the best expected out-of-sample predictive accuracy. In this case we can see that the fourth model dominates.</p>
+</div>
+<div id="the-posterior-predictive-distribution" class="section level2">
+<h2>The posterior predictive distribution</h2>
+<p>The posterior predictive distribution is the distribution of the outcome implied by the model after using the observed data to update our beliefs about the unknown parameters. When simulating observations from the posterior predictive distribution we use the notation <span class="math inline">\(y^{\rm rep}\)</span> (for <em>replicate</em>) when we use the same observations of <span class="math inline">\(X\)</span> that were used to estimate the model parameters. When <span class="math inline">\(X\)</span> contains new observations we use the notation <span class="math inline">\(\tilde{y}\)</span> to refer to the posterior predictive simulations.</p>
+<p>Simulating data from the posterior predictive distribution using the observed predictors is useful for checking the fit of the model. Drawing from the posterior predictive distribution at interesting values of the predictors also lets us visualize how a manipulation of a predictor affects (a function of) the outcome(s).</p>
+<div id="graphical-posterior-predictive-checks" class="section level3">
+<h3>Graphical posterior predictive checks</h3>
+<p>The <code>pp_check</code> function generates a variety of plots comparing the observed outcome <span class="math inline">\(y\)</span> to simulated datasets <span class="math inline">\(y^{\rm rep}\)</span> from the posterior predictive distribution using the same observations of the predictors <span class="math inline">\(X\)</span> as we used to fit the model. He we show a few of the possible displays. The documentation at <code>help(&quot;pp_check&quot;, package = &quot;rstanarm&quot;)</code> has details on all of the <code>pp_check</code> options.</p>
+<p>First we’ll look at a plot directly comparing the distributions of <span class="math inline">\(y\)</span> and <span class="math inline">\(y^{\rm rep}\)</span>. The following call to <code>pp_check</code> will create a plot juxtaposing the histogram of <span class="math inline">\(y\)</span> and histograms of five <span class="math inline">\(y^{\rm rep}\)</span> datasets:</p>
+<pre class="r"><code>pp_check(post4, check = &quot;distributions&quot;, overlay = FALSE, nreps = 5)</code></pre>
+<p><img src="SVGs/KIDIQ-pp_check1-1.svg" title="" alt="" width="480" style="display: block; margin: auto;" /></p>
+<p>The idea is that if the model is a good fit to the data we should be able to generate data <span class="math inline">\(y^{\rm rep}\)</span> from the posterior predictive distribution that looks a lot like the observed data <span class="math inline">\(y\)</span>. That is, given <span class="math inline">\(y\)</span>, the <span class="math inline">\(y^{\rm rep}\)</span> we generate should be plausible.</p>
+<p>Another useful plot we can make using <code>pp_check</code> shows the distribution of a test quantity <span class="math inline">\(T(y^{\rm rep})\)</span> compared to <span class="math inline">\(T(y)\)</span>, the value of the quantity in the observed data. When the argument <code>check = &quot;test&quot;</code> is specified, <code>pp_check</code> will simulate <span class="math inline">\(S\)</span> datasets <span class="math inline">\(y_1^{\rm rep}, \dots, y_S^{\rm rep}\)</span>, each containing <span class="math inline">\(N\)</span> observations. Here <span class="math inline">\(S\)</span> is the size of the posterior sample (the number of MCMC draws from the posterior distribution of the model parameters) and <span class="math inline">\(N\)</span> is the length of <span class="math inline">\(y\)</span>. We can then check if <span class="math inline">\(T(y)\)</span> is consistent with the distribution of <span class="math inline">\(\left(T(y_1^{\rm yep}), \dots, T(y_S^{\rm yep})\right)\)</span>. In the plot below we see that the mean of the observations is plausible when compared to the distribution of the means of the <span class="math inline">\(S\)</span> <span class="math inline">\(y^{\rm rep}\)</span> datasets:</p>
+<pre class="r"><code>pp_check(post4, check = &quot;test&quot;, test = &quot;mean&quot;)</code></pre>
+<p><img src="SVGs/KIDIQ-pp_check2-1.svg" title="" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>We can also specify two test quantities and look at a scatterplot:</p>
+<pre class="r"><code>pp_check(post4, check = &quot;test&quot;, test = c(&quot;mean&quot;, &quot;sd&quot;))</code></pre>
+<p><img src="SVGs/KIDIQ-pp_check3-1.svg" title="" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="generating-predictions" class="section level3">
+<h3>Generating predictions</h3>
+<p>The <code>posterior_predict</code> function is used to generate replicated data <span class="math inline">\(y^{\rm rep}\)</span> or predictions for future observations <span class="math inline">\(\tilde{y}\)</span>. Here we show how to use <code>posterior_predict</code> to generate predictions of the outcome <code>kid_score</code> for a range of different values of <code>mom_iq</code> and for both subpopulations defined by <code>mom_hs</code>.</p>
+<pre class="r"><code>IQ_SEQ &lt;- seq(from = 75, to = 135, by = 5)
+y_nohs &lt;- posterior_predict(post4, newdata = data.frame(mom_hs = 0, mom_iq = IQ_SEQ))
+y_hs &lt;- posterior_predict(post4, newdata = data.frame(mom_hs = 1, mom_iq = IQ_SEQ))</code></pre>
+<p>We now have two matrices, <code>y_nohs</code> and <code>y_hs</code>. Each matrix has 13 columns (one for each value of <code>IQ_SEQ</code>) and 500 rows (the size of the posterior sample). One way to show the predictors is to plot the predictions for the two groups of kids side by side:</p>
+<pre class="r"><code>par(mfrow = c(1:2), mar = c(5,4,2,1))
+boxplot(y_hs, axes = FALSE, outline = FALSE, ylim = c(10,170),
+        xlab = &quot;Mom IQ&quot;, ylab = &quot;Predicted Kid IQ&quot;, main = &quot;Mom HS&quot;)
+axis(1, at = 1:ncol(y_hs), labels = IQ_SEQ, las = 3)
+axis(2, las = 1)
+boxplot(y_nohs, outline = FALSE, col = &quot;red&quot;, axes = FALSE, ylim = c(10,170),
+        xlab = &quot;Mom IQ&quot;, ylab = NULL, main = &quot;Mom No HS&quot;)
+axis(1, at = 1:ncol(y_hs), labels = IQ_SEQ, las = 3)</code></pre>
+<p><img src="SVGs/KIDIQ-plot-predict-1.svg" title="" alt="" width="864" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="gamma-regression-example" class="section level1">
+<h1>Gamma Regression Example</h1>
+<p>Gamma regression is often used when the response variable is continuous and positive, and the <em>coefficient of variation</em> (rather than the variance) is constant.</p>
+<p>We’ll use one of the standard examples of Gamma regression, which is taken from McCullagh &amp; Nelder (1989). This example is also given in the documentation for R’s <code>glm</code> function. The outcome of interest is the clotting time of blood (in seconds) for “normal plasma diluted to nine different percentage concentrations with prothrombin-free plasma; clotting was induced by two lots of thromboplastin” (p. 300).</p>
+<p>The help page for R’s <code>glm</code> function presents the example as follows:</p>
+<pre class="r"><code>clotting &lt;- data.frame(
+    u = c(5,10,15,20,30,40,60,80,100),
+    lot1 = c(118,58,42,35,27,25,21,19,18),
+    lot2 = c(69,35,26,21,18,16,13,12,12))
+summary(glm(lot1 ~ log(u), data = clotting, family = Gamma))
+summary(glm(lot2 ~ log(u), data = clotting, family = Gamma))</code></pre>
+<p>To fit the analagous Bayesian models we can simply substitute <code>stan_glm</code> for <code>glm</code> above. However, instead of fitting separate models we can also reshape the data slightly and fit a model interacting lot with plasma concentration:</p>
+<pre class="r"><code>clotting2 &lt;- with(clotting, data.frame(
+  log_plasma = rep(log(u), 2),
+  clot_time = c(lot1, lot2),
+  lot_id = factor(rep(c(1,2), each = length(u)))
+))
+
+fit &lt;- stan_glm(clot_time ~ log_plasma * lot_id, data = clotting2, family = Gamma, 
+                prior_intercept = normal(0,1), prior = normal(0,1),
+                chains = CHAINS, cores = CORES, seed = SEED)</code></pre>
+<pre class="r"><code>print(fit, digits = 3)</code></pre>
+<pre><code>stan_glm(formula = clot_time ~ log_plasma * lot_id, family = Gamma, 
+    data = clotting2, chains = CHAINS, cores = CORES, seed = SEED, 
+    prior = normal(0, 1), prior_intercept = normal(0, 1))
+
+Estimates:
+                   Median  MAD_SD 
+(Intercept)         -0.017   0.001
+log_plasma           0.015   0.000
+lot_id2             -0.007   0.002
+log_plasma:lot_id2   0.008   0.001
+shape              381.916 154.042
+
+Sample avg. posterior predictive 
+distribution of y (X = xbar):
+         Median MAD_SD
+mean_PPD 32.478  0.700</code></pre>
+<p>In the output above, the estimate reported for <code>shape</code> is for the shape parameter of the Gamma distribution. The <em>reciprocal</em> of the shape parameter can be interpreted similarly to what <code>summary.glm</code> refers to as the dispersion parameter.</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Gelman, A. and Hill, J. (2007). <em>Data Analysis Using Regression and Multilevel/Hierarchical Models.</em> Cambridge University Press, Cambridge, UK.</p>
+<p>McCullagh, P. and Nelder, J. A. (1989). <em>Generalized Linear Models.</em> Chapman and Hall/CRC Press, New York.</p>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

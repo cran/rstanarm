@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Jonah Gabry and Ben Goodrich" />
+
+<meta name="date" content="2015-01-06" />
+
+<title>Estimating Generalized Linear Models with Group-Specific Terms with rstanarm</title>
+
+<script src="glmer_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="glmer_files/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet" />
+<script src="glmer_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="glmer_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="glmer_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="glmer_files/highlight/default.css"
+      type="text/css" />
+<script src="glmer_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Estimating Generalized Linear Models with Group-Specific Terms with rstanarm</h1>
+<h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
+<h4 class="date"><em>01/06/2015</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#glms-with-group-specific-terms">GLMs with group-specific terms</a></li>
+<li><a href="#priors-on-covariance-matrices">Priors on covariance matrices</a><ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#details">Details</a></li>
+</ul></li>
+<li><a href="#comparison-with-lme4">Comparison with <strong>lme4</strong></a><ul>
+<li><a href="#advantage-better-uncertainty-estimates">Advantage: better uncertainty estimates</a></li>
+<li><a href="#advantage-incorporate-prior-information">Advantage: incorporate prior information</a></li>
+<li><a href="#disadvantage-speed">Disadvantage: speed</a></li>
+</ul></li>
+</ul>
+</div>
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{stan_glmer: GLMs with Group-Specific Terms}
+-->
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This vignette explains how to use the <code>stan_lmer</code> and <code>stan_glmer</code> functions in the <strong>rstanarm</strong> package to estimate linear and generalized linear models with intercepts and slopes that may vary across groups. Before continuing, we recommend reading the various vignettes for the <code>stan_glm</code> function.</p>
+<p><em>NOTE: a more thorough vignette for</em> <code>stan_lmer</code> <em>and</em> <code>stan_glmer</code> <em>with detailed examples is forthcoming.</em></p>
+</div>
+<div id="glms-with-group-specific-terms" class="section level1">
+<h1>GLMs with group-specific terms</h1>
+<p>Models with this structure are refered to by many names: multilevel models, (generalized) linear mixed (effects) models (GLMM), hierarchical (generalized) linear models, etc. The terminology for the model parameters is equally diverse. In this vignette we avoid using the common names <em>fixed effects</em> and <em>random effects</em>, which are not only misleading but also defined differently across the various fields in which these models are applied. We instead favor the more accurate (albeit more verbose) <em>intercepts/coefficients that are common across groups</em> and <em>intercepts/coefficients that vary by group</em>.</p>
+<p>One of the many challenges of fitting models to data comprising multiple groupings is confronting the tradeoff between bias and variance. An analysis that disregards between-group heterogeneity can yield parameter estimates with low variance but high bias. Group-by-group analyses, on the other hand, can reduce bias at the expense of high-variance estimates. While complete pooling or no pooling of data across groups is sometimes called for, models that ignore the grouping structures in the data tend to underfit or overfit (Gelman et al., 2013). Multilevel modeling provides a compromise by allowing parameters to vary by group at lower levels of the hierarchy while estimating population-level parameters at higher levels. Inference for each group-level parameter is informed not only by the group-specific information contained in the data but also by the data for other groups as well. This is commonly referred to as <em>borrowing strength</em> or <em>shrinkage</em>.</p>
+<p>In <strong>rstanarm</strong>, these models can be estimated using the <code>stan_lmer</code> and <code>stan_glmer</code> functions, which are similar in syntax to the <code>lmer</code> and <code>glmer</code> functions in the <strong>lme4</strong> package. However, rather than performing (restricted) maximum likelihood (RE)ML estimation, Bayesian estimation is performed via MCMC. The Bayesian model adds independent prior distributions on the regression coefficients (in the same way as <code>stan_glm</code>) as well as priors on the terms of a decomposition of the covariance matrices of the group-specific parameters. These priors are discussed in greater detail below.</p>
+</div>
+<div id="priors-on-covariance-matrices" class="section level1">
+<h1>Priors on covariance matrices</h1>
+<p>In this section we dicuss a flexible family of prior distributions for the unknown covariance matrices of the group-specific coefficients.</p>
+<div id="overview" class="section level3">
+<h3>Overview</h3>
+<p>For each group, we assume the vector of varying slopes and intercepts is a zero-mean random vector following a multivariate Gaussian distribution with an unknown covariance matrix to be estimated from the data. Unfortunately, expressing prior information about a covariance matrix is not intuitive and can also be computationally challenging. It is often both much more intuitive and efficient to work instead with the <strong>correlation</strong> matrix.</p>
+<p>For this reason, <strong>rstanarm</strong> decomposes covariance matrices into correlation matrices and variances. The variances are in turn decomposed into the product of a simplex vector (probability vector) and the trace of the covariance matrix. Finally, the trace is set to the product of the order of the matrix and the square of a scale parameter. This prior on a covariance matrix is represented by the <code>decov</code> function.</p>
+</div>
+<div id="details" class="section level3">
+<h3>Details</h3>
+<p>Using the decomposition described above we can work directly with correlation matrices rather than covariance matrices. The prior used for a correlation matrix <span class="math inline">\(\Omega\)</span> is called the LKJ distribution and has a probability density proportional to the determinant of the correlation matrix raised to the power of a positive regularization parameter <span class="math inline">\(\zeta\)</span> minus one:</p>
+<p><span class="math display">\[ f(\Omega | \zeta) \propto \text{det}(\Omega)^{\zeta - 1}, \quad \zeta &gt; 0. \]</span></p>
+<p>The shape of this prior depends on the value of the regularization parameter in the following way:</p>
+<ul>
+<li>If <span class="math inline">\(\zeta = 1\)</span> (the default), then the LKJ prior is jointly uniform over all correlation matrices of the same dimension as <span class="math inline">\(\Omega\)</span>.</li>
+<li>If <span class="math inline">\(\zeta &gt; 1\)</span>, then the mode of the distribution is the identity matrix. The larger the value of <span class="math inline">\(\zeta\)</span> the more sharply peaked the density is at the identity matrix.</li>
+<li>If <span class="math inline">\(0 &lt; \zeta &lt; 1\)</span>, then the density has a trough at the identity matrix.</li>
+</ul>
+<p>The <span class="math inline">\(J \times J\)</span> covariance matrix <span class="math inline">\(\Sigma\)</span> of a random vector <span class="math inline">\(\boldsymbol{\theta} = (\theta_1, \dots, \theta_J)\)</span> has diagonal entries <span class="math inline">\({\Sigma}_{jj} = \sigma^2_j = \text{var}(\theta_j)\)</span>. Therefore, the trace of the covariance matrix is equal to the sum of the variances. We set the trace equal to the product of the order of the covariance matrix and the square of a positive scale parameter <span class="math inline">\(\tau\)</span>:</p>
+<p><span class="math display">\[\text{tr}(\Sigma) = \sum_{j=1}^{J} \sigma^2_j = J\tau^2.\]</span></p>
+<p>The vector of variances <span class="math inline">\(\boldsymbol{\sigma}^2 = (\sigma^2_1, \dots \sigma^2_J)\)</span> is set equal to the product of a simplex vector <span class="math inline">\(\boldsymbol{\pi}\)</span> — which is non-negative and sums to 1 — and the scalar trace: <span class="math inline">\(\boldsymbol{\sigma}^2 = J \tau^2 \boldsymbol{\pi}\)</span>. Each element <span class="math inline">\(\pi_j\)</span> of <span class="math inline">\(\boldsymbol{\pi}\)</span> then represents the proportion of the trace (total variance) attributable to the corresponding variable <span class="math inline">\(\theta_j\)</span>.</p>
+<p>For the simplex vector <span class="math inline">\(\boldsymbol{\pi}\)</span> we use a symmetric Dirichlet prior, which has a single <em>concentration</em> parameter <span class="math inline">\(\alpha &gt; 0\)</span>:</p>
+<ul>
+<li>If <span class="math inline">\(\alpha = 1\)</span> (the default), then the prior is jointly uniform over the space of simplex vectors with <span class="math inline">\(J\)</span> elements.</li>
+<li>If <span class="math inline">\(\alpha &gt; 1\)</span>, then the prior mode corresponds to all variables having the same (proportion of total) variance, which can be used to ensure that the posterior variances are not zero. As the concentration parameter approaches infinity, this mode becomes more pronounced.</li>
+<li>If <span class="math inline">\(0 &lt; \alpha &lt; 1\)</span>, then the variances are more polarized.</li>
+</ul>
+<p>If all the elements of <span class="math inline">\(\boldsymbol{\theta}\)</span> were multiplied by the same number <span class="math inline">\(k\)</span>, the trace of their covariance matrix would increase by a factor of <span class="math inline">\(k^2\)</span>. For this reason, it is sensible to use a scale-invariant prior for <span class="math inline">\(\tau\)</span>. We choose a Gamma distribution, with shape and scale parameters both set to <span class="math inline">\(1\)</span> by default, implying a unit-exponential distribution. Users can set the shape hyperparameter to some value greater than one to ensure that the posterior trace is not zero.</p>
+</div>
+</div>
+<div id="comparison-with-lme4" class="section level1">
+<h1>Comparison with <strong>lme4</strong></h1>
+<p>There are several advantages to estimating these models using <strong>rstanarm</strong> rather than the <strong>lme4</strong> package. There are also a few drawbacks. In this section we briefly discuss what we find to be the two most important advantages as well as an important disadvantage.</p>
+<div id="advantage-better-uncertainty-estimates" class="section level3">
+<h3>Advantage: better uncertainty estimates</h3>
+<p>While <strong>lme4</strong> uses (restricted) maximum likelihood (RE)ML estimation, <strong>rstanarm</strong> enables full Bayesian inference via MCMC to be performed. It is well known that (RE)ML tends to underestimate uncertainties because it relies on point estimates of hyperparameters. Full Bayes, on the other hand, propogates the uncertainty in the hyperparameters throughout all levels of the model and provides more appropriate estimates of uncertainty for models that consist of a mix of common and group-specific parameters.</p>
+</div>
+<div id="advantage-incorporate-prior-information" class="section level3">
+<h3>Advantage: incorporate prior information</h3>
+<p>The <code>stan_glmer</code> and <code>stan_lmer</code> functions allow the user to specify prior distributions over the regression coefficients as well as any unknown covariance matrices. There are various reasons to specify priors, from helping to stabilize computation to incorporating important information into an analysis that does not enter through the data.</p>
+</div>
+<div id="disadvantage-speed" class="section level3">
+<h3>Disadvantage: speed</h3>
+<p>The benefits of full Bayesian inference (via MCMC) come with a cost. Fitting models with (RE)ML will tend to be much faster than fitting a similar model using MCMC. Speed comparable to <strong>lme4</strong> can be obtained with <strong>rstanarm</strong> using approximate Bayesian inference via the mean-field and full-rank variational algorithms (see <code>help(&quot;rstanarm-package&quot;, &quot;rstanarm&quot;)</code> for details). These algorithms can be useful to narrow the set of candidate models in large problems, but MCMC should always be used for final statistical inference.</p>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

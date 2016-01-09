@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Jonah Gabry and Ben Goodrich" />
+
+<meta name="date" content="2015-01-06" />
+
+<title>Estimating Generalized Linear Models for Binary and Binomial Data with rstanarm</title>
+
+<script src="binomial_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="binomial_files/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet" />
+<script src="binomial_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="binomial_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="binomial_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="binomial_files/highlight/default.css"
+      type="text/css" />
+<script src="binomial_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Estimating Generalized Linear Models for Binary and Binomial Data with rstanarm</h1>
+<h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
+<h4 class="date"><em>01/06/2015</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#likelihood">Likelihood</a></li>
+<li><a href="#priors">Priors</a></li>
+<li><a href="#posterior">Posterior</a></li>
+<li><a href="#logistic-regression-example">Logistic Regression Example</a></li>
+<li><a href="#binomial-models">Binomial Models</a></li>
+<li><a href="#going-further">Going Further</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{stan_glm: GLMs for Binary and Binomial Data}
+-->
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This vignette explains how to estimate generalized linear models (GLMs) for binary (Bernoulli) and Binomial response variables using the <code>stan_glm</code> function in the <strong>rstanarm</strong> package.</p>
+<p>The four steps of a Bayesian analysis are</p>
+<ol style="list-style-type: decimal">
+<li>Specify a joint distribution for the outcome(s) and all the unknowns, which typically takes the form of a marginal prior distribution for the unknowns multiplied by a likelihood for the outcome(s) conditional on the unknowns. This joint distribution is proportional to a posterior distribution of the unknowns conditional on the observed data</li>
+<li>Draw from posterior distribution using Markov Chain Monte Carlo (MCMC).</li>
+<li>Evaluate how well the model fits the data and possibly revise the model.</li>
+<li>Draw from the posterior predictive distribution of the outcome(s) given interesting values of the predictors in order to visualize how a manipulation of a predictor affects (a function of) the outcome(s).</li>
+</ol>
+<p>Steps 3 and 4 are covered in more depth by the vignette entitled “How to Use the <strong>rstanarm</strong> Package”. This vignette focuses on Step 1 when the likelihood is the product of conditionally independent binomial distributions (possibly with only one trial per observation).</p>
+</div>
+<div id="likelihood" class="section level1">
+<h1>Likelihood</h1>
+<p>For a binomial GLM the likelihood for one observation <span class="math inline">\(y\)</span> can be written as a conditionally binomial PMF <span class="math display">\[\binom{n}{y} \pi^{y} (1 - \pi)^{n - y},\]</span> where <span class="math inline">\(n\)</span> is the known number of trials, <span class="math inline">\(\pi = g^{-1}(\eta)\)</span> is the probability of success and <span class="math inline">\(\eta = \alpha + \mathbf{x}^\top \boldsymbol{\beta}\)</span> is a linear predictor. For a sample of size <span class="math inline">\(N\)</span>, the likelihood of the entire sample is the product of <span class="math inline">\(N\)</span> individual likelihood contributions.</p>
+<p>Because <span class="math inline">\(\pi\)</span> is a probability, for a binomial model the <em>link</em> function <span class="math inline">\(g\)</span> maps between the unit interval (the support of <span class="math inline">\(\pi\)</span>) and the set of all real numbers <span class="math inline">\(\mathbb{R}\)</span>. When applied to a linear predictor <span class="math inline">\(\eta\)</span> with values in <span class="math inline">\(\mathbb{R}\)</span>, the inverse link function <span class="math inline">\(g^{-1}(\eta)\)</span> therefore returns a valid probability between 0 and 1.</p>
+<p>The two most common link functions used for binomial GLMs are the <a href="https://en.wikipedia.org/wiki/Logit">logit</a> and <a href="https://en.wikipedia.org/wiki/Probit">probit</a> functions. With the logit (or log-odds) link function <span class="math inline">\(g(x) = \ln{\left(\frac{x}{1-x}\right)}\)</span>, the likelihood for a single observation becomes</p>
+<p><span class="math display">\[\binom{n}{y}\left(\text{logit}^{-1}(\eta)\right)^y 
+\left(1 - \text{logit}^{-1}(\eta)\right)^{n-y} = 
+\binom{n}{y} \left(\frac{e^{\eta}}{1 + e^{\eta}}\right)^{y}
+\left(\frac{1}{1 + e^{\eta}}\right)^{n - y}\]</span></p>
+<p>and the probit link function <span class="math inline">\(g(x) = \Phi^{-1}(x)\)</span> yields the likelihood</p>
+<p><span class="math display">\[\binom{n}{y} \left(\Phi(\eta)\right)^{y}
+\left(1 - \Phi(\eta)\right)^{n - y},\]</span></p>
+<p>where <span class="math inline">\(\Phi\)</span> is the CDF of the standard normal distribution. The differences between the logit and probit functions are minor and – if, as <strong>rstanarm</strong> does by default, the probit is scaled so its slope at the origin matches the logit’s – the two link functions should yield similar results. With <code>stan_glm</code>, binomial models with a logit link function can typically be fit slightly faster than the identical model with a probit link because of how the two models are implemented in Stan. Unless the user has a specific reason to prefer the probit link, we recommend the logit simply because it will be slightly faster and more numerically stable.</p>
+<p>In theory, there are infinitely many possible link functions, although in practice only a few are typically used. Other common choices are the <code>cauchit</code> and <code>cloglog</code> functions, which can also be used with <code>stan_glm</code> (every link function compatible with<code>glm</code> will work with <code>stan_glm</code>).</p>
+</div>
+<div id="priors" class="section level1">
+<h1>Priors</h1>
+<p>A full Bayesian analysis requires specifying prior distributions <span class="math inline">\(f(\alpha)\)</span> and <span class="math inline">\(f(\boldsymbol{\beta})\)</span> for the intercept and vector of regression coefficients. When using <code>stan_glm</code>, these distributions can be set using the <code>prior_intercept</code> and <code>prior</code> arguments. The <code>stan_glm</code> function supports a variety of prior distributions, which are explained in the <strong>rstanarm</strong> documentation (<code>help(priors, package = 'rstanarm')</code>).</p>
+<p>As an example, suppose we have <span class="math inline">\(K\)</span> predictors and believe — prior to seeing the data — that <span class="math inline">\(\alpha, \beta_1, \dots, \beta_K\)</span> are as likely to be positive as they are to be negative, but are highly unlikely to be far from zero. These beliefs can be represented by normal distributions with mean zero and a small scale (standard deviation). To give <span class="math inline">\(\alpha\)</span> and each of the <span class="math inline">\(\beta\)</span>s this prior (with a scale of 1, say), in the call to <code>stan_glm</code> we would include the arguments <code>prior_intercept = normal(0,1)</code> and <code>prior = normal(0,1)</code>.</p>
+<p>If, on the other hand, we have less a priori confidence that the parameters will be close to zero then we could use a larger scale for the normal distribution and/or a distribution with heavier tails than the normal like the Student t distribution. <strong>Step 1</strong> in the “How to Use the <strong>rstanarm</strong> Package” vignette discusses one such example.</p>
+</div>
+<div id="posterior" class="section level1">
+<h1>Posterior</h1>
+<p>With independent prior distributions, the joint posterior distribution for <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\boldsymbol{\beta}\)</span> is proportional to the product of the priors and the <span class="math inline">\(N\)</span> likelihood contributions:</p>
+<p><span class="math display">\[f\left(\alpha,\boldsymbol{\beta} | \mathbf{y},\mathbf{X}\right) \propto
+  f\left(\alpha\right) \times \prod_{k=1}^K f\left(\beta_k\right) \times
+  \prod_{i=1}^N {
+  g^{-1}\left(\eta_i\right)^{y_i} 
+  \left(1 - g^{-1}\left(\eta_i\right)\right)^{n_i-y_i}}.\]</span></p>
+<p>This is posterior distribution that <code>stan_glm</code> will draw from when using MCMC.</p>
+</div>
+<div id="logistic-regression-example" class="section level1">
+<h1>Logistic Regression Example</h1>
+<p>When the logit link function is used the model is often referred to as a logistic regression model (the inverse logit function is the CDF of the standard logistic distribution). As an example, here we will show how to carry out a few parts of the analysis from Chapter 5.4 of <a href="http://www.stat.columbia.edu/~gelman/arm/">Gelman and Hill (2007)</a> using <code>stan_glm</code>.</p>
+<p>Gelman and Hill describe a survey of 3200 residents in a small area of Bangladesh suffering from arsenic contamination of groundwater. Respondents with elevated arsenic levels in their wells had been encouraged to switch their water source to a safe public or private well in the nearby area and the survey was conducted several years later to learn which of the affected residents had switched wells. The goal of the analysis presented by Gelman and Hill is to learn about the factors associated with switching wells.</p>
+<p>To start, we’ll use <code>dist</code> (the distance from the respondent’s house to the nearest well with safe drinking water) as the only predictor of <code>switch</code> (1 if switched, 0 if not). Then we’ll expand the model by adding the arsenic level of the water in the resident’s own well as a predictor and compare this larger model to the original.</p>
+<p>After reading in the data from the <code>'wells.csv.xz'</code> file, we first rescale the <code>dist</code> variable (measured in meters) so that it is measured in units of 100 meters. If we leave <code>dist</code> in its original units then the corresponding regression coefficient will represent the effect of the marginal meter, which is too small to have a useful interpretation.</p>
+<pre class="r"><code># Load data and create dist100 variable 
+wells &lt;- read.csv(file.path(&quot;data&quot;, &quot;wells.csv.xz&quot;))
+wells$dist100 &lt;- wells$dist / 100</code></pre>
+<p>Before estimating any models we can visualize the distribution of <code>dist100</code> in the data:</p>
+<pre class="r"><code>ggplot(wells, aes(x = dist100, y = ..density..)) + 
+  geom_histogram(data = subset(wells, switch == 0)) +
+  geom_histogram(data = subset(wells, switch == 1), fill = &quot;skyblue&quot;, alpha = 0.3) </code></pre>
+<p><img src="SVGs/ARSENIC-plot-dist100-1.svg" title="" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>In the plot above the blue bars correspond to the 1737 residents who said they switched wells and the bars with the darker outline show the distribution of <code>dist100</code> for the 1283 residents who didn’t switch. As we would expect, for the residents who switched wells, the distribution of <code>dist100</code> is more concentrated at smaller distances.</p>
+<p>A Bayesian version of Gelman and Hill’s initial logistic regression model can be estimated using the <code>stan_glm</code> function. Here we’ll use a Student t prior with 7 degrees of freedom and a scale of 2.5, which, as discussed above, is a reasonable default prior when coefficients should be close to zero but have some chance of being large.</p>
+<pre class="r"><code>library(rstanarm)
+t_prior &lt;- student_t(df = 7, location = 0, scale = 2.5)
+fit1 &lt;- stan_glm(switch ~ dist100, data = wells, 
+                 family = binomial(link = &quot;logit&quot;), 
+                 prior = t_prior, prior_intercept = t_prior,  
+                 chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)</code></pre>
+<pre><code>(Intercept)     dist100 
+      0.602      -0.622 </code></pre>
+<p>The <code>formula</code>, <code>data</code> and <code>family</code> arguments to <code>stan_glm</code> are specified in exactly the same way as for <code>glm</code>. We’ve also added the optional additional arguments <code>chains</code> (how many chains we want to execute), <code>cores</code> (how many cores we want the computer to utilize) and <code>seed</code> (for reproducibility). You can read about other possible arguments in the <code>stan_glm</code> documentation (<code>help(stan_glm, package = 'rstanarm')</code>).</p>
+<p>To get a sense for the uncertainty in our estimates we can use the <code>posterior_interval</code> function to get Bayesian uncertainty intervals. The uncertainty intervals are computed by finding the relevant quantiles of the draws from the posterior distribution. For example, to compute 50% intervals we use:</p>
+<pre class="r"><code>round(posterior_interval(fit1, prob = 0.5), 2)</code></pre>
+<pre><code>              25%   75%
+(Intercept)  0.56  0.65
+dist100     -0.70 -0.55</code></pre>
+<p>For more on <code>posterior_interval</code> and interpreting the parameter estimates from a Bayesian model see Step 2 in the “How to Use the <strong>rstanarm</strong> Package” vignette.</p>
+<p>Using the coefficient estimates we can plot the predicted probability of <code>switch = 1</code> (as a function of <code>dist100</code>) together with the observed outcomes:</p>
+<pre class="r"><code># Predicted probability as a function of x
+pr_switch &lt;- function(x, ests) plogis(ests[1] + ests[2] * x)
+# A function to slightly jitter the binary data
+jitt &lt;- function(...) {
+  geom_point(aes_string(...), position = position_jitter(height = 0.05, width = 0.1), 
+             size = 2, shape = 21, stroke = 0.2)
+}
+ggplot(wells, aes(x = dist100, y = switch, color = switch)) + 
+  scale_y_continuous(breaks = c(0, 0.5, 1)) +
+  jitt(x=&quot;dist100&quot;) + 
+  stat_function(fun = pr_switch, args = list(ests = coef(fit1)), 
+                size = 2, color = &quot;gray35&quot;)</code></pre>
+<p><img src="SVGs/ARSENIC-plot-model-1.svg" title="" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>The plot shows that under this model the predicted probability of switching is a decent bit above 50% for residents living very close to wells with safe drinking water. As expected, larger values of <code>dist100</code> are associated with lower predicted probabilities of switching. At the extreme (<span class="math inline">\(\approx 300\)</span> meters), the probability is about 25%.</p>
+<p>Next, we incorporate an additional predictor into the model: the arsenic level of water in the respondent’s well. According to Gelman and Hill, “At the levels present in the Bangladesh drinking water, the health risks from arsenic are roughly proportional to exposure, and so we would expect switching to be more likely from wells with high arsenic levels” (pg. 90). We only need to change the formula, so we can use the <code>update</code> function:</p>
+<pre class="r"><code>fit2 &lt;- update(fit1, formula = switch ~ dist100 + arsenic) </code></pre>
+<pre class="r"><code>(coef_fit2 &lt;- round(coef(fit2), 3))</code></pre>
+<pre><code>(Intercept)     dist100     arsenic 
+      0.004      -0.900       0.459 </code></pre>
+<p>As expected the coefficient on <code>arsenic</code> is positive. Net of distance, an increase of 1 in the concentration of arsenic is associated with an increase of 0.459 in the log-odds of well-switching. The plot below shows distance on the x-axis and arsenic level on the y-axis with the predicted probability of well-switching mapped to the color of the background tiles (the lighter the color the higher the probability). The observed value of <code>switch</code> is indicated by the color of the points.</p>
+<pre class="r"><code>pr_switch2 &lt;- function(x, y, ests) plogis(ests[1] + ests[2] * x + ests[3] * y)
+grid &lt;- expand.grid(dist100 = seq(0, 4, length.out = 100), 
+                    arsenic = seq(0, 10, length.out = 100))
+grid$prob &lt;- with(grid, pr_switch2(dist100, arsenic, coef(fit2)))
+ggplot(grid, aes(x = dist100, y = arsenic)) + 
+  geom_tile(aes(fill = prob)) + 
+  geom_point(data = wells, aes(color = factor(switch)), size = 2, alpha = 0.85) + 
+  scale_fill_gradient() +
+  scale_color_manual(&quot;switch&quot;, values = c(&quot;white&quot;, &quot;black&quot;), labels = c(&quot;No&quot;, &quot;Yes&quot;))</code></pre>
+<p><img src="SVGs/ARSENIC-plot-model2-1.svg" title="" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>We can see that the black points (<code>switch=1</code>) are predominantly clustered in the upper-left region of the plot where the predicted probability of switching is highest.</p>
+<p>Another way we can visualize the data and model is to follow Gelman and Hill and create separate plots for varying the arsenic level and distance. Here we’ll plot curves representing the predicted probability of switching for the minimum, maximum and quartile values of both variables.</p>
+<pre class="r"><code>library(gridExtra)
+# Quantiles
+q_ars &lt;- quantile(wells$dist100, seq(0, 1, 0.25))
+q_dist &lt;- quantile(wells$arsenic, seq(0, 1, 0.25))  
+base &lt;- ggplot(wells) + xlim(c(0, NA)) +
+  scale_y_continuous(breaks = c(0, 0.5, 1))
+vary_arsenic &lt;- base + jitt(x=&quot;arsenic&quot;, y=&quot;switch&quot;, color=&quot;switch&quot;)
+vary_dist &lt;- base + jitt(x=&quot;dist100&quot;, y=&quot;switch&quot;, color=&quot;switch&quot;)
+for (i in 1:5) {
+  vary_dist &lt;- 
+    vary_dist + stat_function(fun = pr_switch2, color = &quot;gray35&quot;, 
+                              args = list(ests = coef(fit2), y = q_dist[i]))
+  vary_arsenic &lt;-
+    vary_arsenic + stat_function(fun = pr_switch2, color = &quot;gray35&quot;, 
+                                 args = list(ests = coef(fit2), x = q_ars[i]))
+}
+grid.arrange(vary_dist, vary_arsenic, ncol = 2)</code></pre>
+<p><img src="SVGs/ARSENIC-plot-model2-alt-1.svg" title="" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>We can compare our two models (with and without <code>arsenic</code>) using an approximation to Leave-One-Out (LOO) cross-validation, which is a method for estimating out of sample predictive performance and is implemented by the <code>loo</code> function in the <strong>loo</strong> package:</p>
+<pre class="r"><code>(loo1 &lt;- loo(fit1))</code></pre>
+<pre><code>Computed from 500 by 3020 log-likelihood matrix
+
+         Estimate   SE
+elpd_loo  -2040.5 10.4
+p_loo         2.3  0.1
+looic      4080.9 20.7
+
+All Pareto k estimates OK (k &lt; 0.5)</code></pre>
+<pre class="r"><code>(loo2 &lt;- loo(fit2))</code></pre>
+<pre><code>Computed from 500 by 3020 log-likelihood matrix
+
+         Estimate   SE
+elpd_loo  -1968.4 15.6
+p_loo         3.2  0.1
+looic      3936.9 31.1
+
+All Pareto k estimates OK (k &lt; 0.5)</code></pre>
+<pre class="r"><code>compare(loo1, loo2)</code></pre>
+<pre><code>elpd_diff        se   weight1   weight2 
+     72.0      12.1       0.0       1.0 </code></pre>
+<p>These results favor <code>fit2</code> over <code>fit1</code> by a wide margin. The estimated difference in <code>elpd</code> (the expected log pointwise predictive density for a new dataset) is so much larger than its standard error that the model weight for <code>fit2</code> is 1. LOO penalizes models for adding additional predictors (this helps counter overfitting), but in this case <code>fit2</code> represents enough of an improvement over <code>fit1</code> that the penalty for including <code>arsenic</code> is negligible (as it should be if <code>arsenic</code> is an important predictor).</p>
+<p>The vignette for the <code>stan_lm</code> function also has an example of using the <code>loo</code> function where the results are quite a bit different from what we see here and some important additional considerations are discussed.</p>
+</div>
+<div id="binomial-models" class="section level1">
+<h1>Binomial Models</h1>
+<p>Although the example in this vignette focused on a binary response variable, we can use nearly identical code if we have the sum of multiple binary variables. For example, image a hypothetical dataset similar to the well-switching data but spanning multiple villages. Each observation (each row) of this <code>data.frame</code> corresponds to an entire village: <code>switch[i]</code> is the number of ‘yes’ responses to the well-switching question for village <code>i</code>, <code>dist100[i]</code> is the average distance to the closest well with clean water for village <code>i</code>, etc. We also now have a variable <code>n</code> where <code>n[i]</code> is the number of respondents from village <code>i</code>.</p>
+<p>For this data we can estimate a similar model to the one we used in the binary case by changing the formula to</p>
+<p><code>cbind(switch, n - switch) ~ dist100 + arsenic</code></p>
+<p>The left-hand side is now a 2-column matrix where the first column is the number of ‘yes’ responses and the second column is the number of ‘no’ responses (or more generally, the number of successes and number of failures). The same model can also be specified using the proportion of ‘yes’ responses and the total number of responses in each village. This corresponds to the formula</p>
+<p><code>prop_switch ~ dist100 + arsenic</code></p>
+<p>where <code>prop_switch = switch / n</code> is the proportion of ‘yes’ responses. The total number of responses is provided using the <code>weights</code> argument. In this case we would add <code>weights = n</code> to the call to <code>stan_glm</code>.</p>
+<p>An example of a similar model can also be found in <strong>Step 1</strong> of the “How to Use the <strong>rstanarm</strong> Package” vignette.</p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going Further</h1>
+<p>In the hypothetical scenario above, if we also have access to the observations for each individual in all of the villages (not just the aggregate data), then a natural extension would be to consider a multilevel model that takes advantage of the inherent multilevel structure of the data (individuals nested within villages). The vignette for the <code>stan_glmer</code> function discusses these models.</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Gelman, A. and Hill, J. (2007). <em>Data Analysis Using Regression and Multilevel/Hierarchical Models.</em> Cambridge University Press, Cambridge, UK.</p>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
