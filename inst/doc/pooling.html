@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Bob Carpenter, Jonah Gabry and Ben Goodrich" />
+
+<meta name="date" content="2016-02-11" />
+
+<title>Hierarchical Partial Pooling for Repeated Binary Trials</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0A%7D%0Apre%20%7B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Hierarchical Partial Pooling for Repeated Binary Trials</h1>
+<h4 class="author"><em>Bob Carpenter, Jonah Gabry and Ben Goodrich</em></h4>
+<h4 class="date"><em>02/11/2016</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#repeated-binary-trials">Repeated Binary Trials</a><ul>
+<li><a href="#baseball-hits-efron-and-morris-1975">Baseball Hits (Efron and Morris 1975)</a></li>
+</ul></li>
+<li><a href="#pooling">Pooling</a></li>
+<li><a href="#fitting-the-models">Fitting the Models</a><ul>
+<li><a href="#complete-pooling">Complete Pooling</a></li>
+<li><a href="#no-pooling">No Pooling</a></li>
+<li><a href="#partial-pooling">Partial Pooling</a></li>
+<li><a href="#observed-vs.estimated-chance-of-success">Observed vs. Estimated Chance of Success</a></li>
+</ul></li>
+<li><a href="#posterior-predictive-distribution">Posterior Predictive Distribution</a><ul>
+<li><a href="#evaluating-held-out-data-predictions">Evaluating Held-Out Data Predictions</a></li>
+<li><a href="#simulating-replicated-data">Simulating Replicated Data</a></li>
+<li><a href="#prediction-for-new-trials">Prediction for New Trials</a><ul>
+<li><a href="#calibration">Calibration</a></li>
+<li><a href="#sharpness">Sharpness</a></li>
+<li><a href="#why-evaluate-with-the-predictive-posterior">Why Evaluate with the Predictive Posterior?</a></li>
+<li><a href="#log-eptildey-theta-vs-elog-ptildey-theta"><span class="math inline">\(\log E[p(\tilde{y} \, | \, \theta)]\)</span> vs <span class="math inline">\(E[\log p(\tilde{y} \, | \, \theta)]\)</span></a></li>
+</ul></li>
+<li><a href="#predicting-new-observations">Predicting New Observations</a><ul>
+<li><a href="#calibration-1">Calibration</a></li>
+<li><a href="#sharpness-1">Sharpness</a></li>
+</ul></li>
+<li><a href="#estimating-event-probabilities">Estimating Event Probabilities</a></li>
+<li><a href="#multiple-comparisons">Multiple Comparisons</a></li>
+<li><a href="#ranking">Ranking</a></li>
+<li><a href="#graphical-posterior-predictive-checks">Graphical Posterior Predictive Checks</a><ul>
+<li><a href="#test-statistics-and-bayesian-p-values">Test Statistics and Bayesian <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="#comparing-observed-and-replicated-data">Comparing Observed and Replicated Data</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#discussion">Discussion</a></li>
+<li><a href="#exercises">Exercises</a></li>
+<li><a href="#references">References</a></li>
+<li><a href="#additional-data-sets">Additional Data Sets</a></li>
+</ul>
+</div>
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Hierarchical Partial Pooling}
+-->
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This vignette illustrates the effects on posterior inference of pooling data (a.k.a sharing strength) across units for repeated binary trial data. It provides R code to fit and check predictive models for three situations: (a) complete pooling, which assumes each unit is the same, (b) no pooling, which assumes the units are unrelated, and (c) partial pooling, where the similarity among the units is estimated. The note explains with working examples how to (i) fit the models using <strong>rstanarm</strong> and plot the results, (ii) estimate event probabilities, (iii) evaluate posterior predictive densities to evaluate model predictions on held-out data, (iv) rank units by chance of success, (v) perform multiple comparisons in several settings, (vi) replicate new data for posterior <span class="math inline">\(p\)</span>-values, and (vii) perform graphical posterior predictive checks.</p>
+<p>The content of the vignette is based on Bob Carpenter’s Stan tutorial <em><a href="https://github.com/stan-dev/example-models/tree/master/knitr">Hierarchical Partial Pooling for Repeated Binary Trials</a></em>, but here we show how to fit the models and carry out predictions and model checking and comparison using <strong>rstanarm</strong>. Most of the text is taken from the original, with some additions and substractions to make the content more useful for <strong>rstanarm</strong> users. The Stan code from the original tutorial has also been entirely removed, as <strong>rstanarm</strong> will fit all of the models in Stan without the user having to write the underlying Stan programs. The Stan code in the original document is a good reference for anyone interested in how these models are estimated “under-the-hood”, though the parameterizations used internally by <strong>rstanarm</strong> differ somewhat from those in the original.</p>
+</div>
+<div id="repeated-binary-trials" class="section level1">
+<h1>Repeated Binary Trials</h1>
+<p>Suppose that for each of <span class="math inline">\(N\)</span> units <span class="math inline">\(n \in 1{:}N\)</span>, we observe <span class="math inline">\(y_n\)</span> successes out of <span class="math inline">\(K_n\)</span> trials. For example, the data may consist of</p>
+<ul>
+<li><p>rat tumor development, with <span class="math inline">\(y_n\)</span> rats developing tumors of <span class="math inline">\(K_n\)</span> total rats in experimental control group <span class="math inline">\(n \in 1{:}N\)</span> (Tarone 1982)</p></li>
+<li><p>surgical mortality, with <span class="math inline">\(y_n\)</span> surgical patients dying in <span class="math inline">\(K_n\)</span> surgeries for hospitals <span class="math inline">\(n \in 1{:}N\)</span> (Spiegelhalter et al. 1996)</p></li>
+<li><p>baseball batting ability, with <span class="math inline">\(y_n\)</span> hits in <span class="math inline">\(K_n\)</span> at bats for baseball players <span class="math inline">\(n \in 1{:}N\)</span> (Efron and Morris 1975; Carpenter 2009)</p></li>
+<li><p>machine learning system accuracy, with <span class="math inline">\(y_n\)</span> correct classifications out of <span class="math inline">\(K_n\)</span> examples for systems <span class="math inline">\(n \in 1{:}N\)</span> (ML conference proceedings; Kaggle competitions)</p></li>
+</ul>
+<p>In this vignette we use the small baseball data set of Efron and Morris (1975), but we also provide the rat control data of Tarone (1982), the surgical mortality data of Spiegelhalter et al. (1996) and the extended baseball data set of Carpenter (2009).</p>
+<div id="baseball-hits-efron-and-morris-1975" class="section level3">
+<h3>Baseball Hits (Efron and Morris 1975)</h3>
+<p>As a running example, we will use the data from Table 1 of (Efron and Morris 1975), which is included in <strong>rstanarm</strong> under the name <code>bball1970</code> (it was downloaded 24 Dec 2015 from <a href="http://www.swarthmore.edu/NatSci/peverso1/Sports%20Data/JamesSteinData/Efron-Morris%20Baseball/EfronMorrisBB.txt">here</a>). It is drawn from the 1970 Major League Baseball season (from both leagues).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rstanarm)
+<span class="kw">data</span>(bball1970)
+bball &lt;-<span class="st"> </span>bball1970
+<span class="kw">print</span>(bball)</code></pre></div>
+<pre><code>       Player AB Hits RemainingAB RemainingHits
+1    Clemente 45   18         367           127
+2    Robinson 45   17         426           127
+3      Howard 45   16         521           144
+4   Johnstone 45   15         275            61
+5       Berry 45   14         418           114
+6     Spencer 45   14         466           126
+7   Kessinger 45   13         586           155
+8    Alvarado 45   12         138            29
+9       Santo 45   11         510           137
+10    Swaboda 45   11         200            46
+11 Petrocelli 45   10         538           142
+12  Rodriguez 45   10         186            42
+13      Scott 45   10         435           132
+14      Unser 45   10         277            73
+15   Williams 45   10         591           195
+16 Campaneris 45    9         558           159
+17     Munson 45    8         408           129
+18      Alvis 45    7          70            14</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># A few quantities we'll use throughout</span>
+N &lt;-<span class="st"> </span><span class="kw">nrow</span>(bball)
+K &lt;-<span class="st"> </span>bball$AB
+y &lt;-<span class="st"> </span>bball$Hits
+K_new &lt;-<span class="st"> </span>bball$RemainingAB
+y_new &lt;-<span class="st"> </span>bball$RemainingHits</code></pre></div>
+<p>The data separates the outcome from the initial 45 at-bats from the rest of the season. After running this code, <code>N</code> is the number of units (players). Then for each unit <code>n</code>, <code>K[n]</code> is the number of initial trials (at-bats), <code>y[n]</code> is the number of initial successes (hits), <code>K_new[n]</code> is the remaining number of trials (remaining at-bats), and <code>y_new[n]</code> is the number of successes in the remaining trials (remaining hits).</p>
+<p>The remaining data can be used to evaluate the predictive performance of our models conditioned on the observed data. That is, we will “train” on the first 45 at bats and see how well our various models do at predicting the rest of the season.</p>
+</div>
+</div>
+<div id="pooling" class="section level1">
+<h1>Pooling</h1>
+<p>With <em>complete pooling</em>, each unit is assumed to have the same chance of success. With <em>no pooling</em>, each unit is assumed to have a completely unrelated chance of success. With <em>partial pooling</em>, each unit is assumed to have a different chance of success, but the data for all of the observed units informs the estimates for each unit.</p>
+<p>Partial pooling is typically accomplished through hierarchical models. Hierarchical models directly model the population of units. From a population model perspective, no pooling corresponds to infinite population variance, whereas complete pooling corresponds to zero population variance.</p>
+<p>In the following sections, all three types of pooling models will be fit for the baseball data.</p>
+</div>
+<div id="fitting-the-models" class="section level1">
+<h1>Fitting the Models</h1>
+<p>First we’ll create some useful objects to use throughout the rest of this vignette. One of them is a function <code>batting_avg</code>, which just formats a number to include three decimal places to the right of zero when printing, as is customary for batting averages.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">batting_avg &lt;-<span class="st"> </span>function(x) <span class="kw">print</span>(<span class="kw">format</span>(<span class="kw">round</span>(x, <span class="dt">digits =</span> <span class="dv">3</span>), <span class="dt">nsmall =</span> <span class="dv">3</span>), <span class="dt">quote =</span> <span class="ot">FALSE</span>)
+player_avgs &lt;-<span class="st"> </span>y /<span class="st"> </span>K <span class="co"># player avgs through 45 AB</span>
+tot_avg &lt;-<span class="st"> </span><span class="kw">sum</span>(y) /<span class="st"> </span><span class="kw">sum</span>(K) <span class="co"># overall avg through 45 AB</span>
+
+<span class="kw">cat</span>(<span class="st">&quot;Player averages through 45 at-bats:</span><span class="ch">\n</span><span class="st">&quot;</span>)
+<span class="kw">batting_avg</span>(player_avgs)
+<span class="kw">cat</span>(<span class="st">&quot;Overall average through 45 at-bats:</span><span class="ch">\n</span><span class="st">&quot;</span>)
+<span class="kw">batting_avg</span>(tot_avg)</code></pre></div>
+<pre><code>Player averages through 45 at-bats:
+ [1] 0.400 0.378 0.356 0.333 0.311 0.311 0.289 0.267 0.244 0.244 0.222
+[12] 0.222 0.222 0.222 0.222 0.200 0.178 0.156
+Overall average through 45 at-bats:
+[1] 0.265</code></pre>
+<div id="complete-pooling" class="section level2">
+<h2>Complete Pooling</h2>
+<p>The complete pooling model assumes a single parameter <span class="math inline">\(\theta\)</span> representing the chance of success for all units (in this case players).</p>
+<p>Assuming each player’s at-bats are independent Bernoulli trials, the probability distribution for each player’s number of hits <span class="math inline">\(y_n\)</span> is modeled as</p>
+<p><span class="math display">\[
+p(y_n \, | \, \theta) 
+\ = \
+\mathsf{Binomial}(y_n \, | \, K_n, \theta).
+\]</span></p>
+<p>When viewed as a function of <span class="math inline">\(\theta\)</span> for fixed <span class="math inline">\(y_n\)</span>, this is called the likelihood function.</p>
+<p>Assuming each player is independent leads to the complete data likelihood</p>
+<p><span class="math display">\[
+p(y \, | \, \theta) = \prod_{n=1}^N \mathsf{Binomial}(y_n \, | \, K_n, \theta).
+\]</span></p>
+<p>Using <code>family=binomial(&quot;logit&quot;)</code>, the <code>stan_glm</code> function in <strong>rstanarm</strong> will parameterize the model in terms of the log-odds <span class="math inline">\(\alpha\)</span>, which are defined by the logit transform as</p>
+<p><span class="math display">\[
+\alpha 
+= \mathrm{logit}(\theta) 
+= \log \, \frac{\theta}{1 - \theta}.
+\]</span></p>
+<p>For example, <span class="math inline">\(\theta = 0.25\)</span> corresponds to odds of <span class="math inline">\(.25\)</span> to <span class="math inline">\(.75\)</span> (equivalently, <span class="math inline">\(1\)</span> to <span class="math inline">\(3\)</span>), or log-odds of <span class="math inline">\(\log .25 / .75 = -1.1\)</span>.</p>
+<p>The model is therefore</p>
+<p><span class="math display">\[
+p(y_n \, | \, K_n, \alpha) 
+\ = \ \mathsf{Binomial}(y_n \, | \, K_n, \ \mathrm{logit}^{-1}(\alpha))
+\]</span></p>
+<p>The inverse logit function is the logistic <a href="https://en.wikipedia.org/wiki/Sigmoid_function">sigmoid</a> from which logistic regression gets its name because the inverse logit function is also the standard logistic Cumulative Distribution Function (CDF),</p>
+<p><span class="math display">\[
+\mathrm{logit}^{-1}(\alpha) = \frac{1}{1 + \exp(-\alpha)} = \theta.
+\]</span></p>
+<p>By construction, for any <span class="math inline">\(\alpha \in (-\infty, \infty)\)</span>, <span class="math inline">\(\mathrm{logit}^{-1}(\alpha) \in (0, 1)\)</span>; the sigmoid converts arbitrary log odds back to the probability scale.</p>
+<p>We will use a normal distribution with mean <span class="math inline">\(-1\)</span> and standard deviation <span class="math inline">\(1\)</span> as the prior on the log-odds <span class="math inline">\(\alpha\)</span>. This is a weakly informative prior that places about 95% of the prior probability in the interval <span class="math inline">\((-3, 1)\)</span>, which inverse-logit transforms to the interval <span class="math inline">\((0.05, 0.73)\)</span>. The prior median <span class="math inline">\(-1\)</span> corresponds to a <span class="math inline">\(0.27\)</span> chance of success. In fact, an even narrower prior is actually motivated here from substantial baseball knowledge.</p>
+<p>The figure below shows both this prior on <span class="math inline">\(\alpha\)</span> as well as the prior it implies on the probability <span class="math inline">\(\theta\)</span>.</p>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
+<p>To fit the model we call <code>stan_glm</code> with the formula <code>cbind(Hits, AB - Hits) ~ 1</code>. The left-hand side of the formula specifies the binomial outcome by providing the number of successes (hits) and failures (at-bats) for each player, and the right-hand side indicates that we want an intercept-only model.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">SEED &lt;-<span class="st"> </span><span class="dv">101</span>
+wi_prior &lt;-<span class="st"> </span><span class="kw">normal</span>(-<span class="dv">1</span>, <span class="dv">1</span>)  <span class="co"># weakly informative prior on log-odds</span>
+fit_pool &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(<span class="kw">cbind</span>(Hits, AB -<span class="st"> </span>Hits) ~<span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> bball, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="st">&quot;logit&quot;</span>),
+                     <span class="dt">prior_intercept =</span> wi_prior, <span class="dt">seed =</span> SEED)</code></pre></div>
+<p>The <code>summary</code> function will compute all sorts of summary statistics from the fitted model, but here we’ll create a small function that will compute just a few posterior summary statistics that we’ll want for each of the models we estimate. The <code>summary_stats</code> function, defined below, will take a matrix of posterior draws as its input, apply an inverse-logit transformation (to convert from log-odds to probabilities) and then compute the median and 80% interval.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">invlogit &lt;-<span class="st"> </span>plogis  <span class="co"># function(x) 1/(1 + exp(-x))</span>
+summary_stats &lt;-<span class="st"> </span>function(posterior) {
+  x &lt;-<span class="st"> </span><span class="kw">invlogit</span>(posterior)  <span class="co"># log-odds -&gt; probabilities</span>
+  <span class="kw">t</span>(<span class="kw">apply</span>(x, <span class="dv">2</span>, quantile, <span class="dt">probs =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>))) 
+}
+
+pool &lt;-<span class="st"> </span><span class="kw">summary_stats</span>(<span class="kw">as.matrix</span>(fit_pool))  <span class="co"># as.matrix extracts the posterior draws</span>
+pool &lt;-<span class="st"> </span><span class="kw">matrix</span>(pool,  <span class="co"># replicate to give each player the same estimates</span>
+               <span class="kw">nrow</span>(bball), <span class="kw">ncol</span>(pool), <span class="dt">byrow =</span> <span class="ot">TRUE</span>, 
+               <span class="dt">dimnames =</span> <span class="kw">list</span>(bball$Player, <span class="kw">c</span>(<span class="st">&quot;10%&quot;</span>, <span class="st">&quot;50%&quot;</span>, <span class="st">&quot;90%&quot;</span>)))
+<span class="kw">batting_avg</span>(pool)</code></pre></div>
+<pre><code>           10%   50%   90%  
+Clemente   0.245 0.265 0.285
+Robinson   0.245 0.265 0.285
+Howard     0.245 0.265 0.285
+Johnstone  0.245 0.265 0.285
+Berry      0.245 0.265 0.285
+Spencer    0.245 0.265 0.285
+Kessinger  0.245 0.265 0.285
+Alvarado   0.245 0.265 0.285
+Santo      0.245 0.265 0.285
+Swaboda    0.245 0.265 0.285
+Petrocelli 0.245 0.265 0.285
+Rodriguez  0.245 0.265 0.285
+Scott      0.245 0.265 0.285
+Unser      0.245 0.265 0.285
+Williams   0.245 0.265 0.285
+Campaneris 0.245 0.265 0.285
+Munson     0.245 0.265 0.285
+Alvis      0.245 0.265 0.285</code></pre>
+<p>The result is a posterior median for <span class="math inline">\(\theta\)</span> of 0.265 with an 80% central posterior interval of <span class="math inline">\((0.245, 0.285)\)</span>.<br />
+With more data, such as from more players or from the rest of the season, the posterior approaches a delta function around the maximum likelihood estimate and the posterior interval around the centeral posterior intervals will shrink. Nevertheless, even if we know a player’s chance of success exactly, there is a large amount of uncertainty in running <span class="math inline">\(K\)</span> binary trials with that chance of success; using a binomial model fundamentally bounds our prediction accuracy.</p>
+<p>Although this model will be a good baseline for comparison, we have good reason to believe from a large amount of prior data (players with as many as 10,000 trials) that it is very unlikely that all baseball players have the same chance of success.</p>
+</div>
+<div id="no-pooling" class="section level2">
+<h2>No Pooling</h2>
+<p>A model with no pooling involves a separate chance-of-success parameter <span class="math inline">\(\theta_n \in [0,1]\)</span> for each player <span class="math inline">\(n\)</span>, where the <span class="math inline">\(\theta_n\)</span> are assumed to be independent.</p>
+<p><strong>rstanarm</strong> will again parameterize the model in terms of the log-odds, <span class="math inline">\(\alpha_n = \mathrm{logit}(\theta_n)\)</span>, so the likelihood then uses the log-odds of succes <span class="math inline">\(\alpha_n\)</span> for unit <span class="math inline">\(n\)</span> in modeling the number of successes <span class="math inline">\(y_n\)</span> as</p>
+<p><span class="math display">\[
+p(y_n \, | \, \alpha_n) = 
+\mathsf{Binomial}(y_n \, | \, K_n, \mathrm{logit}^{-1}(\alpha_n)).
+\]</span></p>
+<p>Assuming the <span class="math inline">\(y_n\)</span> are independent (conditional on <span class="math inline">\(\theta\)</span>), this leads to the total data likelihood</p>
+<p><span class="math display">\[
+p(y \, | \, \alpha) = \prod_{n=1}^N \mathsf{Binomial}(y_n \, | \, K_n, \mathrm{logit}^{-1}(\alpha_n)).
+\]</span></p>
+<p>To fit the model we need only tweak the model formula used for the full pooling model to drop the intercept and instead include as the only predictor the factor variable <code>Player</code>. This is equivalent to estimating a separate intercept on the log-odds scale for each player. We’ll also use the <code>prior</code> (rather than <code>prior_intercept</code>) argument since <code>Player</code> is considered a predictor rather than an intercept from R’s perspective. Using the same weakly informative prior now means that the each <span class="math inline">\(\alpha_n\)</span> gets a <span class="math inline">\(\mathsf{Normal}(-1, 1)\)</span> prior, independent of the others.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit_nopool &lt;-<span class="st"> </span><span class="kw">update</span>(fit_pool, <span class="dt">formula =</span> . ~<span class="st"> </span><span class="dv">0</span> +<span class="st"> </span>Player, <span class="dt">prior =</span> wi_prior)
+nopool &lt;-<span class="st"> </span><span class="kw">summary_stats</span>(<span class="kw">as.matrix</span>(fit_nopool))
+<span class="kw">rownames</span>(nopool) &lt;-<span class="st"> </span><span class="kw">as.character</span>(bball$Player)
+<span class="kw">batting_avg</span>(nopool)</code></pre></div>
+<pre><code>            
+parameters   10%   50%   90%  
+  Clemente   0.297 0.385 0.478
+  Robinson   0.281 0.363 0.454
+  Howard     0.263 0.346 0.437
+  Johnstone  0.245 0.325 0.414
+  Berry      0.224 0.305 0.394
+  Spencer    0.229 0.307 0.392
+  Kessinger  0.207 0.285 0.370
+  Alvarado   0.188 0.264 0.350
+  Santo      0.175 0.245 0.327
+  Swaboda    0.172 0.245 0.332
+  Petrocelli 0.155 0.225 0.304
+  Rodriguez  0.156 0.222 0.304
+  Scott      0.157 0.225 0.306
+  Unser      0.151 0.222 0.308
+  Williams   0.155 0.225 0.306
+  Campaneris 0.139 0.204 0.285
+  Munson     0.121 0.185 0.264
+  Alvis      0.105 0.166 0.240</code></pre>
+<p>Each 80% interval is much wider than the estimated interval for the population in the complete pooling model; this is to be expected—there are only 45 data units for each parameter here as opposed to 810 in the complete pooling case. If the units each had different numbers of trials, the intervals would also vary based on size.</p>
+<p>As the estimated chance of success goes up toward 0.5, the 80% intervals gets wider. This is to be expected for chance of success parameters, because the variance is maximized when <span class="math inline">\(\theta = 0.5\)</span>.</p>
+<p>Based on our existing knowledge of baseball, the no-pooling model is almost certainly overestimating the high abilities and underestimating lower abilities (Ted Williams, 30 years prior to the year this data was collected, was the last player with a 40% observed success rate over a season, whereas 20% or less is too low for all but a few rare defensive specialists).</p>
+</div>
+<div id="partial-pooling" class="section level2">
+<h2>Partial Pooling</h2>
+<p>Complete pooling provides estimated abilities that are too narrowly distributed for the units and removes any chance of modeling population variation. Estimating each chance of success separately without any pooling provides estimated abilities that are too broadly distributed for the units and hence too variable. Clearly some amount of pooling between these two extremes is called for. But how much?</p>
+<p>A hierarchical model treats the players as belonging to a population of players. The properties of this population will be estimated along with player abilities, implicitly controlling the amount of pooling that is applied. The more variable the (estimate of the) population, the less pooling is applied. Mathematically, the hierarchical model places a prior on the abilities with parameters that are themselves estimated.</p>
+<p>This model can be estimated using the <code>stan_glmer</code> function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit_partialpool &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">stan_glmer</span>(<span class="kw">cbind</span>(Hits, AB -<span class="st"> </span>Hits) ~<span class="st"> </span>(<span class="dv">1</span> |<span class="st"> </span>Player), <span class="dt">data =</span> bball, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="st">&quot;logit&quot;</span>),
+             <span class="dt">prior_intercept =</span> wi_prior, <span class="dt">seed =</span> SEED)</code></pre></div>
+<p>Because <code>stan_glmer</code> (like <code>glmer</code>) estimates the varying intercepts for <code>Player</code> by estimating a single global intercept <span class="math inline">\(\alpha_0\)</span> and individual deviations from that intercept for each player <span class="math inline">\(\delta_n = \alpha_n - \alpha_0\)</span>, to get the posterior distribution for each <span class="math inline">\(\alpha_n\)</span> we need to shift each of the posterior draws by the corresponding draw for the intercept. We can do this easily using the <code>sweep</code> function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># shift each player's estimate by intercept (and then drop intercept)</span>
+shift_draws &lt;-<span class="st"> </span>function(draws) {
+  <span class="kw">sweep</span>(draws[, -<span class="dv">1</span>], <span class="dt">MARGIN =</span> <span class="dv">1</span>, <span class="dt">STATS =</span> draws[, <span class="dv">1</span>], <span class="dt">FUN =</span> <span class="st">&quot;+&quot;</span>)
+}
+alphas &lt;-<span class="st"> </span><span class="kw">shift_draws</span>(<span class="kw">as.matrix</span>(fit_partialpool))
+partialpool &lt;-<span class="st"> </span><span class="kw">summary_stats</span>(alphas)
+<span class="kw">rownames</span>(partialpool) &lt;-<span class="st"> </span><span class="kw">as.character</span>(bball$Player)
+<span class="kw">batting_avg</span>(partialpool)</code></pre></div>
+<pre><code>            
+parameters   10%   50%   90%  
+  Clemente   0.249 0.283 0.345
+  Robinson   0.247 0.280 0.336
+  Howard     0.244 0.277 0.331
+  Johnstone  0.239 0.274 0.323
+  Berry      0.235 0.271 0.316
+  Spencer    0.237 0.270 0.317
+  Kessinger  0.233 0.267 0.310
+  Alvarado   0.229 0.264 0.304
+  Santo      0.224 0.262 0.300
+  Swaboda    0.223 0.262 0.298
+  Petrocelli 0.216 0.259 0.294
+  Rodriguez  0.216 0.259 0.294
+  Scott      0.217 0.259 0.294
+  Unser      0.218 0.259 0.295
+  Williams   0.218 0.259 0.293
+  Campaneris 0.211 0.256 0.290
+  Munson     0.203 0.254 0.288
+  Alvis      0.197 0.250 0.283</code></pre>
+<p>Here the estimates are less extreme than in the no-pooling case, which we should expect due to the partial pooling. It is also clear from the wide posteriors for the <span class="math inline">\(\theta_n\)</span> that there is considerable uncertainty in the estimates of chance-of-success on an unit-by-unit (player-by-player) basis.</p>
+</div>
+<div id="observed-vs.estimated-chance-of-success" class="section level2">
+<h2>Observed vs. Estimated Chance of Success</h2>
+<p>Figure 5.4 from (Gelman et al. 2013) plots the observed number of successes <span class="math inline">\(y_n\)</span> for the first <span class="math inline">\(K_n\)</span> trials versus the median and 80% intervals for the estimated chance-of-success parameters <span class="math inline">\(\theta_n\)</span> in the posterior. The following R code reproduces a similar plot for our data.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+models &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;complete pooling&quot;</span>, <span class="st">&quot;no pooling&quot;</span>, <span class="st">&quot;partial pooling&quot;</span>)
+estimates &lt;-<span class="st"> </span><span class="kw">rbind</span>(pool, nopool, partialpool)
+<span class="kw">colnames</span>(estimates) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lb&quot;</span>, <span class="st">&quot;median&quot;</span>, <span class="st">&quot;ub&quot;</span>)
+plotdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(estimates, 
+                       <span class="dt">observed =</span> <span class="kw">rep</span>(player_avgs, <span class="dt">times =</span> <span class="kw">length</span>(models)), 
+                       <span class="dt">model =</span> <span class="kw">rep</span>(models, <span class="dt">each =</span> N), 
+                       <span class="dt">row.names =</span> <span class="ot">NULL</span>)
+
+<span class="kw">ggplot</span>(plotdata, <span class="kw">aes</span>(<span class="dt">x =</span> observed, <span class="dt">y =</span> median, <span class="dt">ymin =</span> lb, <span class="dt">ymax =</span> ub)) +
+<span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> tot_avg, <span class="dt">color =</span> <span class="st">&quot;lightpink&quot;</span>, <span class="dt">size =</span> <span class="fl">0.75</span>) +
+<span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="st">&quot;skyblue&quot;</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_linerange</span>(<span class="dt">color =</span> <span class="st">&quot;gray60&quot;</span>, <span class="dt">size =</span> <span class="fl">0.75</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="fl">2.5</span>, <span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">fill =</span> <span class="st">&quot;gray30&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">stroke =</span> <span class="fl">0.2</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">facet_grid</span>(. ~<span class="st"> </span>model) +
+<span class="st">  </span><span class="kw">coord_fixed</span>() +
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>)) +
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Observed Hits / AB&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Predicted chance of hit&quot;</span>) +
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Posterior Medians and 80% Intervals&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
+<p>The horizontal axis is the observed rate of success, broken out by player (the overplotting is from players with the same number of successes—they all had the same number of trials in this data). The dots are the posterior medians with bars extending to cover the central 80% posterior interval. Players with the same observed rates are indistinguishable, any differences in estimates are due to MCMC error.</p>
+<p>The horizontal red line has an intercept equal to the overall success rate,</p>
+<p><span class="math display">\[
+\frac{\sum_{n=1}^N y_n}{\sum_{n=1}^N K_n}
+\ = \
+\frac{215}{810}
+\ = \ 
+0.265.
+\]</span></p>
+<p>The overall success rate is also the posterior mode (i.e., maximum likelihood estimate) for the complete pooling model. The diagonal blue line has intercept 0 and slope 1. Estimates falling on this line make up the maximum likelihood estimates for the no-pooling model. Overall, the plot makes the amount of pooling toward the prior evident.</p>
+</div>
+</div>
+<div id="posterior-predictive-distribution" class="section level1">
+<h1>Posterior Predictive Distribution</h1>
+<p>After we have fit a model using some “training” data, we are usually interested in the predictions of the fitted model for new data, which we can use to</p>
+<ul>
+<li><p>make predictions for new data points; e.g., predict how many hits will Roberto Clemente get in the rest of the season,</p></li>
+<li><p>evaluate predictions against observed future data; e.g., how well did we predict how many hits Roberto Clemente actually got in the rest of the season, and</p></li>
+<li><p>generate new simulated data to validate our model fits.</p></li>
+</ul>
+<p>With full Bayesian inference, we do not make a point estimate of parameters and use those prediction—we instead use an average of predictions weighted by the posterior.</p>
+<p>Given data <span class="math inline">\(y\)</span> and a model with parameters <span class="math inline">\(\theta\)</span>, the posterior predictive distribution for new data <span class="math inline">\(\tilde{y}\)</span> is defined by</p>
+<p><span class="math display">\[
+p(\tilde{y} \, | \, y)
+\ = \
+\int_{\Theta} p(\tilde{y} \, | \, \theta) \ p(\theta \, | \, y) \ \mathrm{d}\theta,
+\]</span></p>
+<p>where <span class="math inline">\(\Theta\)</span> is the support of the parameters <span class="math inline">\(\theta\)</span>. What an integral of this form says is that <span class="math inline">\(p(\tilde{y} \, | \, y)\)</span> is defined as a weighted average over the legal parameter values <span class="math inline">\(\theta \in \Theta\)</span> of the likelihood function <span class="math inline">\(p(\tilde{y} \, | \, \theta)\)</span>, with weights given by the posterior, <span class="math inline">\(p(\theta \, | \, y)\)</span>. While we do not want to get sidetracked with the notational and mathematical subtleties of expectations here, the posterior predictive density reduces to the expectation of <span class="math inline">\(p(\tilde{y} \, | \, \theta)\)</span> conditioned on <span class="math inline">\(y\)</span>.</p>
+<div id="evaluating-held-out-data-predictions" class="section level3">
+<h3>Evaluating Held-Out Data Predictions</h3>
+<p>Because the posterior predictive density is formulated as an expectation over the posterior, it is possible to compute via MCMC. With <span class="math inline">\(M\)</span> draws <span class="math inline">\(\theta^{(m)}\)</span> from the posterior <span class="math inline">\(p(\theta \, | \, y)\)</span>, the posterior predicitve log density for new data <span class="math inline">\(y^{\mathrm{new}}\)</span> is given by the MCMC approximation</p>
+<p><span class="math display">\[
+\log \frac{1}{M} \, \sum_{m=1}^M \ p\left( y^{\mathrm{new}} \, | \, \theta^{(m)} \right).
+\]</span></p>
+<p>In practice, this requires care to prevent underflow in floating point calculations; a robust calculation on the log scale is provided below.</p>
+</div>
+<div id="simulating-replicated-data" class="section level3">
+<h3>Simulating Replicated Data</h3>
+<p>It is also straightforward to use forward simulation from the probability distribution of the data <span class="math inline">\(p(y \, | \, \theta)\)</span> to generate replicated data <span class="math inline">\(y^{\mathrm{rep}}\)</span> according to the posterior predictive distribution. (Recall that <span class="math inline">\(p(y \, | \, \theta)\)</span> is called the probability distribution when <span class="math inline">\(\theta\)</span> is fixed and the likelihood when <span class="math inline">\(y\)</span> is fixed.)</p>
+<p>With <span class="math inline">\(M\)</span> draws <span class="math inline">\(\theta^{(m)}\)</span> from the posterior <span class="math inline">\(p(\theta \, | \, y)\)</span>, replicated data can be simulated by drawing a sequence of <span class="math inline">\(M\)</span> simulations according <span class="math inline">\(y^{\mathrm{rep} \ (m)}\)</span> with each drawn according to distribution <span class="math inline">\(p(y \, | \, \theta^{(m)})\)</span>. This latter random variate generation can usually be done efficiently (both computationally and statistically) by means of forward simulation from the probability distribution of the data; we provide an example below.</p>
+</div>
+<div id="prediction-for-new-trials" class="section level2">
+<h2>Prediction for New Trials</h2>
+<p>Efron and Morris’s (1975) baseball data includes not only the observed hit rate in the initial 45 at bats, but also includes the data for how the player did for the rest of the season. The question arises as to how well these models predict a player’s performance for the rest of the season based on their initial 45 at bats.</p>
+<div id="calibration" class="section level3">
+<h3>Calibration</h3>
+<p>A well calibrated statistical model is one in which the uncertainy in the predictions matches the uncertainty in further data. That is, if we estimate posterior 50% intervals for predictions on new data (here, number of hits in the rest of the season for each player), roughly 50% of the new data should fall in its predicted 50% interval. If the model is true in the sense of correctly describing the generative process of the data, then Bayesian inference is guaranteed to be well calibrated. Given that our models are rarely correct in this deep sense, in practice we are concerned with testing their calibration on quantities of interest.</p>
+</div>
+<div id="sharpness" class="section level3">
+<h3>Sharpness</h3>
+<p>Given two well calibrated models, the one that makes the more precise predictions in the sense of having narrower intervals is better predictively (Gneiting et al. 2007). To see this in an example, we would rather have a well-calibrated prediction that there’s a 90% chance the number of hits for a player in the rest of the season will fall in <span class="math inline">\((120, 130)\)</span> than a 90% prediction that the number of hits will fall in <span class="math inline">\((100, 150)\)</span>.</p>
+<p>For the models introduced here, a posterior that is a delta function provides the sharpest predictions. Even so, there is residual uncertainty due to the repeated trials; with <span class="math inline">\(K^{\mathrm{new}}\)</span> further trials and a a fixed <span class="math inline">\(\theta_n\)</span> chance of success, the random variable <span class="math inline">\(Y^{\mathrm{new}}_n\)</span> denoting the number of further successes for unit <span class="math inline">\(n\)</span> has a standard deviation from the repeated binary trials of</p>
+<p><span class="math display">\[
+\mathrm{sd}[Y^{\mathrm{new}}_n] \ = \ \sqrt{K \
+\theta \, (1 - \theta)}.
+\]</span></p>
+</div>
+<div id="why-evaluate-with-the-predictive-posterior" class="section level3">
+<h3>Why Evaluate with the Predictive Posterior?</h3>
+<p>The predictive posterior density directly measures the probability of seeing the new data. The higher the probability assigned to the new data, the better job the model has done at predicting the outcome. In the limit, an ideal model would perfectly predict the new outcome with no uncertainty (probability of 1 for a discrete outcome or a delta function at the true value for the density in a continuous outcome). This notion is related to the notion of sharpness discussed in the previous section, because if the new observations have higher predictive densities, they’re probably within narrower posterior intervals (Gneiting et al. 2007).</p>
+</div>
+<div id="log-eptildey-theta-vs-elog-ptildey-theta" class="section level3">
+<h3><span class="math inline">\(\log E[p(\tilde{y} \, | \, \theta)]\)</span> vs <span class="math inline">\(E[\log p(\tilde{y} \, | \, \theta)]\)</span></h3>
+<p>The log of posterior predicitve density is defined in the obvious way as</p>
+<p><span class="math display">\[
+\log p(\tilde{y} \, | \, y)
+= \log \int_{\Theta} p(\tilde{y} \, | \, \theta) 
+                     \ p(\theta \, | \, y)
+                     \ \mathrm{d}\theta.
+\]</span></p>
+<p>This is not a posterior expectation, but rather the log of a posterior expectation. In particular, it should not be confused with the posterior expectation of the log predictive density, which is given by</p>
+<p><span class="math display">\[
+ \int_{\Theta} \left( \log p(\tilde{y} \, | \, \theta) \right) 
+               \ p(\theta \, | \, y)  
+               \ \mathrm{d}\theta.
+\]</span></p>
+<p>Although this is easy to compute in Stan in a stable fashion, it does not produce the same answer (as we show below).</p>
+<p>Because <span class="math inline">\(-\log(u)\)</span> is convex, a little wrangling with <a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen’s inequality</a> shows that the expectation of the log is less than or equal to the log of the expectation,</p>
+<p><span class="math display">\[
+\log \int_{\Theta} p(\tilde{y} \, | \, \theta) \ p(\theta \, | \, y) \ \mathrm{d}\theta
+\ \leq \
+\int_{\Theta} \left( \, \log p(\tilde{y} \, | \, \theta) \, \right) \ p(\theta \, | \, y) \ \mathrm{d}\theta.
+\]</span></p>
+<p>We’ll compute both expectations and demonstrate Jensen’s inequality in our running example.</p>
+<p>The variables <code>K_new[n]</code> and <code>y_new[n]</code> hold the number of at bats (trials) and the number of hits (successes) for player (unit) <code>n</code>. With the held out data we can compute the log density of each data point using the <code>log_lik</code> function, which, like <code>posterior_predict</code>, accepts a <code>newdata</code> argument. The <code>log_lik</code> function will return an <span class="math inline">\(M \times N\)</span> matrix, where <span class="math inline">\(M\)</span> is the size of the posterior sample (the number of draws we obtained from the posterior distribution) and <span class="math inline">\(N\)</span> is the number of data points in <code>newdata</code>. We can then take the row sums of this matrix to sum over the data points.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">newdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Hits =</span> y_new, <span class="dt">AB =</span> K_new, <span class="dt">Player =</span> bball$Player)
+fits &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">Pooling =</span> fit_pool, <span class="dt">NoPooling =</span> fit_nopool, 
+             <span class="dt">PartialPooling =</span> fit_partialpool)
+
+<span class="co"># compute log_p_new with each of the models in 'fits'</span>
+log_p_new &lt;-<span class="st"> </span><span class="kw">sapply</span>(fits, function(x) <span class="kw">rowSums</span>(<span class="kw">log_lik</span>(x, newdata)))
+<span class="kw">head</span>(log_p_new)</code></pre></div>
+<pre><code>       Pooling NoPooling PartialPooling
+[1,] -73.29359 -253.3134      -86.15857
+[2,] -87.45459 -206.8737     -111.90214
+[3,] -73.64027 -140.5583     -104.63592
+[4,] -74.28801 -111.7885      -79.48121
+[5,] -73.52197 -317.1339     -132.79695
+[6,] -78.63311 -223.2194      -97.05880</code></pre>
+<p>We now have the distributions of <code>log_p_new</code> in a 3-column matrix, with a column for each model.</p>
+<p>For each model, the posterior mean for <code>log_p_new</code> will give us</p>
+<p><span class="math display">\[
+ \int_{\Theta} \left( \log p(\tilde{y} \, | \, \theta) \right) 
+               \ p(\theta \, | \, y)  
+               \ \mathrm{d}\theta
+\ \approx \
+\frac{1}{M} \, \sum_{m=1}^M \log p(y^{\mathrm{new}} \, | \, \theta^{(m)}).
+\]</span></p>
+<p>To compute this for each of the models we only need to take the mean of the corresponding column of <code>log_p_new</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mean_log_p_new &lt;-<span class="st"> </span><span class="kw">colMeans</span>(log_p_new)
+<span class="kw">round</span>(<span class="kw">sort</span>(mean_log_p_new, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>), <span class="dt">digits =</span> <span class="dv">1</span>)</code></pre></div>
+<pre><code>       Pooling PartialPooling      NoPooling 
+         -81.9          -99.3         -208.7 </code></pre>
+<p>From a predictive standpoint, the models are ranked by the amount of pooling they do, with complete pooling being the best, and no pooling being the worst predictively. All of these models do predictions by averaging over their posteriors, with the amount of posterior uncertainty also being ranked in reverse order of the amount of pooling they do.</p>
+<p>As we will now see, the ranking of the models can change when we compute the posterior expectation of the log predictive density.</p>
+<div id="posterior-expectation-of-the-log-predictive-density" class="section level4">
+<h4>Posterior expectation of the log predictive density</h4>
+<p>The straight path to calculate this would be to define a generated quantity <span class="math inline">\(p(y^{\mathrm{new}} \, | y)\)</span>, look at the posterior mean computed by Stan, and takes its log. That is,</p>
+<p><span class="math display">\[
+\log p(y^{\mathrm{new}} \, | \, y)
+\ \approx \
+\log \frac{1}{M} \, \sum_{m=1}^M p(y^{\mathrm{new}} \, | \, \theta^{(m)}).
+\]</span></p>
+<p>Unfortunately, this won’t work in most cases because when we try to compute <span class="math inline">\(p(y^{\mathrm{new}} \, | \, \theta^{(m)})\)</span> directly, it is prone to underflow. For example, 2000 outcomes <span class="math inline">\(y^{\mathrm{new}}_n\)</span>, each with likelihood 0.5 for <span class="math inline">\(\theta^{(m)}\)</span>, will underflow, because <span class="math inline">\(0.5^{2000}\)</span> is smaller than the smallest positive number that a computer can represent using standard <a href="https://en.wikipedia.org/wiki/IEEE_754-1985">double-precision floating point</a> (used by Stan, R, etc.).</p>
+<p>In contrast, if we work on the log scale, <span class="math inline">\(\log p(y^{\mathrm{new}} \, | \, y)\)</span> will not underflow. It’s a sum of a bunch of terms of order 1. But we already saw we can’t just average the log to get the log of the average.</p>
+<p>To avoid underflow, we’re going to use the <a href="https://en.wikipedia.org/wiki/LogSumExp">log-sum-of-exponentials</a> trick, which begins by noting the obvious,</p>
+<p><span class="math display">\[
+\log \frac{1}{M} \, \sum_{m=1}^M \ p(y^{\mathrm{new}} \, | \, \theta^{(m)}).
+\ = \
+\log \frac{1}{M} \, \sum_{m=1}^M
+                     \ \exp \left( \log p(y^{\mathrm{new}} \, | \, \theta^{(m)}) \right).
+\]</span></p>
+<p>We’ll then write that last expression as</p>
+<p><span class="math display">\[
+-\log M 
++  \mathrm{log\_sum\_exp \, }
+        \ \log p(y^{\mathrm{new}} \, | \, \theta^{(m)})
+\]</span></p>
+<p>We can compute <span class="math inline">\(\mathrm{log\_sum\_exp}\)</span> stably by subtracting the max value. Suppose <span class="math inline">\(u = u_1, \ldots, u_M\)</span>, and <span class="math inline">\(\max(u)\)</span> is the largest <span class="math inline">\(u_m\)</span>. We can calculate</p>
+<p><span class="math display">\[
+\mathrm{log\_sum\_exp \, } \ u_m
+\ = \
+\log \sum_{m=1}^M \exp(u_m)
+\ = \
+\max(u) + \log \sum_{m=1}^M \exp(u_m - \max(u)).
+\]</span></p>
+<p>Because <span class="math inline">\(u_m - \max(u) \leq 0\)</span>, the exponentiations cannot overflow. They may underflow to zero, but this will not lose precision because of the leading <span class="math inline">\(\max(u)\)</span> term; the only way underflow can arise is if <span class="math inline">\(u_m - \max(u)\)</span> is very small, meaning that it won’t add significant digits to <span class="math inline">\(\max(u)\)</span> if it had not underflowed.</p>
+<p>We can implement <span class="math inline">\(\mathrm{log\_sum\_exp}\)</span> in R as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log_sum_exp &lt;-<span class="st"> </span>function(u) {
+  max_u &lt;-<span class="st"> </span><span class="kw">max</span>(u)
+  a &lt;-<span class="st"> </span><span class="dv">0</span>
+  for (n in <span class="dv">1</span>:<span class="kw">length</span>(u)) {
+    a &lt;-<span class="st"> </span>a +<span class="st"> </span><span class="kw">exp</span>(u[n] -<span class="st"> </span>max_u)
+  }
+  max_u +<span class="st"> </span><span class="kw">log</span>(a)
+}
+
+<span class="co"># Or equivalenty using vectorization</span>
+log_sum_exp &lt;-<span class="st"> </span>function(u) {
+  max_u &lt;-<span class="st"> </span><span class="kw">max</span>(u)
+  max_u +<span class="st"> </span><span class="kw">log</span>(<span class="kw">sum</span>(<span class="kw">exp</span>(u -<span class="st"> </span>max_u)))
+}</code></pre></div>
+<p>and then use it to print the log posterior predictive densities for our fit.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">M &lt;-<span class="st"> </span><span class="kw">nrow</span>(log_p_new) 
+new_lps &lt;-<span class="st"> </span>-<span class="kw">log</span>(M) +<span class="st"> </span><span class="kw">apply</span>(log_p_new, <span class="dv">2</span>, log_sum_exp)
+<span class="kw">round</span>(<span class="kw">sort</span>(new_lps, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>), <span class="dt">digits =</span> <span class="dv">1</span>)</code></pre></div>
+<pre><code>PartialPooling        Pooling      NoPooling 
+         -73.1          -74.9          -97.3 </code></pre>
+<p>Now the ranking is different! As expected, the values here are lower than the expectation of the log density due to Jensen’s inequality. The partial pooling model appears to be making slightly better predictions than the full pooling model, which in turn is making slightly better predictions than the no pooling model.</p>
+</div>
+<div id="approximating-the-expected-log-posterior-density" class="section level4">
+<h4>Approximating the expected log posterior density</h4>
+<p>Ventari, Gelman, and Gabry (2016) shows that the expected log predictive density can be approximated using the <code>loo</code> function for each model and then <code>compare</code>d across models:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">compare</span>(<span class="kw">loo</span>(fit_partialpool), <span class="kw">loo</span>(fit_pool), <span class="kw">loo</span>(fit_nopool))</code></pre></div>
+<pre><code>                     looic se_looic elpd_loo se_elpd_loo p_loo se_p_loo
+loo(fit_pool)         92.9   5.3    -46.5      2.7         1.1   0.3   
+loo(fit_partialpool)  93.2   4.3    -46.6      2.1         3.6   0.8   
+loo(fit_nopool)      107.9   1.2    -53.9      0.6        12.1   0.4   
+                     weights
+loo(fit_pool)          0.5  
+loo(fit_partialpool)   0.5  
+loo(fit_nopool)        0.0  </code></pre>
+<p>The third column is the leave-one-out (loo) approximation to the expected log predictive density. This approximation is only asymptotically valid and with only 18 observations in this case, substantially underestimates the expected log predictive densities found in the previous subsection. Nevertheless, the relative ranking of the models is essentially the same with the pooled and partially pooled models being virtually indistinguishable but much better than the no pooling model.</p>
+</div>
+</div>
+</div>
+<div id="predicting-new-observations" class="section level2">
+<h2>Predicting New Observations</h2>
+<p>With <strong>rstanarm</strong> it is straightforward to generate draws from the posterior predictive distribution using the <code>posterior_predict</code> function. With this capability, we can either generate predictions for new data or we can apply it to the predictors we already have.</p>
+<p>There will be two sources of uncertainty in our predictions, the first being the uncertainty in <span class="math inline">\(\theta\)</span> in the posterior <span class="math inline">\(p(\theta \, | \, y)\)</span> and the second being the uncertainty due to the likelihood <span class="math inline">\(p(\tilde{y} \, | \, \theta)\)</span>.</p>
+<p>We let <span class="math inline">\(z_n\)</span> be the number of successes for unit <span class="math inline">\(n\)</span> in <span class="math inline">\(K^{\mathrm{new}}_n\)</span> further trials. It might seem tempting to eliminate that second source of uncertainty and set <span class="math inline">\(z_n^{(m)}\)</span> to its expectation, <span class="math inline">\(\theta_n^{(m)} \, K^{\mathrm{new}}\)</span>, at each draw <span class="math inline">\(m\)</span> from the posterior rather than simulating a new value. Or it might seem tempting to remove the first source of uncertainty and use the posterior mean (or median or mode or …) rather than draws from the posterior. Either way, the resulting values would suffice for estimating the posterior mean, but would not capture the uncertainty in the prediction for <span class="math inline">\(y^{\mathrm{new}}_n\)</span> and would thus not be useful in estimating predictive standard deviations or quantiles or as the basis for decision making under uncertainty. In other words, the predictions would not be properly calibrated (in a sense we define below).</p>
+<p>To predict <span class="math inline">\(z\)</span> for each player we can use the following code:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">newdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Hits =</span> y_new, <span class="dt">AB =</span> K_new, <span class="dt">Player =</span> bball$Player)
+ppd_pool &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(fit_pool, newdata)
+ppd_nopool &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(fit_nopool, newdata)
+ppd_partialpool &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(fit_partialpool, newdata)
+<span class="kw">colnames</span>(ppd_pool) &lt;-<span class="st"> </span><span class="kw">colnames</span>(ppd_nopool) &lt;-<span class="st"> </span><span class="kw">colnames</span>(ppd_partialpool) &lt;-<span class="st"> </span><span class="kw">as.character</span>(bball$Player)
+<span class="kw">colMeans</span>(ppd_partialpool)</code></pre></div>
+<pre><code>  Clemente   Robinson     Howard  Johnstone      Berry    Spencer 
+ 106.86975  121.75950  147.21975   76.10025  114.44050  127.82150 
+ Kessinger   Alvarado      Santo    Swaboda Petrocelli  Rodriguez 
+ 157.75750   36.74175  133.66450   52.24275  138.57150   47.81125 
+     Scott      Unser   Williams Campaneris     Munson      Alvis 
+ 112.01200   71.38350  152.27775  141.32525  101.87275   17.12975 </code></pre>
+<p>Translating the posterior number of hits into a season batting average, <span class="math inline">\(\frac{y_n + z_n}{K_n + K^{\mathrm{new}}_n}\)</span>, we get an 80% posterior interval of</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">z_1 &lt;-<span class="st"> </span>ppd_partialpool[, <span class="dv">1</span>]
+clemente_80pct &lt;-<span class="st"> </span>(y[<span class="dv">1</span>] +<span class="st"> </span><span class="kw">quantile</span>(z_1, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>))) /<span class="st"> </span>(K[<span class="dv">1</span>] +<span class="st"> </span>K_new[<span class="dv">1</span>])
+<span class="kw">batting_avg</span>(clemente_80pct)</code></pre></div>
+<pre><code>  10%   90% 
+0.255 0.359 </code></pre>
+<p>for Roberto Clemente from the partial pooling model. Part of our uncertainty here is due to our uncertainty in Clemente’s underlying chance of success, and part of our uncertainty is due to there being 367 remaining trials (at bats) modeled as binomial. In the remaining at bats for the season, Clemente’s success rate (batting average) was <span class="math inline">\(127/367 = 0.346\)</span>.</p>
+<p>The posterior produced by the model for the number of hits for the rest of the season is overdispersed compared to a simple binomial model based on a point estimate. For example, if we take the partially pooled posterior median estimate of 0.28 for Roberto Clemente’s ability (and thus remove the first source of uncertainty, the posterior uncertainty in his chance of success), the prediction for number of hits based on the point estimate would be <span class="math inline">\(\mathrm{Binomial}(K^{\mathrm{new}}_1, 0.28)\)</span>, which we know analytically has a standard deviation of <span class="math inline">\(\sqrt{n \, \theta_n \, (1 - \theta_n)} = 8.6\)</span>, which is quite a bit lower than the standard deviation of 17.4 for <span class="math inline">\(z_1\)</span> estimated from the draws from the posterior predictive distribution.</p>
+<p>For each model, the following plot shows each player’s posterior predictive 50% interval for predicted batting average (success rate) in his remaining at bats (trials); the observed success rate in the remainder of the season is shown as a blue dot.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ppd_intervals &lt;-<span class="st"> </span>function(x) <span class="kw">t</span>(<span class="kw">apply</span>(x, <span class="dv">2</span>, quantile, <span class="dt">probs =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>)))
+ppd_summaries &lt;-<span class="st"> </span>(<span class="dv">1</span> /<span class="st"> </span>K_new) *<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">ppd_intervals</span>(ppd_pool),
+                                     <span class="kw">ppd_intervals</span>(ppd_nopool),
+                                     <span class="kw">ppd_intervals</span>(ppd_partialpool))
+df_ppd &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">player =</span> <span class="kw">rep</span>(<span class="dv">1</span>:<span class="kw">length</span>(y_new), <span class="dv">3</span>),
+                     <span class="dt">y =</span> <span class="kw">rep</span>(y_new /<span class="st"> </span>K_new, <span class="dv">3</span>),
+                     <span class="dt">lb =</span> ppd_summaries[, <span class="st">&quot;25%&quot;</span>],
+                     <span class="dt">ub =</span> ppd_summaries[, <span class="st">&quot;75%&quot;</span>],
+                     <span class="dt">model =</span> <span class="kw">rep</span>(models, <span class="dt">each =</span> <span class="kw">length</span>(y_new)))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(df_ppd, <span class="kw">aes</span>(<span class="dt">x=</span>player, <span class="dt">y=</span>y, <span class="dt">ymin=</span>lb, <span class="dt">ymax=</span>ub)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_linerange</span>(<span class="dt">color =</span> <span class="st">&quot;gray60&quot;</span>, <span class="dt">size =</span> <span class="dv">2</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="fl">2.5</span>, <span class="dt">fill =</span> <span class="st">&quot;skyblue2&quot;</span>) +
+<span class="st">  </span><span class="kw">facet_grid</span>(. ~<span class="st"> </span>model) +
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="st">&quot;batting average&quot;</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="ot">NULL</span>) +
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="kw">expression</span>(
+    <span class="kw">atop</span>(<span class="st">&quot;Posterior Predictions for Batting Average in Remainder of Season&quot;</span>,
+         <span class="kw">atop</span>(<span class="st">&quot;50% posterior predictive intervals (gray bars); observed (blue dots)&quot;</span>, <span class="st">&quot;&quot;</span>))))</code></pre></div>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
+<p>We choose to plot 50% posterior intervals as they are a good single point for checking calibration. Rather than plotting the number of hits on the vertical axis, we have standardized all the predictions and outcomes to a success rate. Because each unit (player) has a different number of subsequent trials (at bats), the posterior intervals are relatively wider or narrower within the plots for each model (more trials imply narrower intervals for the average). Because each unit had the same number of initial observed trials, this variation is primarily due to the uncertainty from the binomial model of outcomes.</p>
+<div id="calibration-1" class="section level3">
+<h3>Calibration</h3>
+<p>With 50% intervals, we expect half of our estimates to lie outside their intervals in a well-calibrated model. If fewer than the expected number of outcomes lie in their estimated posterior intervals, we have reason to believe the model is not well calibrated—its posterior intervals are too narrow. This is also true if too many outcomes lie in their estimated posterior intervals—in this case the intervals are too broad. Of course, there is variation in the tests as the number of units lying in their intervals is itself a random variable (see the exercises), so in practice we are only looking for extreme values as indicators of miscalibration.</p>
+<p>Each of the models other than the complete pooling model appears to be reasonably well calibrated, and even the calibration for the complete pooling model is not bad (the variation in chance-of-success among players has low enough variance that the complete pooling model cannot be rejected as a possibility with only the amount of data we used here).</p>
+</div>
+<div id="sharpness-1" class="section level3">
+<h3>Sharpness</h3>
+<p>Consider the width of the posterior predictive intervals for the units across the models. The model with no pooling has the broadest posterior predictive intervals and the complete pooling model the narrowest. This is to be expected given the number of observations used to fit each model; 45 each in the no pooling case and 810 in the complete pooling case, and relatively something in between for the partial pooling models. Because the log odds model is doing more pooling, its intervals are slightly narrower than that of the direct hierarchical model.</p>
+<p>For two well calibrated models, the one with the narrower posterior intervals is preferable because its predictions are more tighter. The term introduced for this by Gneiting et al. (2007) is “sharpness.” In the limit, a perfect model would provide a delta function at the true answer with a vanishing posterior interval.</p>
+</div>
+</div>
+<div id="estimating-event-probabilities" class="section level2">
+<h2>Estimating Event Probabilities</h2>
+<p>The 80% interval in the partial pooling model coincidentally shows us that our model estimates a roughly 10% chance of Roberto Clemente batting 0.400 or better for the season based on batting 0.400 in his first 45 at bats. Not great, but non-trivial. Rather than fishing for the right quantile and hoping to get lucky, we can write a model to directly estimate event probabilities, such as Robert Clemente’s batting average is 0.400 or better for the season.</p>
+<p>Event probabilities are defined as expectations of indicator functions over parameters and data. For example, the probability of player <span class="math inline">\(n\)</span>’s batting average being 0.400 or better conditioned on the data <span class="math inline">\(y\)</span> is defined by the conditional event probability</p>
+<p><span class="math display">\[
+\mathrm{Pr}\left[
+\frac{(y_n + z_n)}{(45 + K^{\mathrm{new}}_n)} \geq 0.400 
+\, \Big| \, 
+y
+\right]
+\ = \
+\int_{\Theta}
+ \mathrm{I}\left[\frac{(y_n + z_n)}{(45 + K^{\mathrm{new}}_n)} \geq 0.400\right]
+       \ p(z_n \, | \, \theta_n, K^{\mathrm{new}}_n)
+       \ p(\theta \, | \, y, K)
+       \ \mathrm{d}\theta.
+\]</span></p>
+<p>The indicator function <span class="math inline">\(\mathrm{I}[c]\)</span> evaluates to 1 if the condition <span class="math inline">\(c\)</span> is true and 0 if it is false. Because it is just another expectation with respect to the posterior, we can calculate this event probability using MCMC as</p>
+<p><span class="math display">\[
+\mathrm{Pr}\left[\frac{(y_n + z_n)}{(45 + K^{\mathrm{new}}_n)} \geq
+0.400 \, \Big| \, y \right]
+\ \approx \
+\frac{1}{M} \, \sum_{m=1}^M \mathrm{I}\left[\frac{(y_n + z_n^{(m)})}{(45 + K^{\mathrm{new}}_n)} \geq 0.400\right].
+\]</span></p>
+<p>This event is about the season batting average being greater than 0.400. What if we care about ability (chance of success), not batting average (success rate) for the rest of the season? Then we would ask the question of whether <span class="math inline">\(\mathrm{Pr}[\theta_n &gt; 0.4]\)</span>. This is defined as a weighted average over the prior and computed via MCMC as the previous case.</p>
+<p><span class="math display">\[
+\mathrm{Pr}\left[\theta_n \geq 0.400 \, | \, y \right]
+\ = \
+\int_{\Theta}
+ \mathrm{I}\left[\theta_n \geq 0.400\right]
+       \ p(\theta \, | \, y, K)
+       \ \mathrm{d}\theta
+\ \approx \
+\frac{1}{M} \, \sum_{m=1}^M \mathrm{I}[\theta_n^{(m)} \geq 0.400].
+\]</span></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">draws_partialpool &lt;-<span class="st"> </span><span class="kw">shift_draws</span>(<span class="kw">as.matrix</span>(fit_partialpool))
+thetas_partialpool &lt;-<span class="st"> </span><span class="kw">plogis</span>(draws_partialpool)
+<span class="kw">colnames</span>(thetas_partialpool) &lt;-<span class="st"> </span><span class="kw">as.character</span>(bball$Player)
+ability_gt_400 &lt;-<span class="st"> </span>thetas_partialpool &gt;<span class="st"> </span><span class="fl">0.4</span>
+<span class="kw">cat</span>(<span class="st">&quot;Pr(theta_n &gt;= 0.400 | y)</span><span class="ch">\n</span><span class="st">&quot;</span>)
+<span class="kw">colMeans</span>(ability_gt_400)[<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>)]
+
+some_gt_350 &lt;-<span class="st"> </span><span class="kw">apply</span>(thetas_partialpool, <span class="dv">1</span>, function(x) <span class="kw">max</span>(x) &gt;<span class="st"> </span><span class="fl">0.35</span>)
+<span class="kw">cat</span>(<span class="st">&quot;Pr(at least one theta_n &gt;= 0.350 | y)</span><span class="ch">\n</span><span class="st">&quot;</span>)
+<span class="kw">mean</span>(some_gt_350)</code></pre></div>
+<pre><code>Pr(theta_n &gt;= 0.400 | y)
+Clemente    Berry  Swaboda 
+ 0.02125  0.00350  0.00025 
+Pr(at least one theta_n &gt;= 0.350 | y)
+[1] 0.22075</code></pre>
+<!-- These results show that the probability of batting 0.400 or better for -->
+<!-- the season is a different question than asking if the player's ability -->
+<!-- is 0.400 or better; for example, with respect to the basic partial -->
+<!-- pooling model, there is roughly an estimated 10% chance of Roberto -->
+<!-- Clemente ($n = 1$) batting 0.400 or better for the season, but only an -->
+<!-- estimated 8% chance that he has ability greater than 0.400.  This is -->
+<!-- again due to there being two sources of uncertainty, that from the -->
+<!-- estimate of the chance of success in the posterior and that from the -->
+<!-- remaining binary trials. -->
+</div>
+<div id="multiple-comparisons" class="section level2">
+<h2>Multiple Comparisons</h2>
+<p>We snuck in a “multiple comparison” event in the last section, namely whether there was some player with an a chance of success for hits of .350 or greater.</p>
+<p>With traditional significance testing over multiple trials, it is common to adjust for falsely rejecting the null hypothesis (a so-called <a href="https://en.wikipedia.org/wiki/Type_I_and_type_II_errors#Type_I_error">Type I error</a>) by inflating the conventional (and arguably far too low) 5% target for reporting “significance.”</p>
+<p>For example, suppose we have our 18 players with ability parameters <span class="math inline">\(\theta_n\)</span> and we have <span class="math inline">\(N\)</span> null hypotheses of the form <span class="math inline">\(H_0^n: \theta_n &lt; 0.350\)</span>. Now suppose we evaluate each of these 18 hypotheses independently at the conventional <span class="math inline">\(p = 0.05\)</span> significance level, giving each a 5% chance of rejecting the null hypothesis in error. When we run all 18 hypothesis tests, the overall chance of falsely rejecting at least one of the null hypotheses is a whopping <span class="math inline">\(1 - (1 - 0.05)^{18} = 0.60\)</span>.</p>
+<p>The traditional solution to this problem is to apply a <a href="https://en.wikipedia.org/wiki/Bonferroni_correction">Bonferroni adjustment</a> to control the false rejection rate; the typical adjustment is to divide the <span class="math inline">\(p\)</span>-value by the number of hypothesis tests in the “family” (that is, the collective test being done). Here that sets the rate to <span class="math inline">\(p = 0.05/18\)</span>, or approximately <span class="math inline">\(p = 0.003\)</span>, and results in a slightly less than 5% chance of falsely rejecting a null hypothesis in error.</p>
+<p>Although the Bonferroni correction does reduce the overall chance of falsely rejecting a null hypothesis, it also reduces the statistical power of the test to the same degree. This means that many null hypotheses will fail to be rejected in error.</p>
+<p>Rather than doing classical multiple comparison adjustments to adjust for false-discovery rate, such as a Bonferroni correction, Gelman et al. (2012) suggest using a hierarchical model to perform partial pooling instead. As already shown, hierarchical models partially pool the data, which pulls estimates toward the population mean with a strength determined by the amount of observed variation in the population (see also Figure 2 of (Gelman et al. 2012)). This automatically reduces the false-discovery rate, though not in a way that is intrinsically calibrated to false discovery, which is good, because reducing the overall false discovery rate in and of itself reduces the true discovery rate at the same time.</p>
+<p>The generated quantity <code>some_ability_gt_350</code> will be set to 1 if the maximum ability estimate in <span class="math inline">\(\theta\)</span> is greater than 0.35. And thus the posterior mean of this generated quantity will be the event probability</p>
+<p><span class="math display">\[
+\mathrm{Pr}[\mathrm{max}(\theta) &gt; 0.350]
+\ = \ \int_{\Theta} \mathrm{I}[\mathrm{max}(\theta) &gt; 0.35] \ p(\theta \, | \, y, K) \ \mathrm{d}\theta
+\ \approx \ \frac{1}{M} \, \sum_{m=1}^M \ \mathrm{I}[\mathrm{max}(\theta^{(m)}) &gt; 0.35]
+\]</span></p>
+<p>where <span class="math inline">\(\theta^{(m)}\)</span> is the sequence of posterior draws for the ability parameter vector. Stan reports this value as the posterior mean of the generated quantity <code>some_ability_gt_350</code>, which takes on the value <span class="math inline">\(\mathrm{I}[\mathrm{max}(\theta^{(m)}) &gt; 0.35]\)</span> in each iteration.</p>
+<p>The probability estimate of there being a player with an ability (chance of success) greater than 0.350 is roughly 0% in the complete pooling model, 22% in the partial pooling model, and 98% in the no pooling model. The partially pooled estimates would not be considered significant at conventional p=0.05 thresholds. One way to get a handle on what’s going on is to inspect the posterior 80% intervals for chance-of-success estimates in the first graph above.</p>
+</div>
+<div id="ranking" class="section level2">
+<h2>Ranking</h2>
+<p>In addition to multiple comparisons, we can use the simultaneous estimation of the ability parameters to rank the units. In this section, we rank ballplayers by (estimated) chance of success (i.e., batting ability).</p>
+<p>Of course, ranking players by ability makes no sense for the complete pooling model, where every player is assumed to have the same ability.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reverse_rank &lt;-<span class="st"> </span>function(x) <span class="dv">1</span> +<span class="st"> </span><span class="kw">length</span>(x) -<span class="st"> </span><span class="kw">rank</span>(x) <span class="co"># so lower rank is better</span>
+rank &lt;-<span class="st"> </span><span class="kw">apply</span>(thetas_partialpool, <span class="dv">1</span>, reverse_rank)
+<span class="kw">t</span>(<span class="kw">apply</span>(rank, <span class="dv">1</span>, quantile, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>)))</code></pre></div>
+<pre><code>            
+parameters   10% 50% 90%
+  Clemente     1   5  14
+  Robinson     1   6  14
+  Howard       1   6  15
+  Johnstone    2   7  15
+  Berry        2   8  16
+  Spencer      2   8  16
+  Kessinger    2   9  16
+  Alvarado     3   9  16
+  Santo        3  10  17
+  Swaboda      3  10  17
+  Petrocelli   3  11  17
+  Rodriguez    3  11  17
+  Scott        3  11  17
+  Unser        4  11  17
+  Williams     4  11  17
+  Campaneris   4  12  17
+  Munson       4  13  18
+  Alvis        5  14  18</code></pre>
+<p>It is again abundantly clear from the posterior intervals that our uncertainty is very great after only 45 at bats.</p>
+<p>In the original Volume I BUGS example (see <a href="http://www.openbugs.net/Examples/Surgical.html">OpenBUGS: Surgical example</a>) of surgical mortality, the posterior distribution over ranks was plotted for each hospital. It is now straightforward to reproduce that figure here for the baseball data.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_rank &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> <span class="kw">rep</span>(bball$Player, <span class="dt">each =</span> M), 
+                      <span class="dt">rank =</span> <span class="kw">c</span>(<span class="kw">t</span>(rank)))
+
+<span class="kw">ggplot</span>(df_rank, <span class="kw">aes</span>(rank)) +
+<span class="st">  </span><span class="kw">stat_count</span>(<span class="dt">width =</span> <span class="fl">0.8</span>) +
+<span class="st">  </span><span class="kw">facet_wrap</span>(~<span class="st"> </span>name) +
+<span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>)) +
+<span class="st">  </span><span class="kw">scale_y_discrete</span>(<span class="dt">name =</span> <span class="st">&quot;posterior probability&quot;</span>, <span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span> *<span class="st"> </span>M, <span class="fl">0.2</span> *<span class="st"> </span>M),
+                   <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;0.0&quot;</span>, <span class="st">&quot;0.1&quot;</span>, <span class="st">&quot;0.2&quot;</span>)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Rankings for Partial Pooling Model&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
+<div id="who-has-the-highest-chance-of-success" class="section level4">
+<h4>Who has the Highest Chance of Success?</h4>
+<p>We can use our ranking statistic to calculate the event probability for unit <span class="math inline">\(n\)</span> that the unit has the highest chance of success using MCMC as</p>
+<p><span class="math display">\[
+\mathrm{Pr}[\theta_n = \max(\theta)]
+\ = \
+\int_{\Theta} \mathrm{I}[\theta_n = \mathrm{max}(\theta)]
+              \ p(\theta \, | \, y, K)
+              \ \mathrm{d}\theta
+\ \approx \ 
+\frac{1}{M} \, \sum_{m=1}^M \mathrm{I}[\theta^{(m)}_n = \mathrm{max}(\theta^{(m)})].
+\]</span></p>
+<p>Like our other models, the partial pooling mitigates the implicit multiple comparisons being done to calculate the probabilities of rankings. Contrast this with an approach that does a pairwise significance test and then applies a false-discovery correction.</p>
+<p>We can compute this straightforwardly using the rank data we have already computed or we could compute it directly as above. Because <span class="math inline">\(\mathrm{Pr}[\theta_n = \theta_{n'}] = 0\)</span> for <span class="math inline">\(n \neq n'\)</span>, we don’t have to worry about ties.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">thetas_nopool &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">as.matrix</span>(fit_nopool))
+<span class="kw">colnames</span>(thetas_nopool) &lt;-<span class="st"> </span><span class="kw">as.character</span>(bball$Player)
+rank_nopool &lt;-<span class="st"> </span><span class="kw">apply</span>(thetas_nopool, <span class="dv">1</span>, reverse_rank)
+is_best_nopool &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(rank_nopool ==<span class="st"> </span><span class="dv">1</span>)
+is_best_partialpool &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(rank ==<span class="st"> </span><span class="dv">1</span>)
+
+df_is_best &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">unit =</span> <span class="kw">rep</span>(bball$Player, <span class="dv">2</span>), 
+                         <span class="dt">is_best =</span> <span class="kw">c</span>(is_best_partialpool, is_best_nopool), 
+                         <span class="dt">model =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;partial pooling&quot;</span>, <span class="st">&quot;no pooling&quot;</span>), <span class="dt">each =</span> N))
+
+<span class="kw">ggplot</span>(df_is_best, <span class="kw">aes</span>(<span class="dt">x=</span>unit, <span class="dt">y=</span>is_best)) +
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) +
+<span class="st">  </span><span class="kw">facet_wrap</span>(~<span class="st"> </span>model) +
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;Pr[player is best]&quot;</span>) +
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Who is the Best Player?&quot;</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> -<span class="dv">45</span>, <span class="dt">vjust =</span> <span class="dv">1</span>, <span class="dt">hjust =</span> <span class="dv">0</span>))</code></pre></div>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
+<p>This question of which player has the highest chance of success (batting ability) doesn’t even make sense in the complete pooling model, because the chance of success parameters are all the same by definition. In the other models, the amount of pooling directly determines the probabilities of being the best player. For example, Roberto Clemente, the top performing player in the first 45 at bats, has an estimated 34% and 17% chance of being the best player according to the no-pooling and partial pooling models, respectively. Ron Swaboda, on the other hand, has an estimated 1.3% and 3.3% chance according to the same models. That is, the probability of being best goes down for high performing players with more pooling, whereas it goes up for below-average players.</p>
+</div>
+</div>
+<div id="graphical-posterior-predictive-checks" class="section level2">
+<h2>Graphical Posterior Predictive Checks</h2>
+<p>We can simulate data from the predictive distribution and compare it to the original data used for fitting the model. If they are not consistent, then either our model is not capturing the aspects of the data we are probing with test statistics or the measurement we made is highly unlikely. That is, extreme <span class="math inline">\(p\)</span>-values lead us to suspect there is something wrong with our model that deserves further exploration.</p>
+<p>In some cases, we are willing to work with models that are wrong in some measurable aspects, but accurately capture quantities of interest for an application. That is, it’s possible for a model to capture some, but not all, aspects of a data set, and still be useful.</p>
+<div id="test-statistics-and-bayesian-p-values" class="section level3">
+<h3>Test Statistics and Bayesian <span class="math inline">\(p\)</span>-Values</h3>
+<p>A test statistic <span class="math inline">\(T\)</span> is a function from data to a real value. Following (Gelman et al. 2013), we will concentrate on four specific test statistics for repeated binary trial data (though these choices are fairly general): minimum value, maximum value, sample mean, and sample standard deviation.</p>
+<p>Given a test statistic <span class="math inline">\(T\)</span> and data <span class="math inline">\(y\)</span>, the Bayesian <span class="math inline">\(p\)</span>-value has a direct definition as a probability,</p>
+<p><span class="math display">\[
+p_B = \mathrm{Pr}[T(y^{\mathrm{rep}}) \geq T(y) \, | \, y].
+\]</span></p>
+<p>Bayesian <span class="math inline">\(p\)</span>-values, like their traditional counterparts, are probabilities, but not probabilities that a model is true. They simply measure discrepancies between the observed data and what we would expect if the model is true.</p>
+<p>Values of Bayesian <span class="math inline">\(p\)</span>-values near 0 or 1 indicate that the data <span class="math inline">\(y\)</span> used to estimate the model is unlikely to have been generated by the estimated model. As with other forms of full Bayesian inference, our estimate is the full posterior, not just a point estimate.</p>
+<p>As with other Bayesain inferences, we average over the posterior rather than working from a point estimate of the parameters. Expanding this as an expectation of an indicator function,</p>
+<p><span class="math display">\[
+p_B 
+\ = \ 
+  \int_{\Theta, Y^{\mathrm{rep}}} 
+    \mathrm{I}[T(y^{\mathrm{rep}}) \geq T(y)]  
+    \ p(y^{\mathrm{rep}} \, | \, \theta)
+    \ p(\theta \, | \, y)
+    \ \mathrm{d}\theta,
+\]</span></p>
+<p>We treat <span class="math inline">\(y^{\mathrm{rep}}\)</span> as a parameter in parallel with <span class="math inline">\(\theta\)</span>, integrating over possible values <span class="math inline">\(y^{\mathrm{rep}} \in Y^{\mathrm{rep}}\)</span>. As usual, we use the integration sign in a general way intended to include summation, as with the discrete variable <span class="math inline">\(y^{\mathrm{rep}}\)</span>.</p>
+<p>The formualation as an expectation leads to the obvious MCMC calculation based on posterior draws <span class="math inline">\(y^{\mathrm{rep} (m)}\)</span> for <span class="math inline">\(m \in 1{:}M\)</span>,</p>
+<p><span class="math display">\[
+p_B
+\approx 
+\frac{1}{M}
+\,
+\sum_{m=1}^M
+\mathrm{I}[T(y^{\mathrm{rep} \ (m)}) \geq T(y)].
+\]</span></p>
+<p>Using the <code>pp_check</code> in <strong>rstanarm</strong>, we can easily reproduce Figure 6.12 from (Gelman et al. 2013), which shows the posterior predictive distribution for the test statistic, the observed value as a vertical line, and the <span class="math inline">\(p\)</span>-value for each of the tests. First, here is just the plot for the no pooling model using the mean as the test statistic:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">pp_check</span>(fit_nopool, <span class="dt">check =</span> <span class="st">&quot;test&quot;</span>, <span class="dt">test =</span> <span class="st">&quot;mean&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAADwCAMAAACXFEkpAAAADFBMVEUAAAAiIiKHzuv///8uz0LcAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAElklEQVR4nO3di3KiMBhA4ezy/u+8s1UgXJITLoEUzplZbTH84jdqrXZmQ2fZwt0H0HoCQQJBAkECQQJB9YD+/lRt/FUJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkEXQEU/lfteionECQQJBAkEHT+gfccAqUmCgQTBYKJAsFEgWCiQDBRIJgoEEwUCCYKBBMFgokCwUSBYKJAMFEgmCgQTBQIJn4TKDVRIJgoEEycAPXfCTROFAgmCgQTBYKJAsFEgWCiQDBRIJgoEEwUCCYKBBMFgokCwUSBYKJAMFEgmCgQTBQIJgoEE+8AGt8APzuBIIEggSCBoMcCxVc8Xvn2wxAIugyortL6QyxMzhZfFyUQ9AKg/1f7uerhiw29Aag/mT0flfUqoHFbeace8wSjMaAgEAEFgRbHMzmNvytPIOg9QEGgzOug4eze10EIVA0p+9t8WJxu6LTjXUCkgKogCQTl3w8aXkbf+dt840A7n6JfAnQkgaCHAFUa2wnEk08bJBAMEggGCQSDGgOKrwuuL3uxQG8F+tk6OcvsvfOyTQlEV9IsUPy5WPh+933kBX6T6A1A/cnPG/efk0ENf8k/5VhXERoE6qLPDicfAwnUfy42MRFoCjR+dvhdLND0vdb40TVeIFACyHtQNwOKnp+jn2DxkvXJ5x1es0DR2YB17eugVoH6C6PT5fbVi1YWHUkgqHGg6HOxxeb4PLnv4X4B0NqFAp0y+ZQhtwPVSyBIIEggSCBIIEggSCBIIOgeoF+kJBAkECQQJBAkEHT0MNO3X6AMjkCffQWCfQWCfY8B/Q4kgSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBoJuB2lcSCBIIagGoaaSdR1ZwkwUSKLfb2UDNKu04qMJbK5BAqV0Egl0ESq/e0A6gFpGaA2pNqexY9tzII0ANIa0dx/4bdSbQpMtdRoxqkz9A1cZflUCQQJBAkEBQDPSn+QSCBIIaBgqFN6F03b6FAsFCgWDhzUBXrquwsE4CtX317ScQlAOK3ojpv1x/b2a5MPEuTunE4oH1y1xnGC/vv4w2FSzcPbF44AUJBJUB9d8j0GTh7onFAy+oHCgsN2UWrj+1zHbfAnTXO9PFQGG5KbNwffZkYQhJ8pV1dLDVKgUKy025heuzD9yD6GCrVQgUlpuyC9dnPxcoLDedsXDrT7FGgULp7d68kIBo3RXlrjMMz6PD69jsK+ktC4teSeO6C7rlSn9TAkECQQJBAkECQTuA0n/U1MyfhZ2YQNC+m5SQEGjYq//VdPIyN/FiN/T/q2BY7tKNFzTaIaD+ofY9TwJFf4u5ft6w0EGg8d/nvjBcHt3sEC/7/ou2hbYfmkeAFg+SFFA3hZn7PhlofGyl7wkzoJVdHg80PgklF8+AhuUPB5ptK3mILbc9F2h4lqUn6W7EGO5v3TuApj+rk6+DZjhhFHw20ORVX/8ze31xhNGfPfke9KIEggSCBIIEggSCBIIEggSCBIIEggSC/gFQYtFIiQaAVQAAAABJRU5ErkJggg==" title alt style="display: block; margin: auto;" /></p>
+<p>The <code>test</code> argument can the be the name of any R function (including your own functions defined in the Global Environment) that takes a vector as an input and returns a scalar.</p>
+<p>To make plots for each of the models for several test statistics we can use the following code, which will greate a list of ggplot objects for each model and then arrange everything in a single plot.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tstat_plots &lt;-<span class="st"> </span>function(model, stats) {
+  <span class="kw">lapply</span>(stats, function(stat) {
+    graph &lt;-<span class="st"> </span><span class="kw">pp_check</span>(model, <span class="dt">check =</span> <span class="st">&quot;test&quot;</span>, <span class="dt">test =</span> stat, 
+                      <span class="dt">binwidth =</span> .<span class="dv">025</span>, <span class="dt">seed =</span> SEED) <span class="co"># optional arguments</span>
+    graph +<span class="st"> </span><span class="kw">xlab</span>(stat) +<span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>)
+  })
+}
+Tstats &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;mean&quot;</span>, <span class="st">&quot;sd&quot;</span>, <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)
+ppcs_pool &lt;-<span class="st"> </span><span class="kw">tstat_plots</span>(fit_pool, Tstats)
+ppcs_nopool &lt;-<span class="st"> </span><span class="kw">tstat_plots</span>(fit_nopool, Tstats)
+ppcs_partialpool &lt;-<span class="st"> </span><span class="kw">tstat_plots</span>(fit_partialpool, Tstats)
+
+<span class="kw">library</span>(gridExtra)
+<span class="kw">grid.arrange</span>(
+  <span class="kw">arrangeGrob</span>(<span class="dt">grobs =</span> ppcs_pool, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">left =</span> <span class="st">&quot;Pooling&quot;</span>), 
+  <span class="kw">arrangeGrob</span>(<span class="dt">grobs =</span> ppcs_nopool, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">left =</span> <span class="st">&quot;No Pooling&quot;</span>),
+  <span class="kw">arrangeGrob</span>(<span class="dt">grobs =</span> ppcs_partialpool, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">left =</span> <span class="st">&quot;Partial Pooling&quot;</span>))</code></pre></div>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
+<p>The only worrisomely extreme value visible in the plots is the <span class="math inline">\(p\)</span>-value for standard deviation in the no-pooling model, where the vast majority of the simulated data sets under the model had standard deviations greater than the actual data.</p>
+<p>We didn’t actually compute this <span class="math inline">\(p\)</span>-value because extreme <span class="math inline">\(p\)</span>-values are easy to detect visually and whether or not the <span class="math inline">\(p\)</span>-value is less than <span class="math inline">\(0.05\)</span> or some other arbitrary value is of little use to us beyond what we can already see in the plot. However, if we did want to actually compute the <span class="math inline">\(p\)</span>-value we can do so easily:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yrep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(fit_nopool, <span class="dt">seed =</span> SEED) <span class="co"># seed is optional</span>
+Ty &lt;-<span class="st"> </span><span class="kw">sd</span>(y)
+Tyrep &lt;-<span class="st"> </span><span class="kw">apply</span>(yrep, <span class="dv">1</span>, sd)
+
+<span class="co"># tail-area probability</span>
+p &lt;-<span class="st"> </span><span class="dv">1</span> -<span class="st"> </span><span class="kw">mean</span>(Tyrep &gt;<span class="st"> </span>Ty)
+<span class="kw">print</span>(p)</code></pre></div>
+<pre><code>[1] 0.01375</code></pre>
+</div>
+<div id="comparing-observed-and-replicated-data" class="section level3">
+<h3>Comparing Observed and Replicated Data</h3>
+<p>Following the advice of Gelman et al. (2013), we will take the fitted parameters of the data set and generate replicated data sets, then compare the replicated data sets visually to the observed data we used to fit the model. In this section we’ll create the plots for the model using partial pooling, but the same plots can be made for the other models too.</p>
+<p>Again using <strong>rstanarm</strong>’s <code>pp_check</code> function, we can plot some of the simulated data sets along with the original data set to do a visual inspection as suggested by Gelman et al. (2013). For this type of posterior predictive check we set the <code>check</code> argument to <code>&quot;distributions&quot;</code> and we use <code>nreps</code> to specify how many replicated sets of data to generate from the posterior predictive distribution. Because our models have a binomial outcome, instead of plotting the number of successes (hits in this case) on the x-axis, <code>pp_check</code> will plot the proportion of successes.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">pp_check</span>(fit_partialpool, <span class="dt">check =</span> <span class="st">&quot;distributions&quot;</span>, <span class="dt">nreps =</span> <span class="dv">15</span>, 
+         <span class="dt">overlay =</span> <span class="ot">FALSE</span>, <span class="dt">binwidth =</span> <span class="fl">0.05</span>) +<span class="st">  </span><span class="co"># optional arguments</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Model: Partial Pooling&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
+<p>These simulations are not unreasonable for a binomial likelihood, but they are more spread out than the actual data. In this case, this may actually have more to do with how the data were selected out of all the major league baseball players than the actual data distribution. Efron and Morris (1975, p 312) write</p>
+<blockquote>
+<p>This sample was chosen because we wanted between 30 and 50 at bats to assure a satisfactory approximation of the binomial by the normal distribution while leaving the bulk of at bats to be estimated. We also wanted to include an unusually good hitter (Clemente) to test the method with at least one extreme parameter, a situation expected to be less favorable to Stein’s estimator. Stein’s estimator requires equal variances, or in this situation, equal at bats, so the remaining 17 players are all whom either the April 26 or May 3 <em>New York Times</em> reported with 45 at bats.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+<p>A hierarchical model introduces an estimation bias toward the population mean and the stronger the bias, the less variance there is in the estimates for the units. Exactly how much bias and variance is warranted can be estimated by further calibrating the model and testing where its predictions do not bear out.</p>
+<p>With very little data, there is very little we can do to gain sharp inferences other than provide more informative priors, which is well worth doing when prior information is available.</p>
+<p>On the other hand, with more data, the models provide similar results (see the exericses), and in the limit, all of the models (other than complete pooling) converge to posteriors that are delta functions around the empirical chance of success (i.e., the maximum likelihood estimate). Meanwhile, Bayesian inference is allowing us to make more accurate predictions with the data available before we hit that asymptotic regime.</p>
+</div>
+<div id="exercises" class="section level1">
+<h1>Exercises</h1>
+<ol style="list-style-type: decimal">
+<li><p>Generate fake data according to the pooling, no-pooling, and partial pooling models. Fit the model and consider the coverage of the posterior 80% intervals.</p></li>
+<li><p>Try generating data where each player has a different number of at-bats (trials) and then fitting the models. What effect does the number of initial trials have on the posterior? Is there a way to quantify the effect?</p></li>
+<li><p>In the section where we fit the complete pooling model we show a plot of the prior distribution on the probability of success <span class="math inline">\(\theta\)</span> implied by the <span class="math inline">\(\mathsf{Normal}(-1,1)\)</span> prior on the log-odds <span class="math inline">\(\alpha\)</span>. If <span class="math inline">\(\theta = \mathrm{logit}^{-1}(\alpha)\)</span> and <span class="math inline">\(p(\alpha) = \mathsf{Normal}(\alpha \,|\, -1, 1)\)</span>, what is <span class="math inline">\(p(\theta)\)</span>? For a hint, see <a href="https://en.wikipedia.org/wiki/Probability_density_function#Dependent_variables_and_change_of_variables">here</a>.</p></li>
+<li><p>How sensitive is the basic no-pooling model to the choice of prior? We used a somewhat informative prior due to our knowledge of baseball, but the prior could be made more or less informative. How, if at all, does this affect posterior inference?</p></li>
+<li><p>What are some other test statistics that might be used to evaluate our model fit to data? Try some out using <code>pp_check(model, check=&quot;test&quot;, test = &quot;my_test&quot;)</code>, where <code>my_test</code> is your function that computes the test statistic. For example, to check the 25% quantile you could first define a function <code>q25 &lt;- function(x) quantile(x, 0.25)</code> and then call <code>pp_check(model, check = &quot;test&quot;, test = &quot;q25&quot;)</code>.</p></li>
+<li><p>Discuss the difference between batting average and on-base percentage as random variables. Consider particularly the denominator (at-bat versus plate appearance). Is the denominator in these kinds of problems always a random variable itself? Why might this be important in inference?</p></li>
+</ol>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li><p>Betancourt, M. and Girolami, M. (2015) Hamiltonian Monte Carlo for hierarchical models. <em>Current Trends in Bayesian Methodology with Applications</em> <strong>79</strong>.</p></li>
+<li><p>Efron, B. and Morris, C. (1975) Data analysis using Stein’s estimator and its generalizations. <em>Journal of the American Statistical Association</em> <strong>70</strong>(350), 311–319. [ <a href="http://www.medicine.mcgill.ca/epidemiology/hanley/bios602/MultilevelData/EfronMorrisJASA1975.pdf">pdf</a> ]</p></li>
+<li><p>Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., and Rubin, D. B. (2013) <em>Bayesian Data Analysis</em>, 3rd Edition. Chapman &amp; Hall/CRC Press, London.</p></li>
+<li><p>Gelman, A. and Hill, J. (2007) <em>Data Analysis Using Regression and Multilevel-Hierarchical Models</em>. Cambridge University Press, Cambridge, United Kingdom.</p></li>
+<li><p>Gelman, A., Hill, J., and Yajima, M. (2012) Why we (usually) don’t have to worry about multiple comparisons. <em>Journal of Research on Educational Effectiveness</em> <strong>5</strong>, 189–211. [ <a href="http://www.stat.columbia.edu/~gelman/research/published/multiple2f.pdf">pdf</a> ]</p></li>
+<li><p>Gneiting, T., Balabdaoui, F., and Raftery, A. E. (2007) Probabilistic forecasts, calibration and sharpness. <em>Journal of the Royal Statistical Society: Series B</em> (Statistical Methodology), <strong>69</strong>(2), 243–268.</p></li>
+<li><p>Lunn, D., Jackson, C., Best, N., Thomas, A., and Spiegelhalter, D. (2013) <em>The BUGS Book: A Practical Introduction to Bayesian Analysis</em>. Chapman &amp; Hall/CRC Press.</p></li>
+<li><p>Neal, R. M. (2003) Slice sampling. <em>Annals of Statistics</em> <strong>31</strong>(3):705–767.</p></li>
+<li><p>Papaspiliopoulos, O., Roberts, G. O., and Skold, M. (2003) Non-centered parameterisations for hierarchical models and data augmentation. In <em>Bayesian Statistics 7: Proceedings of the Seventh Valencia International Meeting</em>, edited by Bernardo, J. M., Bayarri, M. J., Berger, J. O., Dawid, A. P., Heckerman, D., Smith, A. F. M., and West, M. Oxford University Press, Chicago.</p></li>
+<li><p>Plummer, M., Best, N., Cowles, K., &amp; Vines, K. (2006). CODA: Convergence diagnosis and output analysis for MCMC. <em>R News</em>, <strong>6</strong>(1), 7–11.</p></li>
+<li><p>Spiegelhalter, D., Thomas, A., Best, N., &amp; Gilks, W. (1996) BUGS 0.5 Examples. MRC Biostatistics Unit, Institute of Public health, Cambridge, UK.</p></li>
+<li><p>Stan Development Team (2015) <em>Stan Modeling Language User’s Guide and Reference Manual</em>. <a href="http://mc-stan.org/documentation/">[web page]</a></p></li>
+<li><p>Tarone, R. E. (1982) The use of historical control information in testing for a trend in proportions. <em>Biometrics</em> <strong>38</strong>(1):215–220.</p></li>
+<li><p>Ventari, A, Gelman, A., &amp; Gabry, J. (2016) Practical Bayesian model evaluation using leave-one-out cross-validation and WAIC. [ <a href="http://arxiv.org/abs/1507.04544">pdf</a> ]</p></li>
+</ul>
+</div>
+<div id="additional-data-sets" class="section level1">
+<h1>Additional Data Sets</h1>
+<p>The following additional data sets have a similar structure to the baseball data used in this vignette and are included with <strong>rstanarm</strong>.</p>
+<div id="rat-tumors-n-71" class="section level4">
+<h4>Rat tumors (N = 71)</h4>
+<p>Tarone (1982) provides a data set of tumor incidence in historical control groups of rats; specifically endometrial stromal polyps in female lab rats of type F344. The data set is taken from the book site for (Gelman et al. 2013):</p>
+<ul>
+<li>To load: <code>data(tumors, package = &quot;rstanarm&quot;)</code></li>
+<li>Data source: <a href="http://www.stat.columbia.edu/~gelman/book/data/rats.asc" class="uri">http://www.stat.columbia.edu/~gelman/book/data/rats.asc</a></li>
+</ul>
+</div>
+<div id="surgical-mortality-n-12" class="section level4">
+<h4>Surgical mortality (N = 12)</h4>
+<p>Spiegelhalter et al. (1996) provide a data set of mortality rates in 12 hospitals performing cardiac surgery in babies. We just manually entered the data from the paper; it is also available in the Stan example models repository in R format.</p>
+<ul>
+<li>To load: <code>data(mortality, package = &quot;rstanarm&quot;)</code></li>
+<li>Data source: Unknown</li>
+</ul>
+</div>
+<div id="baseball-hits-1996-al-n-308" class="section level4">
+<h4>Baseball hits 1996 AL (N = 308)</h4>
+<p>Carpenter (2009) updates Efron and Morris’s (1975) data set for the entire set of players for the entire 2006 American League season of Major League Baseball. The data was originally downloaded from the <a href="http://www.baseball1.com/">baseball1.com</a>.</p>
+<ul>
+<li>To load: <code>data(bball2006, package = &quot;rstanarm&quot;)</code></li>
+<li>Data Source: <a href="http://lingpipe-blog.com/2009/09/23/bayesian-estimators-for-the-beta-binomial-model-of-batting-ability/">http://lingpipe-blog.com/2009/09/23/bayesian-estimators-for-the-beta-binomial-model-of-batting-ability</a></li>
+</ul>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

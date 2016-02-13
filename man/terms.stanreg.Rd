@@ -2,18 +2,15 @@
 % Please edit documentation in R/stanreg-methods.R
 \name{terms.stanreg}
 \alias{terms.stanreg}
-\title{terms method}
+\title{terms method for stanreg objects}
 \usage{
 \method{terms}{stanreg}(x, ..., fixed.only = TRUE, random.only = FALSE)
 }
 \arguments{
-\item{x, fixed.only, random.only, ...}{See lme4:::terms.merMod
-terms method for stanreg objects}
-
-\item{x, fixed.only, random.only, ...}{See lme4:::terms.merMod}
+\item{x, fixed.only, random.only, ...}{See lme4:::terms.merMod.}
 }
 \description{
-terms method
+terms method for stanreg objects
 }
 \keyword{internal}
 

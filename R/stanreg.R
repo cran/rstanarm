@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2015 Trustees of Columbia University
+# Copyright (C) 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,9 +36,10 @@ stanreg <- function(object) {
     stan_summary <- cbind(Median = apply(stanmat, 2L, median), 
                           MAD_SD = apply(stanmat, 2L, mad),
                           t(apply(stanmat, 2L, quantile, probs)))
-    covmat <- cov(stanmat)
-    coefs <- apply(stanmat[, colnames(x), drop = FALSE], 2L, median)
-    ses <- apply(stanmat[, colnames(x), drop = FALSE], 2L, mad)
+    xnms <- colnames(x)
+    covmat <- cov(stanmat)[xnms, xnms]
+    coefs <- apply(stanmat[, xnms, drop = FALSE], 2L, median)
+    ses <- apply(stanmat[, xnms, drop = FALSE], 2L, mad)
     rank <- qr(x, tol = .Machine$double.eps, LAPACK = TRUE)$rank
     df.residual <- nobs - sum(object$weights == 0) - rank
   } else {
@@ -46,7 +47,7 @@ stanreg <- function(object) {
     qq <- (1 - levs) / 2
     probs <- sort(c(0.5, qq, 1 - qq))
     stan_summary <- rstan::summary(stanfit, probs = probs, digits = 10)$summary
-    coefs <- stan_summary[1:nvars, .select_median(object$algorithm)]
+    coefs <- stan_summary[1:nvars, select_median(object$algorithm)]
     if (length(coefs) == 1L) # ensures that if only a single coef it still gets a name
       names(coefs) <- rownames(stan_summary)[1L]
     
@@ -66,7 +67,7 @@ stanreg <- function(object) {
     # residuals of type 'response', (glm which does 'deviance' residuals by default)
     residuals <- y[, 1L] / rowSums(y) - mu 
   } else {
-    ytmp <- if (is.factor(y)) as.integer(y != levels(y)[1L]) else y
+    ytmp <- if (is.factor(y)) fac2bin(y) else y
     residuals <- ytmp - mu
   }
   names(eta) <- names(mu) <- names(residuals) <- ynames
@@ -97,8 +98,10 @@ stanreg <- function(object) {
     stan_summary,  
     stanfit = if (opt) stanfit$stanfit else stanfit
   )
-  if (opt) out$asymptotic_sampling_dist <- stanmat
-  if (mer) out$glmod <- object$glmod
+  if (opt) 
+    out$asymptotic_sampling_dist <- stanmat
+  if (mer) 
+    out$glmod <- object$glmod
   
   structure(out, class = c("stanreg", "glm", "lm"))
 }

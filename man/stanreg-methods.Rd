@@ -16,6 +16,7 @@
 \alias{ranef.stanreg}
 \alias{residuals.stanreg}
 \alias{se.stanreg}
+\alias{sigma}
 \alias{sigma.stanreg}
 \alias{stanreg-methods}
 \alias{update.stanreg}
@@ -28,7 +29,7 @@
 
 \method{fitted}{stanreg}(object, ...)
 
-\method{log_lik}{stanreg}(object, ...)
+\method{log_lik}{stanreg}(object, newdata = NULL, ...)
 
 \method{nobs}{stanreg}(object, ...)
 
@@ -48,7 +49,7 @@
 
 \method{sigma}{stanreg}(object, ...)
 
-\method{VarCorr}{stanreg}(x, sigma = 1, rdig = 3)
+\method{VarCorr}{stanreg}(x, sigma = 1, ...)
 }
 \arguments{
 \item{object, x}{A fitted model object returned by one of the
@@ -63,14 +64,17 @@ names.}
 \item{level}{For \code{confint}, a scalar between \eqn{0} and \eqn{1}
 indicating the confidence level to use.}
 
+\item{newdata}{For \code{log_lik}, an optional data frame of new data (e.g.
+holdout data). See \code{\link{posterior_predict}}.}
+
 \item{formula., evaluate}{See \code{\link[stats]{update}}.}
 
 \item{correlation}{For \code{vcov}, if \code{FALSE} (the default) the
 covariance matrix is returned. If \code{TRUE}, the correlation matrix is
 returned instead.}
 
-\item{sigma, rdig}{Ignored (included for compatibility with
-\code{\link[lme4]{VarCorr}}).}
+\item{sigma}{Ignored (included for compatibility with
+\code{\link[nlme]{VarCorr}}).}
 }
 \description{
 S3 methods for \link[=stanreg-objects]{stanreg} objects. There are also 
@@ -116,13 +120,6 @@ The \code{se} function returns standard errors based on
 \code{\link{print.stanreg}} for more details.
 }
 }
-}
-\note{
-Because \code{sigma} is not yet included in \pkg{stats}, both 
-  \pkg{rstanarm} and \pkg{lme4} export a \code{sigma} generic. If both
-  packages are loaded it may be necessary to use \code{rstanarm::sigma} or
-  \code{lme4::sigma} (depending on which package is loaded first) in order to
-  access the appropriate method.
 }
 \seealso{
 Other S3 methods for stanreg objects, which have separate documentation, 

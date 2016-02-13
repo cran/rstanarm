@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2015 Trustees of Columbia University
+# Copyright (C) 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -71,9 +71,9 @@
 #'   also half Cauchy. This is called the "horseshoe prior". The hierarchical 
 #'   shrinkage (\code{hs}) prior in the \pkg{rstanarm} package instead utilizes 
 #'   a half Student t distribution for the standard deviation (with 3 degrees of
-#'   freedom by default), scaled by a half Cauchy parameter. It is possible to 
-#'   change the \code{df} argument, the prior degrees of freedom, to obtain less
-#'   or more shrinkage.
+#'   freedom by default), scaled by a half Cauchy parameter, as described by
+#'   Piironen and Vehtari (2015). It is possible to change the \code{df}
+#'   argument, the prior degrees of freedom, to obtain less or more shrinkage.
 #'   
 #'   The hierarhical shrinkpage plus (\code{hs_plus}) prior is a normal with a 
 #'   mean of zero and a standard deviation that is distributed as the product of
@@ -88,8 +88,8 @@
 #'   shrinkage priors often require you to increase the 
 #'   \code{\link{adapt_delta}} tuning parameter in order to diminish the number
 #'   of divergent transitions. For more details on tuning parameters and
-#'   divergent transitions see the Troubleshooting section of the "How to Use
-#'   the rstanarm Package" vignette.
+#'   divergent transitions see the Troubleshooting section of the 
+#'   \emph{How to Use the rstanarm Package} vignette.
 #' }
 #' \subsection{Dirichlet family}{
 #'   The Dirichlet distribution is a multivariate generalization of the beta
@@ -97,22 +97,24 @@
 #'   because the concentration parameters can be interpreted as prior counts
 #'   (although they need not be integers) of a multinomial random variable.
 #'   
-#'   The Dirichlet distribution is used for an implicit prior on the cutpoints
-#'   in \code{\link{stan_polr}}. More specifically, the Dirichlet prior 
-#'   pertains to the prior probability of observing each category of the 
-#'   ordinal outcome when the predictors are at their sample means. Given 
-#'   these prior probabilities, it is straightforward to add them to form
-#'   cumulative probabilities and then use an inverse CDF transformation
-#'   of the cumulative probabilities to define the cutpoints.
+#'   The Dirichlet distribution is used in \code{\link{stan_polr}} for an 
+#'   implicit prior on the cutpoints in an ordinal regression model. More
+#'   specifically, the Dirichlet prior pertains to the prior probability of
+#'   observing each category of the ordinal outcome when the predictors are at
+#'   their sample means. Given these prior probabilities, it is straightforward
+#'   to add them to form cumulative probabilities and then use an inverse CDF
+#'   transformation of the cumulative probabilities to define the cutpoints.
 #'   
 #'   If a scalar is passed to the \code{concentration} argument of the 
-#'   \code{dirichlet} function, then it is replicated to the appropriate length
-#'   and the Dirichlet distribution is symmetric. If all the concentration
-#'   parameters are \eqn{1}, then the Dirichlet distribution is jointly uniform.
-#'   If all concentration parameters are equal but greater than \eqn{1} then the
-#'   prior mode is that the categories are equiprobable, and the larger the
-#'   value of the identical concentration parameters, the more sharply peaked
-#'   the distribution is at the mode.
+#'   \code{dirichlet} function, then it is replicated to the appropriate length 
+#'   and the Dirichlet distribution is symmetric. If \code{concentration} is a
+#'   vector and all elements are \eqn{1}, then the Dirichlet distribution is
+#'   jointly uniform. If all concentration parameters are equal but greater than
+#'   \eqn{1} then the prior mode is that the categories are equiprobable, and
+#'   the larger the value of the identical concentration parameters, the more
+#'   sharply peaked the distribution is at the mode. The elements in 
+#'   \code{concentration} can also be given different values to represent that 
+#'   not all outcome categories are a priori equiprobable.
 #' }
 #' \subsection{Covariance matrices}{
 #'   Covariance matrices are decomposed into correlation matrices and 
@@ -139,7 +141,7 @@
 #'   each element of the simplex vector represents the proportion of the trace
 #'   attributable to the corresponding variable.
 #'   
-#'   A symmetric Dirichlet prior is used for a simplex vector, which has a 
+#'   A symmetric Dirichlet prior is used for the simplex vector, which has a 
 #'   single (positive) \code{concentration} parameter, which defaults to
 #'   \eqn{1} and implies that the prior is jointly uniform over the space of
 #'   simplex vectors of that size. If \code{concentration > 1}, then the prior
@@ -155,7 +157,7 @@
 #'   scale parameter, and in this case we utilize a Gamma distribution, whose
 #'   \code{shape} and \code{scale} are both \eqn{1} by default, implying a
 #'   unit-exponential distribution. Set the \code{shape} hyperparameter to some
-#'   value greater than one to ensure that the posterior trace is not zero.
+#'   value greater than \eqn{1} to ensure that the posterior trace is not zero.
 #'   
 #'   If \code{regularization}, \code{concentration}, \code{shape} and / or 
 #'   \code{scale} are positive scalars, then they are recycled to the 
@@ -164,7 +166,7 @@
 #'   covariance matrices in the model and their sizes. A one-by-one covariance 
 #'   matrix is just a variance and thus does not have \code{regularization} or 
 #'   \code{concentration} parameters, but does have \code{shape} and 
-#'   \code{scale} parameter for the the prior standard deviation of that 
+#'   \code{scale} parameters for the prior standard deviation of that 
 #'   variable.
 #' }
 #' \subsection{R2 family}{
@@ -175,7 +177,7 @@
 #'   proportion of variance in the outcome attributable to the predictors, 
 #'   which has a \code{\link[stats]{Beta}} prior with first shape 
 #'   hyperparameter equal to half the number of predictors and second shape 
-#'   hyperparameter free. By specifying the prior mode (the default) mean, 
+#'   hyperparameter free. By specifying the prior mode (the default), mean, 
 #'   median, or expected log of \eqn{R^2}, the second shape parameter for this 
 #'   Beta distribution is determined internally. If \code{what = 'log'}, 
 #'   location should be a negative scalar; otherwise it should be a scalar on 
@@ -250,7 +252,7 @@
 #' compare_priors(scale = 5, xlim = c(-20,20)) 
 #' 
 #' # If you use a prior like normal(0, 1000) to be "non-informative" you are 
-#' # actually saying that coefficient a value of e.g. -500 is quite plausible
+#' # actually saying that a coefficient value of e.g. -500 is quite plausible
 #' compare_priors(scale = 1000, xlim = c(-1000,1000))
 #' 
 normal <- function(location = 0, scale = NULL) {
@@ -345,33 +347,38 @@ prior_options <- function(prior_scale_for_dispersion = 5,
 make_eta <- function(location, what = c("mode", "mean", "median", "log"), K) {
   if (is.null(location)) 
     stop("For the R2 prior, 'location' must be in the (0,1) interval unless ",
-         "'what' is 'log'. If 'what' is 'log' then 'location' must be negative.")
+         "'what' is 'log'. If 'what' is 'log' then 'location' must be negative.",
+         call. = FALSE)
   stopifnot(length(location) == 1, is.numeric(location))
   stopifnot(is.numeric(K), K == as.integer(K))
-  if (K == 0) stop("R2 prior is not applicable when there are no covariates.")
+  if (K == 0) 
+    stop("R2 prior is not applicable when there are no covariates.", 
+         call. = FALSE)
   what <- match.arg(what)
   half_K <- K / 2
   if (what == "mode") {
     stopifnot(location > 0, location <= 1)
     if (K <= 2)
-      stop(paste0("The mode of the beta distribution does not exist when K <= 2.", 
-                  "\nSpecify 'what' as 'mean', 'median', or 'log' instead."))
+      stop(paste("R2 prior error.", 
+                 "The mode of the beta distribution does not exist",
+                 "with fewer than three predictors.", 
+                 "Specify 'what' as 'mean', 'median', or 'log' instead."),
+           call. = FALSE)
     eta <- (half_K - 1  - location * half_K + location * 2) / location
-  }
-  else if (what == "mean") {
+  } else if (what == "mean") {
     stopifnot(location > 0, location < 1)
     eta <- (half_K - location * half_K) / location
-  }
-  else if (what == "median") {
+  } else if (what == "median") {
     stopifnot(location > 0, location < 1)
     FUN <- function(eta) qbeta(0.5, half_K, qexp(eta)) - location
     eta <- qexp(uniroot(FUN, interval = 0:1)$root)
-  }
-  else { # what == "log"
+  } else { # what == "log"
     stopifnot(location < 0)
     FUN <- function(eta) digamma(half_K) - digamma(half_K + qexp(eta)) - location
     eta <- qexp(uniroot(FUN, interval = 0:1, 
-                        f.lower = -location, f.upper = -.Machine$double.xmax)$root)
+                        f.lower = -location, 
+                        f.upper = -.Machine$double.xmax)$root)
   }
+  
   return(eta)
 }

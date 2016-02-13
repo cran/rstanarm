@@ -94,7 +94,10 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
 Bayesian inference for linear modeling with regularizing priors on the 
 model parameters that are driven by prior beliefs about \eqn{R^2}, the 
 proportion of variance in the outcome attributable to the predictors. See 
-\code{\link{priors}} for an explanation of this critical point.
+\code{\link{priors}} for an explanation of this critical point. 
+\code{\link{stan_glm}} with \code{family="gaussian"} also estimates a 
+linear model with normally-distributed errors and allows for various other 
+priors on the coefficients.
 }
 \details{
 The \code{stan_lm} function is similar in syntax to the 

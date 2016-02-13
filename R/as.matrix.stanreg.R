@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2015 Trustees of Columbia University
+# Copyright (C) 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,8 +31,8 @@
 #' @export
 #' @templateVar stanregArg x
 #' @template args-stanreg-object
+#' @template args-pars
 #' @template args-regex-pars
-#' @param pars An optional character vector of parameter names.
 #' @param ... Ignored.
 #'   
 #' @return A matrix or data frame, the dimensions of which depend on \code{pars}
@@ -66,37 +66,46 @@
 #' }
 #' 
 as.matrix.stanreg <- function(x, ..., pars = NULL, regex_pars = NULL) {
-  NO_DRAWS <- "No draws found."
-  pars <- .collect_pars(x, pars, regex_pars)
-  no_user_pars <- is.null(pars)
+  STOP_no_draws <- function() stop("No draws found.", call. = FALSE)
+  pars <- collect_pars(x, pars, regex_pars)
+  user_pars <- !is.null(pars)
+  
   if (used.optimizing(x)) {
     mat <- x$asymptotic_sampling_dist
-    if (is.null(mat)) stop(NO_DRAWS, call. = FALSE)
-    if (is.null(pars)) {
+    if (is.null(mat)) 
+      STOP_no_draws()
+    if (!user_pars) {
       dispersion <- c("sigma", "scale", "shape", "lambda", "overdispersion")
       pars <- c(names(coef(x)), # return with coefficients first
                 dispersion[which(dispersion %in% colnames(mat))])
     }
-  } else { # used mcmc or vb
-    if (x$stanfit@mode != 0) stop(NO_DRAWS, call. = FALSE)
+  } else { 
+    # used mcmc or vb
+    if (x$stanfit@mode != 0) 
+      STOP_no_draws()
     posterior <- rstan::extract(x$stanfit, permuted = FALSE, inc_warmup = FALSE)
     mat <- apply(posterior, 3L, FUN = function(y) y)
-    if (is.null(pars))
-      pars <- grep("mean_PPD|log-posterior", colnames(mat), invert = TRUE, 
-                   value = TRUE)
+    if (!user_pars)
+      pars <- grep("mean_PPD|log-posterior", # exclude these by default
+                   colnames(mat), invert = TRUE, value = TRUE)
   }
-  if (!no_user_pars) {
-    badpars <- which(!pars %in% colnames(mat))
-    if (length(badpars)) 
-      stop("No parameter(s) ", paste(pars[badpars], collapse = ", "), 
+  
+  if (user_pars) {
+    notfound <- which(!pars %in% colnames(mat))
+    if (length(notfound)) 
+      stop("No parameter(s) ", paste(pars[notfound], collapse = ", "), 
            call. = FALSE)
   }
   mat <- mat[, pars, drop = FALSE]
-  if (!is.mer(x)) return(mat) else return(unpad_reTrms(mat, columns = TRUE))
+  if (!is.mer(x))
+    return(mat)
+  
+  unpad_reTrms(mat)
 }
 
 #' @rdname as.matrix.stanreg
 #' @export
 as.data.frame.stanreg <- function(x, ..., pars = NULL, regex_pars = NULL) {
-  as.data.frame(as.matrix.stanreg(x, pars = pars, regex_pars = regex_pars, ...))
+  mat <- as.matrix.stanreg(x, pars = pars, regex_pars = regex_pars, ...)
+  as.data.frame(mat)
 }

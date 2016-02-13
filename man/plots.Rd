@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plots}
 \alias{plots}
-\title{Plots}
+\title{Plots for rstanarm models}
 \description{
 All \pkg{rstanarm} models fit using \code{algorithm='sampling'},
 \code{"meanfield"}, or \code{"fullrank"} are compatible with a variety of

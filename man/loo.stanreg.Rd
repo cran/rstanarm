@@ -35,14 +35,28 @@
  there are problems (e.g. \code{NA} or \code{NaN} results).}
 }
 \value{
-An object of class 'loo'. See \code{\link[loo]{loo}} and
-  \code{\link[loo]{waic}}.
+An object of class 'loo'. See the 'Value' section in 
+  \code{\link[loo]{loo}} and \code{\link[loo]{waic}} for details on the
+  structure of these objects.
 }
 \description{
 For models fit using MCMC, compute approximate leave-one-out cross-validation
 (LOO) or, less preferably, the Widely Applicable Information Criterion (WAIC) 
 using the \pkg{\link[=loo-package]{loo}} package. Compare two or more models 
 using the \code{\link[loo]{compare}} function.
+}
+\details{
+The LOO Information Criterion (LOOIC) has the same purpose as the Aikaike
+Information Criterion (AIC) that is used by frequentists. Both are intended
+to estimate the expected log predicted density (ELPD) for a new dataset.
+However, the AIC ignores priors and assumes that the posterior distribution
+is multivariate normal, whereas the functions from the 
+\pkg{\link[=loo-package]{loo}} package do not make this distributional 
+assumption and integrate over uncertainty in the parameters. This only 
+assumes that any one observation can be omitted without having a major effect
+on the posterior distribution, which can be judged using the diagnostic plot
+provided by the \code{\link[loo]{plot.loo}} method. The \emph{How to Use the
+rstanarm Package} vignette has an example of this entire process.
 }
 \note{
 The \code{...} is ignored for \code{waic}.
@@ -81,12 +95,16 @@ compare(loo_lalonde1, loo_lalonde2)
 
 }
 \references{
-Vehtari, A., Gelman, A., and Gabry, J. (2015). Efficient
-implementation of leave-one-out cross-validation and WAIC for evaluating
-fitted Bayesian models. \url{http://arxiv.org/abs/1507.04544/} (preprint)
+Vehtari, A., Gelman, A., and Gabry, J. (2016). Practical Bayesian model
+evaluation using leave-one-out cross-validation and WAIC.
+\url{http://arxiv.org/abs/1507.04544/} (preprint)
 }
 \seealso{
-\code{\link[loo]{loo-package}}, \code{\link[loo]{compare}}, 
-  \code{\link[loo]{plot.loo}}
+\code{\link[loo]{compare}} for comparing two or more models on LOO and WAIC.
+
+\code{\link[loo]{loo-package}} (in particular the \emph{PSIS-LOO} section) 
+for details on the computations implemented by the \pkg{loo} package and the 
+interpretation of the Pareto \eqn{k} estimates displayed when using the 
+\code{\link{plot.loo}} method.
 }
 

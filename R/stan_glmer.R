@@ -47,12 +47,15 @@
 #'   \code{family = \link{neg_binomial_2}(link)}.
 #'   
 #'   
+#' @seealso The vignette for \code{stan_glmer} and the \emph{Hierarchical 
+#'   Partial Pooling} vignette.
+#'    
 #' @examples
 #' # see help(example_model) for details on the model below
 #' print(example_model, digits = 1)
 #' 
 #' @importFrom lme4 glFormula glmerControl
-#' 
+#' @importFrom Matrix Matrix t
 stan_glmer <- function(formula, data = NULL, family = gaussian, 
                        subset, weights, 
                        na.action = getOption("na.action", "na.omit"), 
@@ -63,6 +66,7 @@ stan_glmer <- function(formula, data = NULL, family = gaussian,
                        algorithm = c("sampling", "meanfield", "fullrank"), 
                        adapt_delta = NULL, QR = FALSE) {
   
+  call <- match.call(expand.dots = TRUE)
   mc <- match.call(expand.dots = FALSE)
   family <- validate_family(family)
   mc[[1]] <- quote(lme4::glFormula)
@@ -74,15 +78,18 @@ stan_glmer <- function(formula, data = NULL, family = gaussian,
   mc$prior <- mc$prior_intercept <- mc$prior_covariance <- mc$prior_ops <-
     mc$prior_PD <- mc$algorithm <- mc$scale <- mc$concentration <- mc$shape <-
     mc$adapt_delta <- mc$... <- mc$QR <- NULL
-  glmod <- eval(mc, parent.frame(1L))
-  y <- glmod$fr[,as.character(glmod$formula[2])]
+  glmod <- eval(mc, parent.frame())
+  y <- glmod$fr[, as.character(glmod$formula[2L])]
   X <- glmod$X
 
-  offset <- eval(attr(glmod$fr, "offset"), parent.frame(1L)) %ORifNULL% double(0)
+  offset <- eval(attr(glmod$fr, "offset"), parent.frame()) %ORifNULL% double(0)
   weights <- validate_weights(weights)
-  if (is.null(prior)) prior <- list()
-  if (is.null(prior_intercept)) prior_intercept <- list()
-  if (!length(prior_ops)) prior_ops <- list(scaled = FALSE, prior_scale_for_dispersion = Inf)
+  if (is.null(prior)) 
+    prior <- list()
+  if (is.null(prior_intercept)) 
+    prior_intercept <- list()
+  if (!length(prior_ops)) 
+    prior_ops <- list(scaled = FALSE, prior_scale_for_dispersion = Inf)
   group <- glmod$reTrms
   group$decov <- prior_covariance
   algorithm <- match.arg(algorithm)
@@ -92,32 +99,34 @@ stan_glmer <- function(formula, data = NULL, family = gaussian,
                           prior_ops = prior_ops, prior_PD = prior_PD, 
                           algorithm = algorithm, adapt_delta = adapt_delta,
                           group = group, QR = QR, ...)
-  call <- match.call(expand.dots = TRUE)
-  prior.info <- get_prior_info(call, formals())
 
-  Z <- pad_reTrms(Z = t(as.matrix(group$Zt)), cnms = group$cnms, 
+  Z <- pad_reTrms(Z = t(group$Zt), cnms = group$cnms, 
                   flist = group$flist)$Z
-  colnames(Z) <- .bnames(names(stanfit), value = TRUE)
-  fit <- nlist(stanfit, family, formula, offset, weights, x = cbind(X, Z), 
-               y = y, data, prior.info, call, terms = NULL, model = NULL, 
+  colnames(Z) <- b_names(names(stanfit), value = TRUE)
+  fit <- nlist(stanfit, family, formula, offset, weights, x = cbind2(X, Z), 
+               y = y, data, call, terms = NULL, model = NULL, 
+               prior.info = get_prior_info(call, formals()),
                na.action, contrasts, algorithm, glmod)
   out <- stanreg(fit)
   class(out) <- c(class(out), "lmerMod")
+  
   return(out)
 }
 
 #' @rdname stan_glmer
 #' @export
 stan_lmer <- function(...) {
-  if ("family" %in% names(list(...))) stop("'family' should not be specified.")
+  if ("family" %in% names(list(...))) 
+    stop("'family' should not be specified.")
   mc <- call <- match.call(expand.dots = TRUE)
   if (!"formula" %in% names(call)) 
     names(call)[2L] <- "formula"
   mc[[1L]] <- quote(stan_glmer)
   mc$REML <- NULL
   mc$family <- gaussian
-  out <- eval(mc, parent.frame(1L))
+  out <- eval(mc, parent.frame())
   out$call <- call
+  
   return(out)
 }
 
@@ -128,15 +137,16 @@ stan_lmer <- function(...) {
 #'   \code{\link{neg_binomial_2}}.
 #' 
 stan_glmer.nb <- function(..., link = "log") {
-  if ("family" %in% names(list(...))) stop("'family' should not be specified.")
+  if ("family" %in% names(list(...))) 
+    stop("'family' should not be specified.")
   mc <- call <- match.call(expand.dots = TRUE)
   if (!"formula" %in% names(call)) 
     names(call)[2L] <- "formula"
   mc[[1]] <- quote(stan_glmer)
-  mc$REML <- NULL
-  mc$link <- NULL
+  mc$REML <- mc$link <- NULL
   mc$family <- neg_binomial_2(link = link)
-  out <- eval(mc, parent.frame(1L))
+  out <- eval(mc, parent.frame())
   out$call <- call
+  
   return(out)
 }

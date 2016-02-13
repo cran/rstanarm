@@ -1,9 +1,7 @@
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
-stopifnot(require(svglite))
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, message = FALSE, warning = FALSE,
-  dev = 'svglite', fig.ext='svg', fig.path = "SVGs/",
   fig.align='center', fig.width = 7, fig.height = 3
 )
 
@@ -25,31 +23,30 @@ SEED <- 12345
 loo.cores <- if (exists("CORES")) CORES else 1L
 options(loo.cores = loo.cores)
 
-## ----ARSENIC-load-data---------------------------------------------------
-# Load data and create dist100 variable 
-wells <- read.csv(file.path("data", "wells.csv.xz"))
+## ----binom-arsenic-data--------------------------------------------------
+library(rstanarm)
+data(wells)
 wells$dist100 <- wells$dist / 100
 
-## ---- ARSENIC-plot-dist100, fig.height=3---------------------------------
+## ---- binom-arsenic-plot-dist100, fig.height=3---------------------------
 ggplot(wells, aes(x = dist100, y = ..density..)) + 
   geom_histogram(data = subset(wells, switch == 0)) +
   geom_histogram(data = subset(wells, switch == 1), fill = "skyblue", alpha = 0.3) 
 
-## ---- ARSENIC-stan_glm, results="hide"-----------------------------------
-library(rstanarm)
+## ---- binom-arsenic-mcmc, results="hide"---------------------------------
 t_prior <- student_t(df = 7, location = 0, scale = 2.5)
 fit1 <- stan_glm(switch ~ dist100, data = wells, 
                  family = binomial(link = "logit"), 
                  prior = t_prior, prior_intercept = t_prior,  
                  chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- binom-arsenic-print, echo=FALSE------------------------------------
 (coef_fit1 <- round(coef(fit1), 3))
 
-## ---- ARSENIC-CI---------------------------------------------------------
+## ---- binom-arsenic-ci---------------------------------------------------
 round(posterior_interval(fit1, prob = 0.5), 2)
 
-## ---- ARSENIC-plot-model-------------------------------------------------
+## ---- binom-arsenic-plot-model-------------------------------------------
 # Predicted probability as a function of x
 pr_switch <- function(x, ests) plogis(ests[1] + ests[2] * x)
 # A function to slightly jitter the binary data
@@ -63,7 +60,7 @@ ggplot(wells, aes(x = dist100, y = switch, color = switch)) +
   stat_function(fun = pr_switch, args = list(ests = coef(fit1)), 
                 size = 2, color = "gray35")
 
-## ----ARSENIC-stan_glm2, results="hide"-----------------------------------
+## ----binom-arsenic-mcmc2, results="hide"---------------------------------
 fit2 <- update(fit1, formula = switch ~ dist100 + arsenic) 
 
 ## ------------------------------------------------------------------------
@@ -72,7 +69,7 @@ fit2 <- update(fit1, formula = switch ~ dist100 + arsenic)
 ## ----echo=FALSE----------------------------------------------------------
 theme_update(legend.position = "right")
 
-## ---- ARSENIC-plot-model2------------------------------------------------
+## ---- binom-arsenic-plot-model2------------------------------------------
 pr_switch2 <- function(x, y, ests) plogis(ests[1] + ests[2] * x + ests[3] * y)
 grid <- expand.grid(dist100 = seq(0, 4, length.out = 100), 
                     arsenic = seq(0, 10, length.out = 100))
@@ -86,7 +83,7 @@ ggplot(grid, aes(x = dist100, y = arsenic)) +
 ## ----echo=FALSE----------------------------------------------------------
 theme_update(legend.position = "none")
 
-## ---- ARSENIC-plot-model2-alt--------------------------------------------
+## ---- binom-arsenic-plot-model2-alt--------------------------------------
 library(gridExtra)
 # Quantiles
 q_ars <- quantile(wells$dist100, seq(0, 1, 0.25))
@@ -105,7 +102,7 @@ for (i in 1:5) {
 }
 grid.arrange(vary_dist, vary_arsenic, ncol = 2)
 
-## ---- LOO----------------------------------------------------------------
+## ---- binom-arsenic-loo--------------------------------------------------
 (loo1 <- loo(fit1))
 (loo2 <- loo(fit2))
 compare(loo1, loo2)

@@ -34,7 +34,8 @@ default) or as separate histograms (\code{FALSE})?}
 
 \item{test}{For \code{check="test"} only, a character vector (of length 1 or 
 2) naming a single function or a pair of functions. The function(s) should 
-take a vector input and return a scalar test statistic. See Details.}
+take a vector input and return a scalar test statistic. See Details and
+Examples.}
 
 \item{...}{Optional arguments to geoms to control features of the plots 
 (e.g. \code{binwidth} if the plot is a histogram).}
@@ -78,15 +79,6 @@ For binomial data, plots of \eqn{y} and \eqn{y^{rep}}{yrep} show the proportion
   of 'successes' rather than the raw count.
 }
 \examples{
-\dontrun{
-# Scatterplot of y vs. average yrep
-fit <- stan_glm(mpg ~ wt, data = mtcars)
-pp_check(fit, check = "scatter")
-
-# Separate scatterplots of y vs. a few different yrep datasets 
-pp_check(fit, check = "scatter", nreps = 3)
-}
-
 # Compare distribution of y to distributions of yrep
 (pp_dist <- pp_check(example_model, check = "dist", overlay = TRUE))
 pp_dist + 
@@ -105,9 +97,23 @@ gridExtra::grid.arrange(test_mean, test_sd, ncol = 2)
 # Scatterplot of two test statistics
 pp_check(example_model, check = "test", test = c("mean", "sd"))
 
-# Define a test function 
-prop_zero <- function(y) mean(y == 0)
-pp_check(example_model, check = "test", test = "prop_zero", binwidth = 1/20)
+\dontrun{
+# Scatterplots of y vs. yrep
+fit <- stan_glm(mpg ~ wt, data = mtcars)
+pp_check(fit, check = "scatter") # y vs. average yrep
+pp_check(fit, check = "scatter", nreps = 3) # y vs. a few different yrep datasets 
+
+
+# Defining a function to compute test statistic 
+roaches$roach100 <- roaches$roach1 / 100
+fit_pois <- stan_glm(y ~ treatment + roach100 + senior, offset = log(exposure2), 
+                     family = "poisson", data = roaches)
+fit_nb <- update(fit_pois, family = "neg_binomial_2")
+
+prop0 <- function(y) mean(y == 0) # function to compute proportion of zeros
+pp_check(fit_pois, check = "test", test = "prop0") # looks bad 
+pp_check(fit_nb, check = "test", test = "prop0")   # much better
+}
 
 }
 \references{

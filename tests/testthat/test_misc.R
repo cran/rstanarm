@@ -20,9 +20,12 @@
 
 library(rstanarm)
 SEED <- 12345
+set.seed(SEED)
 ITER <- 10L
 CHAINS <- 2L
-REFRESH <- ITER
+REFRESH <- 0
+
+SW <- suppressWarnings
 
 context("helper functions")
 
@@ -113,7 +116,7 @@ test_that("validate_weights works", {
   expect_error(validate_weights(c(-1,2,3)), regexp = "negative", ignore.case = TRUE)
   expect_error(stan_glm(mpg ~ wt, data = mtcars, weights = rep(-1, nrow(mtcars))), 
                regexp = "negative", ignore.case = TRUE)
-  expect_is(stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing", 
+  expect_is(stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing", seed = SEED,
                      weights = rexp(nrow(mtcars))), "stanreg")
 })
 
@@ -154,6 +157,18 @@ test_that("array1D_check works", {
   expect_equal(array1D_check(y2), y2)
 })
 
+test_that("fac2bin works", {
+  fac2bin <- rstanarm:::fac2bin
+  y <- gl(2, 2, 20, labels = c("lo", "hi"))
+  expect_identical(fac2bin(y), rep_len(c(0L, 0L, 1L, 1L), 20))
+  y <- gl(2, 8, labels = c("Control", "Treat"))
+  expect_identical(fac2bin(y), rep(c(0L, 1L), each = 8))
+  expect_identical(fac2bin(factor(c(1,2))), c(0L, 1L))
+  expect_error(fac2bin(rnorm(10)))
+  expect_error(fac2bin(factor(c(1,2,3))))
+  expect_error(fac2bin(factor(mtcars$cyl, labels = c("lo", "mid", "hi"))))
+})
+
 test_that("check_constant_vars works", {
   check_constant_vars <- rstanarm:::check_constant_vars
   mf <- model.frame(glm(mpg ~ ., data = mtcars))
@@ -164,10 +179,11 @@ test_that("check_constant_vars works", {
   mf2$gear <- 1
   expect_error(check_constant_vars(mf2), "wt, gear")
   expect_error(stan_glm(mpg ~ ., data = mf2), "wt, gear")
-  expect_is(stan_glm(mpg ~ ., data = mf, algorithm = "optimizing"), "stanreg")
-  expect_is(stan_glm(mpg ~ ., data = mf, weights = rep(2, nrow(mf)),
-                     offset = rep(1, nrow(mf)), algorithm = "optimizing"), 
+  expect_is(stan_glm(mpg ~ ., data = mf, algorithm = "optimizing", seed = SEED), 
             "stanreg")
+  expect_is(stan_glm(mpg ~ ., data = mf, weights = rep(2, nrow(mf)),
+                     offset = rep(1, nrow(mf)), algorithm = "optimizing", 
+                     seed = SEED), "stanreg")
   
   esoph2 <- esoph
   esoph2$agegp[1:nrow(esoph2)] <- "75+"
@@ -186,21 +202,20 @@ test_that("linear_predictor methods work", {
   vec_ans <- seq(0, 1.5, 0.5)
   mat_ans <- rbind(vec_ans, 1:4)
   offset <- rep(2, nrow(x))
-  expect_equivalent(vec_ans, linpred_vec(bvec, x))
-  expect_equivalent(vec_ans, linpred_vec(bvec, x, offset = NULL))
-  expect_equivalent(vec_ans + offset, linpred_vec(bvec, x, offset))
-  expect_equivalent(mat_ans, linpred_mat(bmat, x))
-  expect_equivalent(mat_ans, linpred_mat(bmat, x, offset = NULL))
-  expect_equivalent(mat_ans + offset, linpred_mat(bmat, x, offset))
+  expect_equivalent(linpred_vec(bvec, x), vec_ans)
+  expect_equivalent(linpred_vec(bvec, x, offset = NULL), vec_ans)
+  expect_equivalent(linpred_vec(bvec, x, offset), vec_ans + offset)
+  expect_equivalent(linpred_mat(bmat, x), mat_ans)
+  expect_equivalent(linpred_mat(bmat, x, offset = NULL), mat_ans)
+  expect_equivalent(linpred_mat(bmat, x, offset), mat_ans + offset)
 })
 
 # fits to use in multiple calls to test_that below
-fit <- suppressWarnings(stan_glm(mpg ~ wt, data = mtcars, iter = ITER, 
-                                 chains = CHAINS, refresh = REFRESH))
-fit2 <- suppressWarnings(stan_glmer(mpg ~ wt + (1|cyl), data = mtcars, 
-                                    iter = ITER, chains = CHAINS, 
-                                    refresh = REFRESH))
-fito <- stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing")
+fit <- SW(stan_glm(mpg ~ wt, data = mtcars, iter = ITER, 
+                   chains = CHAINS, seed = SEED, refresh = REFRESH))
+fit2 <- SW(stan_glmer(mpg ~ wt + (1|cyl), data = mtcars, 
+                      iter = ITER, chains = CHAINS, seed = SEED, refresh = REFRESH))
+fito <- stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing", seed = SEED)
 fitvb <- update(fito, algorithm = "meanfield", seed = SEED)
 fitvb2 <- update(fitvb, algorithm = "fullrank", seed = SEED)
 
@@ -260,23 +275,23 @@ test_that("is.mer works", {
 test_that("get_x, get_y, get_z work", {
   x_ans <- cbind("(Intercept)" = 1, wt = mtcars$wt)
   y_ans <- mtcars$mpg
-  expect_equivalent(x_ans, get_x(fit))
-  expect_equivalent(y_ans, get_y(fit))
+  expect_equivalent(get_x(fit), x_ans)
+  expect_equivalent(get_y(fit), y_ans)
   expect_error(get_z(fit), "no applicable method")
   
   z_ans2 <- model.matrix(mpg ~ -1 + factor(cyl), data = mtcars)
-  expect_equivalent(x_ans, get_x(fit2))
-  expect_equivalent(y_ans, get_y(fit2))
-  expect_equivalent(z_ans2, get_z(fit2))
+  expect_equivalent(get_x(fit2), x_ans)
+  expect_equivalent(get_y(fit2), y_ans)
+  expect_equivalent(as.matrix(get_z(fit2)), z_ans2)
   
-  fit3 <- suppressWarnings(stan_glmer(mpg ~ wt + (1 + wt|cyl), data = mtcars, 
-                                      iter = 5, chains = 1, refresh = 5))
+  fit3 <- SW(stan_glmer(mpg ~ wt + (1 + wt|cyl), data = mtcars, 
+                        iter = 10, chains = 1, refresh = 5, seed = SEED))
   z_ans3 <- mat.or.vec(nr = nrow(mtcars), nc = 6)
   z_ans3[, c(1, 3, 5)] <- model.matrix(mpg ~ 0 + factor(cyl), data = mtcars)
   z_ans3[, c(2, 4, 6)] <- model.matrix(mpg ~ 0 + wt:factor(cyl), data = mtcars)
-  expect_equivalent(x_ans, get_x(fit3))
-  expect_equivalent(y_ans, get_y(fit3))
-  expect_equivalent(z_ans3, get_z(fit3))
+  expect_equivalent(get_x(fit3), x_ans)
+  expect_equivalent(get_y(fit3), y_ans)
+  expect_equivalent(as.matrix(get_z(fit3)), z_ans3)
 })
 
 test_that("set_sampling_args works", {
@@ -290,41 +305,41 @@ test_that("set_sampling_args works", {
   no_control <- list()
   
   # normal prior --> adapt_delta = 0.95
-  ans1 <- set_sampling_args(fit, prior = normal(),
+  val1 <- set_sampling_args(fit, prior = normal(),
                             user_dots = list(control = control1, iter = 100),  
                             user_adapt_delta = NULL)
   # use fit2 instead of fit to check that it doesn't matter which fit object is used
-  ans1b <- set_sampling_args(fit2,
+  val1b <- set_sampling_args(fit2,
                              prior = normal(),
                              user_dots = list(control = control1, iter = 100),  
                              user_adapt_delta = NULL)
   # normal prior --> adapt_delta = 0.95, but user override to 0.9
-  ans2 <- set_sampling_args(fit, prior = normal(), 
+  val2 <- set_sampling_args(fit, prior = normal(), 
                             user_dots = list(control = control1),  
                             user_adapt_delta = 0.9)
   # cauchy/t_1 prior --> adapt_delta = 0.99
-  ans3 <- set_sampling_args(fit, prior = student_t(1), 
+  val3 <- set_sampling_args(fit, prior = student_t(1), 
                             user_dots = list(control = control1),  
                             user_adapt_delta = NULL)
   # cauchy/t_1 prior --> adapt_delta = 0.99, but user override to 0.8
-  ans4 <- set_sampling_args(fit, prior = cauchy(),
+  val4 <- set_sampling_args(fit, prior = cauchy(),
                             user_dots = list(control = control2),  
                             user_adapt_delta = 0.8)
   # hs prior --> adapt_delta = 0.99
-  ans5 <- set_sampling_args(fit, prior = hs(), 
+  val5 <- set_sampling_args(fit, prior = hs(), 
                             user_dots = no_control,
                             user_adapt_delta = NULL)
-  ans6 <- set_sampling_args(fit, prior = hs_plus(), 
+  val6 <- set_sampling_args(fit, prior = hs_plus(), 
                             user_dots = no_control,
                             user_adapt_delta = NULL)
-  expect_equal(ans1$control, c(control1, adapt_delta = 0.95))
-  expect_equal(ans1$iter, 100)
-  expect_equal(ans1$control, ans1b$control)
-  expect_equal(ans2$control, c(control1, adapt_delta = 0.9))
-  expect_equal(ans3$control, c(control1, adapt_delta = 0.99))
-  expect_equal(ans4$control, c(control2, adapt_delta = 0.8, max_treedepth = 15))
-  expect_equal(ans5$control, list(adapt_delta = 0.99, max_treedepth = 15))
-  expect_equal(ans6$control, list(adapt_delta = 0.99, max_treedepth = 15))
+  expect_equal(val1$control, c(control1, adapt_delta = 0.95))
+  expect_equal(val1$iter, 100)
+  expect_equal(val1$control, val1b$control)
+  expect_equal(val2$control, c(control1, adapt_delta = 0.9))
+  expect_equal(val3$control, c(control1, adapt_delta = 0.99))
+  expect_equal(val4$control, c(control2, adapt_delta = 0.8, max_treedepth = 15))
+  expect_equal(val5$control, list(adapt_delta = 0.99, max_treedepth = 15))
+  expect_equal(val6$control, list(adapt_delta = 0.99, max_treedepth = 15))
 })
 
 test_that("linkinv methods work", {
@@ -337,52 +352,52 @@ test_that("linkinv methods work", {
   expect_identical(linkinv.family(binomial(link = "probit")), 
                    binomial(link = "probit")$linkinv)
   
-  fit_polr <- suppressWarnings(stan_polr(tobgp ~ agegp, data = esoph, 
-                                         method = "loglog",
-                                         chains = 1, iter = 5,
-                                         prior = R2(0.2, "mean"), 
-                                         init_r = 0.1, seed = 12345, 
-                                         refresh = 5))
+  fit_polr <- SW(stan_polr(tobgp ~ agegp, data = esoph, method = "loglog",
+                           prior = R2(0.2, "mean"), init_r = 0.1, 
+                           chains = CHAINS, iter = ITER, seed = SEED, 
+                           refresh = REFRESH))
   expect_identical(linkinv.stanreg(fit_polr), rstanarm:::pgumbel)
   expect_identical(linkinv.character(fit_polr$family), rstanarm:::pgumbel)
   expect_identical(linkinv.stanreg(example_model), binomial()$linkinv)
   expect_identical(linkinv.stanreg(fit), gaussian()$linkinv)
+  expect_error(rstanarm:::polr_linkinv(example_model), 
+               regexp = "should be a stanreg object created by stan_polr")
 })
 
-test_that(".collect_pars and .grep_for_pars work", {
+test_that("collect_pars and grep_for_pars work", {
   fit <- example_model
-  .collect_pars <- rstanarm:::.collect_pars
-  .grep_for_pars <- rstanarm:::.grep_for_pars
+  collect_pars <- rstanarm:::collect_pars
+  grep_for_pars <- rstanarm:::grep_for_pars
   
   all_period <- paste0("period", 2:4)
-  all_varying <- rstanarm:::.bnames(rownames(fit$stan_summary), value = TRUE)
+  all_varying <- rstanarm:::b_names(rownames(fit$stan_summary), value = TRUE)
   
-  expect_identical(.grep_for_pars(fit, "period"), all_period)
-  expect_identical(.grep_for_pars(fit, c("period", "size")), c(all_period, "size"))
-  expect_identical(.grep_for_pars(fit, "period|size"), c("size", all_period))
-  expect_identical(.grep_for_pars(fit, "(2|3)$"), all_period[1:2])
-  expect_identical(.grep_for_pars(fit, "herd"), all_varying)
-  expect_identical(.grep_for_pars(fit, "b\\["), all_varying)
-  expect_identical(.grep_for_pars(fit, "Intercept"), c("(Intercept)", all_varying))
-  expect_identical(.grep_for_pars(fit, "herd:[3,5]"), all_varying[c(3,5)])
-  expect_identical(.grep_for_pars(fit, "herd:[3-5]"), all_varying[3:5])
-  expect_error(.grep_for_pars(fit, "NOT A PARAMETER"), regexp = "No matches")
-  expect_error(.grep_for_pars(fit, "b["))
+  expect_identical(grep_for_pars(fit, "period"), all_period)
+  expect_identical(grep_for_pars(fit, c("period", "size")), c(all_period, "size"))
+  expect_identical(grep_for_pars(fit, "period|size"), c("size", all_period))
+  expect_identical(grep_for_pars(fit, "(2|3)$"), all_period[1:2])
+  expect_identical(grep_for_pars(fit, "herd"), all_varying)
+  expect_identical(grep_for_pars(fit, "b\\["), all_varying)
+  expect_identical(grep_for_pars(fit, "Intercept"), c("(Intercept)", all_varying))
+  expect_identical(grep_for_pars(fit, "herd:[3,5]"), all_varying[c(3,5)])
+  expect_identical(grep_for_pars(fit, "herd:[3-5]"), all_varying[3:5])
+  expect_error(grep_for_pars(fit, "NOT A PARAMETER"), regexp = "No matches")
+  expect_error(grep_for_pars(fit, "b["))
   
-  expect_identical(.collect_pars(fit, regex_pars = "period"), all_period)
-  expect_identical(.collect_pars(fit, pars = "size", regex_pars = "period"), 
+  expect_identical(collect_pars(fit, regex_pars = "period"), all_period)
+  expect_identical(collect_pars(fit, pars = "size", regex_pars = "period"), 
                    c("size", all_period))
-  expect_identical(.collect_pars(fit, pars = c("(Intercept)", "size")), 
+  expect_identical(collect_pars(fit, pars = c("(Intercept)", "size")), 
                    c("(Intercept)", "size"))
-  expect_identical(.collect_pars(fit, pars = "period2", regex_pars = "herd:[[1]]"), 
+  expect_identical(collect_pars(fit, pars = "period2", regex_pars = "herd:[[1]]"), 
                    c("period2", all_varying[1]))
-  expect_identical(.collect_pars(fit, pars = "size", regex_pars = "size"), "size")
-  expect_identical(.collect_pars(fit, regex_pars = c("period", "herd")), 
+  expect_identical(collect_pars(fit, pars = "size", regex_pars = "size"), "size")
+  expect_identical(collect_pars(fit, regex_pars = c("period", "herd")), 
                    c(all_period, all_varying))
 })
 
-test_that(".posterior_sample_size works", {
-  pss <- rstanarm:::.posterior_sample_size
+test_that("posterior_sample_size works", {
+  pss <- rstanarm:::posterior_sample_size
   expect_equal(pss(example_model), 500)
   expect_equal(pss(fit), nrow(as.matrix(fit)))
   expect_equal(pss(fit2), ITER * CHAINS / 2)

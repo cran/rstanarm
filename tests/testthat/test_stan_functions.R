@@ -18,6 +18,8 @@
 # tests can be run using devtools::test() or manually by loading testthat 
 # package and then running the code
 
+set.seed(12345)
+
 MODELS_HOME <- "exec"
 fsep <- .Platform$file.sep
 if (!file.exists(MODELS_HOME)) {
@@ -34,10 +36,13 @@ if (!file.exists(MODELS_HOME)) {
 context("setup")
 test_that("Stan programs are available", {
   message(MODELS_HOME)
-  expect_true(file.exists(MODELS_HOME))  
+  expect_true(file.exists(MODELS_HOME))
+  expect_true(file.exists(file.path(system.file("chunks", package = "rstanarm"), 
+                                    "common_functions.stan")))
+  
 })
   
-stopifnot(require(rstan))
+library(rstan)
 Sys.unsetenv("R_TESTS")
 
 functions <- sapply(dir(MODELS_HOME, pattern = "stan$", full.names = TRUE), function(f) {
@@ -50,8 +55,9 @@ functions <- sapply(dir(MODELS_HOME, pattern = "stan$", full.names = TRUE), func
   }
   else return(as.character(NULL))
 })
-functions <- c(readLines(file.path(MODELS_HOME, "common_functions.txt")), 
-               unlist(functions))
+print(MODELS_HOME)
+functions <- c(readLines(file.path(system.file("chunks", package = "rstanarm"), 
+                                   "common_functions.stan")), unlist(functions))
 model_code <- paste(c("functions {", functions, "}", "model {}"), collapse = "\n")
 expose_stan_functions(stanc(model_code = model_code, model_name = "Stan Functions"))
 N <- 99L
@@ -359,7 +365,7 @@ test_that("the Stan equivalent of lme4's Z %*% b works", {
     Lind <- group$Lind
     theta <- group$theta
     
-    group <- rstanarm:::pad_reTrms(Z = t(as.matrix(group$Zt)), cnms = group$cnms, 
+    group <- rstanarm:::pad_reTrms(Z = t(group$Zt), cnms = group$cnms, 
                                    flist = group$flist)
     Z <- group$Z
     p <- sapply(group$cnms, FUN = length)
@@ -380,7 +386,7 @@ test_that("the Stan equivalent of lme4's Z %*% b works", {
     
     z_b <- rnorm(ncol(Z))
     b <- make_b(z_b, theta_L, p, l)
-    mark <- grepl("_NEW_", colnames(Z), fixed = TRUE)
+    mark <- colnames(Z) == ""
     expect_equal(b[!mark], as.vector(Matrix::t(Lambdati) %*% z_b[!mark]), 
                  tol = 1e-14)
     

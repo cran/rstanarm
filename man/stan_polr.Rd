@@ -141,6 +141,7 @@ The \code{stan_polr} function is similar in syntax to
   property.
 }
 \examples{
+if (!grepl("^sparc",  R.version$platform))
 stan_polr(tobgp ~ agegp, data = esoph, method = "probit",
           prior = R2(0.2, "mean"), init_r = 0.1, seed = 12345,
           algorithm = "fullrank") # for speed only
@@ -153,5 +154,7 @@ Nagler, J., (1994). Scobit: An Alternative Estimator to Logit and Probit.
 \seealso{
 \code{\link{stanreg-methods}} and 
 \code{\link[MASS]{polr}}.
+
+The vignette for \code{stan_polr}.
 }
 

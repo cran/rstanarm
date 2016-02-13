@@ -9,7 +9,9 @@ log_lik(object, ...)
 \arguments{
 \item{object}{Fitted model object.}
 
-\item{...}{Arguments to methods.}
+\item{...}{Arguments to methods. For example the
+\code{\link[=stanreg-methods]{stanreg}} method accepts the argument
+\code{newdata}.}
 }
 \value{
 Pointwise log-likelihood matrix.

@@ -42,13 +42,15 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 \code{"sampling"} it is possibly to specify \code{iter}, \code{chains},
 \code{cores}, \code{refresh}, etc.}
 
-\item{prior}{Prior for coefficients. Can be \code{NULL} to omit a prior and 
-see \code{\link{priors}} otherwise.}
+\item{prior}{Prior for coefficients. See \code{\link{priors}} for details. 
+Set \code{prior} to \code{NULL} to omit a prior, i.e., use an (improper)
+uniform prior.}
 
-\item{prior_intercept}{Prior for intercept. Can be \code{NULL} to omit a 
-prior and see \code{\link{priors}} otherwise. (\strong{Note:} the prior
-distribution for the intercept is set so it applies to the value when all
-predictors are centered.)}
+\item{prior_intercept}{Prior for intercept. See \code{\link{priors}} for 
+details. Set \code{prior_intercept} to \code{NULL} to omit a prior, i.e.,
+use an (improper) uniform prior. (\strong{Note:} the prior distribution for
+the intercept is set so it applies to the value when all predictors are 
+centered.)}
 
 \item{prior_ops}{Additional options related to prior distributions. Can 
 be \code{NULL} to omit a prior on the dispersion and see 
@@ -117,6 +119,7 @@ The \code{stan_glm} function is similar in syntax to
   \link{neg_binomial_2}(link)}.
 }
 \examples{
+if (!grepl("^sparc",  R.version$platform)) {
 ### Linear regression
 fit <- stan_glm(mpg / 10 ~ ., data = mtcars, QR = TRUE,
                 algorithm = "fullrank") # for speed only
@@ -139,14 +142,14 @@ plot(fit2, pars = c("black", "hisp", "nodegr", "u74", "u75"),
      ci_level = 0.67, outer_level = 1, show_density = TRUE)
 pp_check(fit2, check = "resid")
 pp_check(fit2, check = "test", test = "mean")
-
+}
 \dontrun{
 ### Poisson regression (example from help("glm")) 
 counts <- c(18,17,15,20,10,20,25,13,12)
 outcome <- gl(3,1,9)
 treatment <- gl(3,3)
 fit3 <- stan_glm(counts ~ outcome + treatment, family = poisson(link="log"),
-                 prior = normal(0, 2.5), prior_intercept = normal(0, 10))
+                 prior = normal(0, 1), prior_intercept = normal(0, 5))
 plot(fit3, fill_color = "skyblue4", est_color = "maroon")
 
 ### Gamma regression (example from help("glm"))
@@ -167,5 +170,7 @@ Gelman, A. and Hill, J. (2007). \emph{Data Analysis Using
 \seealso{
 \code{\link{stanreg-methods}} and 
 \code{\link[stats]{glm}}.
+
+The various vignettes for \code{stan_glm}.
 }
 

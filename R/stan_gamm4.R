@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2015 Trustees of Columbia University
+# Copyright (C) 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -87,10 +87,16 @@ stan_gamm4 <- function(formula, random = NULL, family = gaussian(), data = list(
   glmod$reTrms <- group
 
   weights <- validate_weights(weights)
-  if (TRUE) offset <- double(0)  
-  else offset <- eval(attr(glmod$fr, "offset"), parent.frame(1L)) %ORifNULL% double(0)
-  if (is.null(prior)) prior <- list()
-  if (is.null(prior_intercept)) prior_intercept <- list()
+  if (TRUE) {
+    offset <- double(0)  
+  } else {
+    tmp <- eval(attr(glmod$fr, "offset"), parent.frame(1L))
+    offset <- tmp %ORifNULL% double(0)
+  }
+  if (is.null(prior)) 
+    prior <- list()
+  if (is.null(prior_intercept)) 
+    prior_intercept <- list()
   if (!length(prior_ops)) 
     prior_ops <- list(scaled = FALSE, prior_scale_for_dispersion = Inf)
 
@@ -102,16 +108,17 @@ stan_gamm4 <- function(formula, random = NULL, family = gaussian(), data = list(
                           prior_ops = prior_ops, prior_PD = prior_PD, 
                           algorithm = algorithm, adapt_delta = adapt_delta,
                           group = group, QR = QR, ...)
-  prior.info <- get_prior_info(call, formals())
   
-  Z <- pad_reTrms(Z = t(as.matrix(group$Zt)), cnms = group$cnms, 
+  Z <- pad_reTrms(Z = t(group$Zt), cnms = group$cnms, 
                   flist = group$flist)$Z
-  colnames(Z) <- .bnames(names(stanfit), value = TRUE)
-  fit <- nlist(stanfit, family, formula, offset, weights, x = cbind(X, Z), 
-               y = y, data, prior.info, call, algorithm, glmod) 
+  colnames(Z) <- b_names(names(stanfit), value = TRUE)
+  fit <- nlist(stanfit, family, formula, offset, weights, x = cbind2(X, Z),
+               prior.info = get_prior_info(call, formals()), 
+               y = y, data, call, algorithm, glmod) 
   out <- stanreg(fit)
   # FIXME: replace guts of gam with point estimates from stanfit
   out$gam <- result$gam
   class(out) <- c(class(out), "lmerMod")
+  
   return(out)
 }

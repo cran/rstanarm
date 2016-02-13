@@ -10,63 +10,69 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2015-01-06" />
+<meta name="date" content="2016-02-11" />
 
 <title>How to Use the rstanarm Package</title>
 
-<script src="rstanarm_files/jquery-1.11.0/jquery.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="rstanarm_files/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet" />
-<script src="rstanarm_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
-<script src="rstanarm_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
-<script src="rstanarm_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="rstanarm_files/highlight/default.css"
-      type="text/css" />
-<script src="rstanarm_files/highlight/highlight.js"></script>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
   }
 </style>
-<script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
-}
-</script>
 
 
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0A%7D%0Apre%20%7B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
 <body>
 
-<style type = "text/css">
-.main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
-img { 
-  max-width:100%; 
-  height: auto; 
-}
-</style>
-<div class="container-fluid main-container">
 
 
 <div id="header">
 <h1 class="title">How to Use the rstanarm Package</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>01/06/2015</em></h4>
+<h4 class="date"><em>02/11/2016</em></h4>
 </div>
 
 <div id="TOC">
@@ -123,25 +129,25 @@ img {
 <h1>Step 2: Draw from the posterior distribution</h1>
 <p>The likelihood for the sample is just the product over the <span class="math inline">\(J\)</span> groups of <span class="math display">\[g^{-1}\left(\eta_i \right)^{y_i} 
   \left(1 - g^{-1}\left(\eta_i \right)\right)^{n_i-y_i},\]</span> which can be maximized over <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta_1\)</span>, and <span class="math inline">\(\beta_2\)</span> to obtain frequentist estimates by calling</p>
-<pre class="r"><code>data(&quot;womensrole&quot;, package = &quot;HSAUR3&quot;)
-womensrole$total &lt;- womensrole$agree + womensrole$disagree
-womensrole_glm_1 &lt;- glm(cbind(agree, disagree) ~ education + gender,
-                        data = womensrole, family = binomial(link = &quot;logit&quot;))
-round(coef(summary(womensrole_glm_1)), 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;womensrole&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;HSAUR3&quot;</span>)
+womensrole$total &lt;-<span class="st"> </span>womensrole$agree +<span class="st"> </span>womensrole$disagree
+womensrole_glm_1 &lt;-<span class="st"> </span><span class="kw">glm</span>(<span class="kw">cbind</span>(agree, disagree) ~<span class="st"> </span>education +<span class="st"> </span>gender,
+                        <span class="dt">data =</span> womensrole, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))
+<span class="kw">round</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(womensrole_glm_1)), <span class="dv">3</span>)</code></pre></div>
 <pre><code>             Estimate Std. Error z value Pr(&gt;|z|)
 (Intercept)     2.509      0.184  13.646    0.000
 education      -0.271      0.015 -17.560    0.000
 genderFemale   -0.011      0.084  -0.136    0.892</code></pre>
 <p>The p-value for the null hypothesis that <span class="math inline">\(\beta_1 = 0\)</span> is very small, while the p-value for the null hypothesis that <span class="math inline">\(\beta_2 = 0\)</span> is very large. However, frequentist p-values are awkward because they do not pertain to the probability that a scientific hypothesis is true but rather to the probability of observing a <span class="math inline">\(z\)</span>-statistic that is so large (in magnitude) if the null hypothesis were true. The desire to make probabalistic statements about a scientific hypothesis is one reason why many people are drawn to the Bayesian approach.</p>
 <p>A model with the same likelihood but Student t priors with seven degrees of freedom can be specified using the <strong>rstanarm</strong> package in a similar way by prepending <code>stan_</code> to the <code>glm</code> call and specifying priors (and optionally the number of cores on your computer to utilize):</p>
-<pre class="r"><code>library(rstanarm)
-womensrole_bglm_1 &lt;- stan_glm(cbind(agree, disagree) ~ education + gender,
-                              data = womensrole,
-                              family = binomial(link = &quot;logit&quot;), 
-                              prior = student_t(df = 7), 
-                              prior_intercept = student_t(df = 7),
-                              chains = CHAINS, cores = CORES, seed = SEED)
-womensrole_bglm_1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rstanarm)
+womensrole_bglm_1 &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(<span class="kw">cbind</span>(agree, disagree) ~<span class="st"> </span>education +<span class="st"> </span>gender,
+                              <span class="dt">data =</span> womensrole,
+                              <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), 
+                              <span class="dt">prior =</span> <span class="kw">student_t</span>(<span class="dt">df =</span> <span class="dv">7</span>), 
+                              <span class="dt">prior_intercept =</span> <span class="kw">student_t</span>(<span class="dt">df =</span> <span class="dv">7</span>),
+                              <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)
+womensrole_bglm_1</code></pre></div>
 <pre><code>stan_glm(formula = cbind(agree, disagree) ~ education + gender, 
     family = binomial(link = &quot;logit&quot;), data = womensrole, chains = CHAINS, 
     cores = CORES, seed = SEED, prior = student_t(df = 7), prior_intercept = student_t(df = 7))
@@ -157,23 +163,23 @@ distribution of y (X = xbar):
          Median MAD_SD
 mean_PPD 24.2    0.8  </code></pre>
 <p>As can be seen, the “Bayesian point estimates” — which are represented by the posterior medians — are very similar to the maximum likelihood estimates. Frequentists would ask whether the point estimate is greater in magnitude than double the estimated standard deviation of the sampling distribution. But here we simply have estimates of the standard deviation of the marginal posterior distributions, which are based on a scaling of the Median Absolute Deviation (MAD) from the posterior medians to obtain a robust estimator of the posterior standard deviation. In addition, we can use the <code>posterior_interval</code> function to obtain a Bayesian uncertainty interval for <span class="math inline">\(\beta_1\)</span>:</p>
-<pre class="r"><code>ci95 &lt;- posterior_interval(womensrole_bglm_1, prob = 0.95, pars = &quot;education&quot;)
-round(ci95, 2)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ci95 &lt;-<span class="st"> </span><span class="kw">posterior_interval</span>(womensrole_bglm_1, <span class="dt">prob =</span> <span class="fl">0.95</span>, <span class="dt">pars =</span> <span class="st">&quot;education&quot;</span>)
+<span class="kw">round</span>(ci95, <span class="dv">2</span>)</code></pre></div>
 <pre><code>          2.5% 97.5%
 education -0.3 -0.24</code></pre>
 <p>Unlike frequentist confidence intervals — which are <em>not</em> interpretable in terms of post-data probabilities — the Bayesian uncertainty interval indicates we believe after seeing the data that there is a <span class="math inline">\(0.95\)</span> probability that <span class="math inline">\(\beta_2\)</span> is between -0.3 and -0.24. Alternatively, we could say that there is essentially zero probability that <span class="math inline">\(\beta_2 &gt; 0\)</span>, although frequentists cannot make such a claim coherently.</p>
 <p>Many of the postestimation methods that are available for a model that is estimated by <code>glm</code> are also available for a model that is estimated by <code>stan_glm</code>. For example,</p>
-<pre class="r"><code>cbind(Median = coef(womensrole_bglm_1), MAD_SD = se(womensrole_bglm_1))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cbind</span>(<span class="dt">Median =</span> <span class="kw">coef</span>(womensrole_bglm_1), <span class="dt">MAD_SD =</span> <span class="kw">se</span>(womensrole_bglm_1))</code></pre></div>
 <pre><code>                  Median     MAD_SD
 (Intercept)   2.50553917 0.18172590
 education    -0.27038917 0.01573899
 genderFemale -0.01080511 0.09050671</code></pre>
-<pre class="r"><code>summary(residuals(womensrole_bglm_1)) # not deviance residuals</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(<span class="kw">residuals</span>(womensrole_bglm_1)) <span class="co"># not deviance residuals</span></code></pre></div>
 <pre><code>      Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
 -0.3060000 -0.0365000 -0.0037500  0.0002338  0.0662200  0.2818000 
-      NA&#39;s 
+      NA's 
          1 </code></pre>
-<pre class="r"><code>cov2cor(vcov(womensrole_bglm_1))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cov2cor</span>(<span class="kw">vcov</span>(womensrole_bglm_1))</code></pre></div>
 <pre><code>             (Intercept)   education genderFemale
 (Intercept)    1.0000000 -0.93354581  -0.23343542
 education     -0.9335458  1.00000000  -0.04282036
@@ -183,42 +189,42 @@ genderFemale  -0.2334354 -0.04282036   1.00000000</code></pre>
 <div id="step-3-criticize-the-model" class="section level1">
 <h1>Step 3: Criticize the model</h1>
 <p>The <code>launch_shinystan</code> function in the <strong>shinystan</strong> package provides almost all the tools you need to visualize the posterior distribution and diagnose any problems with the Markov chains. In this case, the results are fine and to verify that, you can call</p>
-<pre class="r"><code>launch_shinystan(womensrole_bglm_1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">launch_shinystan</span>(womensrole_bglm_1)</code></pre></div>
 <p>which will open a web browser that drives the visualizations.</p>
 <p>For the rest of this subsection, we focus on what users can do programatically to evaluate whether a model is adequate. A minimal requirement for a Bayesian estimates is that the model should fit the data that the estimates conditioned on. The key function here is <code>posterior_predict</code>, which can be passed a new <code>data.frame</code> to predict out-of-sample, but in this case is omitted to obtain in-sample posterior predictions:</p>
-<pre class="r"><code>y_rep &lt;- posterior_predict(womensrole_bglm_1)
-dim(y_rep)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(womensrole_bglm_1)
+<span class="kw">dim</span>(y_rep)</code></pre></div>
 <pre><code>[1] 2000   42</code></pre>
 <p>The resulting matrix has rows equal to the number of posterior simulations, which in this case is <span class="math inline">\(2000\)</span> and columns equal to the number of observations in the original dataset, which is <span class="math inline">\(42\)</span> combinations of education and gender. Each element of this matrix is a predicted number of respondents with that value of education and gender who agreed with the survey question and thus should be reasonably close to the observed proportion of agreements in the data. We can create a plot to check this:</p>
-<pre class="r"><code>par(mfrow = 1:2, mar = c(5,3.7,1,0) + 0.1, las = 3)
-boxplot(sweep(y_rep[,womensrole$gender == &quot;Male&quot;], 2, STATS = 
-               womensrole$total[womensrole$gender == &quot;Male&quot;], FUN = &quot;/&quot;), 
-        axes = FALSE, main = &quot;Male&quot;, pch = NA,
-        xlab = &quot;Years of Education&quot;, ylab = &quot;Proportion of Agrees&quot;)
-with(womensrole, axis(1, at = education[gender == &quot;Male&quot;] + 1, 
-                      labels = 0:20))
-axis(2, las = 1)
-with(womensrole[womensrole$gender == &quot;Male&quot;,], 
-     points(education + 1,  agree / (agree + disagree), 
-            pch = 16, col = &quot;red&quot;))
-boxplot(sweep(y_rep[,womensrole$gender == &quot;Female&quot;], 2, STATS = 
-          womensrole$total[womensrole$gender == &quot;Female&quot;], FUN = &quot;/&quot;), 
-          axes = FALSE, main = &quot;Female&quot;, pch = NA,
-        xlab = &quot;Years of Education&quot;, ylab = &quot;&quot;)
-with(womensrole, axis(1, at = education[gender == &quot;Female&quot;] + 1,
-     labels = 0:20))
-with(womensrole[womensrole$gender == &quot;Female&quot;,], 
-     points(education + 1,  agree / (agree + disagree), 
-            pch = 16, col = &quot;red&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="fl">3.7</span>,<span class="dv">1</span>,<span class="dv">0</span>) +<span class="st"> </span><span class="fl">0.1</span>, <span class="dt">las =</span> <span class="dv">3</span>)
+<span class="kw">boxplot</span>(<span class="kw">sweep</span>(y_rep[,womensrole$gender ==<span class="st"> &quot;Male&quot;</span>], <span class="dv">2</span>, <span class="dt">STATS =</span> 
+               womensrole$total[womensrole$gender ==<span class="st"> &quot;Male&quot;</span>], <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>), 
+        <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;Male&quot;</span>, <span class="dt">pch =</span> <span class="ot">NA</span>,
+        <span class="dt">xlab =</span> <span class="st">&quot;Years of Education&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Proportion of Agrees&quot;</span>)
+<span class="kw">with</span>(womensrole, <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> education[gender ==<span class="st"> &quot;Male&quot;</span>] +<span class="st"> </span><span class="dv">1</span>, 
+                      <span class="dt">labels =</span> <span class="dv">0</span>:<span class="dv">20</span>))
+<span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">las =</span> <span class="dv">1</span>)
+<span class="kw">with</span>(womensrole[womensrole$gender ==<span class="st"> &quot;Male&quot;</span>,], 
+     <span class="kw">points</span>(education +<span class="st"> </span><span class="dv">1</span>,  agree /<span class="st"> </span>(agree +<span class="st"> </span>disagree), 
+            <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>))
+<span class="kw">boxplot</span>(<span class="kw">sweep</span>(y_rep[,womensrole$gender ==<span class="st"> &quot;Female&quot;</span>], <span class="dv">2</span>, <span class="dt">STATS =</span> 
+          womensrole$total[womensrole$gender ==<span class="st"> &quot;Female&quot;</span>], <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>), 
+          <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;Female&quot;</span>, <span class="dt">pch =</span> <span class="ot">NA</span>,
+        <span class="dt">xlab =</span> <span class="st">&quot;Years of Education&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;&quot;</span>)
+<span class="kw">with</span>(womensrole, <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> education[gender ==<span class="st"> &quot;Female&quot;</span>] +<span class="st"> </span><span class="dv">1</span>,
+     <span class="dt">labels =</span> <span class="dv">0</span>:<span class="dv">20</span>))
+<span class="kw">with</span>(womensrole[womensrole$gender ==<span class="st"> &quot;Female&quot;</span>,], 
+     <span class="kw">points</span>(education +<span class="st"> </span><span class="dv">1</span>,  agree /<span class="st"> </span>(agree +<span class="st"> </span>disagree), 
+            <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>))</code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="SVGs/criticism-1.svg" alt="Posterior predictive boxplots vs. observed datapoints" width="960" />
+<img src="data:image/png;base64,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" alt="Posterior predictive boxplots vs. observed datapoints" />
 <p class="caption">
 Posterior predictive boxplots vs. observed datapoints
 </p>
 </div>
 <p>Here the boxplots provide the median, interquartile range, and hinges of the posterior predictive distribution for a given gender and level of education, while the red points represent the corresponding observed data. As can be seen, the model predicts the observed data fairly well for six to sixteen years of education but predicts less well for very low or very high levels of education where there are less data.</p>
 <p>Consequently, we might consider a model where education has a quadratic effect on agreement, which is easy to specify using R’s formula-based syntax.</p>
-<pre class="r"><code>(womensrole_bglm_2 &lt;- update(womensrole_bglm_1, formula. = . ~ . + I(education^2)))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(womensrole_bglm_2 &lt;-<span class="st"> </span><span class="kw">update</span>(womensrole_bglm_1, <span class="dt">formula. =</span> . ~<span class="st"> </span>. +<span class="st"> </span><span class="kw">I</span>(education^<span class="dv">2</span>)))</code></pre></div>
 <pre><code>stan_glm(formula = cbind(agree, disagree) ~ education + gender + 
     I(education^2), family = binomial(link = &quot;logit&quot;), data = womensrole, 
     chains = CHAINS, cores = CORES, seed = SEED, prior = student_t(df = 7), 
@@ -236,19 +242,19 @@ distribution of y (X = xbar):
          Median MAD_SD
 mean_PPD 24.3    0.8  </code></pre>
 <p>Frequentists would test the null hypothesis that the coefficient on the squared level of education is zero. Bayesians might ask whether such a model is expected to produce better out-of-sample predictions than a model with only the level of education. The latter question can be answered using leave-one-out cross-validation or the approximation thereof provided by the <code>loo</code> function in the <strong>loo</strong> package, for which a method is provided by the <strong>rstanarm</strong> package.</p>
-<pre class="r"><code>loo_bglm_1 &lt;- loo(womensrole_bglm_1)
-loo_bglm_2 &lt;- loo(womensrole_bglm_2)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">loo_bglm_1 &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_1)
+loo_bglm_2 &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_2)</code></pre></div>
 <p>First, we verify that the posterior is not too sensitive to any particular observation in the dataset.</p>
-<pre class="r"><code>par(mfrow = 1:2, mar = c(5,3.8,1,0) + 0.1, las = 3)
-plot(loo_bglm_1, label_points = TRUE)
-plot(loo_bglm_2, label_points = TRUE)</code></pre>
-<p><img src="SVGs/loo_plot-1.svg" title="" alt="" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="fl">3.8</span>,<span class="dv">1</span>,<span class="dv">0</span>) +<span class="st"> </span><span class="fl">0.1</span>, <span class="dt">las =</span> <span class="dv">3</span>)
+<span class="kw">plot</span>(loo_bglm_1, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(loo_bglm_2, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" title alt style="display: block; margin: auto;" /></p>
 <p>There are only one or two moderate outliers (whose statistics are greater than <span class="math inline">\(0.5\)</span>), which should not have too much of an effect on the resulting model comparison:</p>
-<pre class="r"><code>compare(loo_bglm_1, loo_bglm_2)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">compare</span>(loo_bglm_1, loo_bglm_2)</code></pre></div>
 <pre><code>elpd_diff        se   weight1   weight2 
      -0.6       1.8       0.6       0.4 </code></pre>
 <p>In this case, there is little difference in the expected log pointwise deviance between the two models, so we are essentially indifferent between them after taking into account that the second model estimates an additional parameter. The “LOO Information Criterion (LOOIC)”</p>
-<pre class="r"><code>loo_bglm_1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">loo_bglm_1</code></pre></div>
 <pre><code>Computed from 2000 by 42 log-likelihood matrix
 
          Estimate   SE
@@ -260,16 +266,19 @@ looic       209.8 19.0</code></pre>
 <div id="step-4-analyze-manipulations-of-predictors" class="section level1">
 <h1>Step 4: Analyze manipulations of predictors</h1>
 <p>Frequentists attempt to interpret the estimates of the model, which is difficult except when the model is linear, has no inverse link function, and contains no interaction terms. Bayesians can avoid this difficulty simply by inspecting the posterior predictive distribution at different levels of the predictors. For example,</p>
-<pre class="r"><code>y_rep &lt;- posterior_predict(womensrole_bglm_2, newdata = 
-                             data.frame(education = c(12,16),
-                                        gender = factor(&quot;Female&quot;, levels = 
-                                                       c(&quot;Male&quot;, &quot;Female&quot;))))
-y_rep &lt;- with(womensrole, sweep(y_rep, 2, FUN = &quot;/&quot;, STATS = 
-                total[gender == &quot;Female&quot; &amp; education %in% c(12,16)]))
-summary(apply(y_rep, 1, diff))</code></pre>
-<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
--0.008432 -0.003373 -0.001686 -0.001242  0.000000  0.015620 </code></pre>
-<p>As can be seen, two women — one with a high school degree and another with a college degree — are expected to have about the same probability of agreeing with the survey question. This is largely due to the fact that women with a high school education are already extremely unlikely to agree with the survey question and thus increasing their education to a college degree cannot have a large negative impact on this probability. Thus, to the extent that education makes a difference to the outcome, it is mostly that people with very little education have a considerable probability of agreeing with the survey question.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># note: in newdata we want agree and disgree to sum to the number of people we</span>
+<span class="co"># want to predict for. the values of agree and disagree don't matter so long as</span>
+<span class="co"># their sum is the desired number of trials. we need to explicitly imply the</span>
+<span class="co"># number of trials like this because our original data are aggregate. if we had</span>
+<span class="co"># bernoulli data then it would be a given we wanted to predict for single</span>
+<span class="co"># individuals.</span>
+newdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">agree =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">disagree =</span> <span class="kw">c</span>(<span class="dv">100</span>,<span class="dv">100</span>), <span class="dt">education =</span> <span class="kw">c</span>(<span class="dv">12</span>,<span class="dv">16</span>),
+                      <span class="dt">gender =</span> <span class="kw">factor</span>(<span class="st">&quot;Female&quot;</span>, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>)))
+y_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(womensrole_bglm_2, newdata)
+<span class="kw">summary</span>(<span class="kw">apply</span>(y_rep, <span class="dv">1</span>, diff))</code></pre></div>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ -42.00  -23.00  -20.00  -19.69  -16.00    0.00 </code></pre>
+<p>As can be seen, out of <span class="math inline">\(100\)</span> women who have a college degree versus <span class="math inline">\(100\)</span> women with only a high school degree, we would expect about <span class="math inline">\(20\)</span> fewer college-educated women to agree with the question. There is an even chance that the difference is between <span class="math inline">\(24\)</span> and <span class="math inline">\(16\)</span>, a one-in-four chance that it is greater, and one-in-four chance that it is less.</p>
 </div>
 <div id="troubleshooting" class="section level1">
 <h1>Troubleshooting</h1>
@@ -282,20 +291,20 @@ summary(apply(y_rep, 1, diff))</code></pre>
 <p>Gelman and Rubin’s recommendation is that the independent Markov chains be initialized with diffuse starting values for the parameters and sampled until all values for Rhat are below 1.1. When any Rhat values are above 1.1 <strong>rstanarm</strong> will print a warning message like this:</p>
 <pre><code>Markov chains did not converge! Do not analyze results! </code></pre>
 <p>To illustrate how to check the Rhat values after fitting a model using <strong>rstanarm</strong> we’ll fit two models and run them for different numbers of iterations.</p>
-<pre class="r"><code>bad_rhat &lt;- stan_glm(mpg ~ ., data = mtcars, iter = 20, 
-                     chains = CHAINS, cores = CORES, seed = SEED)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bad_rhat &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(mpg ~<span class="st"> </span>., <span class="dt">data =</span> mtcars, <span class="dt">iter =</span> <span class="dv">20</span>, 
+                     <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)</code></pre></div>
 <pre><code>Warning: Markov chains did not converge! Do not analyze results!</code></pre>
-<pre class="r"><code>good_rhat &lt;- update(bad_rhat, iter = 500, 
-                    chains = CHAINS, cores = CORES, seed = SEED)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">good_rhat &lt;-<span class="st"> </span><span class="kw">update</span>(bad_rhat, <span class="dt">iter =</span> <span class="dv">500</span>, 
+                    <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)</code></pre></div>
 <p>Here the first model leads to the warning message about convergence but the second model does not. Indeed, we can see that not all Rhat values are less than 1.1 for the first model:</p>
-<pre class="r"><code>rhat &lt;- summary(bad_rhat)[, &quot;Rhat&quot;]
-rhat[rhat &gt; 1.1]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rhat &lt;-<span class="st"> </span><span class="kw">summary</span>(bad_rhat)[, <span class="st">&quot;Rhat&quot;</span>]
+rhat[rhat &gt;<span class="st"> </span><span class="fl">1.1</span>]</code></pre></div>
 <pre><code>         disp            hp            vs            am          gear 
      1.241645      1.413041      1.155705      1.158465      1.153849 
          carb         sigma      mean_PPD log-posterior 
      1.174211      1.650953      1.789107      2.679556 </code></pre>
 <p>Since we didn’t get a warning for the second model we shouldn’t find any parameters with an Rhat greater than 1.1:</p>
-<pre class="r"><code>any(summary(good_rhat)[, &quot;Rhat&quot;] &gt; 1.1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">any</span>(<span class="kw">summary</span>(good_rhat)[, <span class="st">&quot;Rhat&quot;</span>] &gt;<span class="st"> </span><span class="fl">1.1</span>)</code></pre></div>
 <pre><code>[1] FALSE</code></pre>
 <p>Details on the computatation of Rhat and some of its limitations can be found in the chapter of the <a href="http://mc-stan.org/documentation/">Stan Modeling Language User’s Guide and Reference Manual</a>.</p>
 </div>
@@ -324,16 +333,6 @@ rhat[rhat &gt; 1.1]</code></pre>
 </div>
 
 
-</div>
-
-<script>
-
-// add bootstrap table styles to pandoc tables
-$(document).ready(function () {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-});
-
-</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
