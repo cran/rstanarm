@@ -75,10 +75,11 @@ Descriptions of the plots corresponding to the different values of
 }
 }
 \note{
-For binomial data, plots of \eqn{y} and \eqn{y^{rep}}{yrep} show the proportion
-  of 'successes' rather than the raw count.
+For binomial data, plots of \eqn{y} and \eqn{y^{rep}}{yrep} show the
+  proportion of 'successes' rather than the raw count.
 }
 \examples{
+if (!exists("example_model")) example(example_model)
 # Compare distribution of y to distributions of yrep
 (pp_dist <- pp_check(example_model, check = "dist", overlay = TRUE))
 pp_dist + 

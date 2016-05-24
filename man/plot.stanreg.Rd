@@ -12,13 +12,13 @@
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{plotfun}{A character string naming the plotting function to apply to 
-the stanreg object. See \code{\link{plots}} for the names and descriptions.
-Also see the Examples section below. \code{plotfun} can be either the full 
-name of the plotting function (e.g. \code{"stan_hist"}) or can be 
-abbreviated to the part of the name following the underscore (e.g. 
+the stanreg object. See \code{\link{rstanarm-plots}} for the names and
+descriptions. Also see the Examples section below. \code{plotfun} can be
+either the full name of the plotting function (e.g. \code{"stan_hist"}) or
+can be abbreviated to the part of the name following the underscore (e.g. 
 \code{"hist"}). The default plot shows intervals and point estimates for 
-the coefficients. Note: \code{plotfun} should not be specified for models
-fit using \code{algorithm="optimizing"} as there is currently only one
+the coefficients. Note: \code{plotfun} should not be specified for models 
+fit using \code{algorithm="optimizing"} as there is currently only one 
 plotting function for these models.}
 
 \item{pars}{An optional character vector of parameter names.}
@@ -30,7 +30,7 @@ functions that accept a \code{regex_pars} argument ignore it for models fit
 using optimization.}
 
 \item{...}{Additional arguments to pass to \code{plotfun} (see
-\code{\link{plots}}) or, for models fit using
+\code{\link{rstanarm-plots}}) or, for models fit using
 \code{algorithm="optimizing"}, \code{\link[arm]{coefplot}}.}
 }
 \value{
@@ -47,6 +47,7 @@ the regression coefficients and standard errors are passed to
 }
 \examples{
 # Use rstanarm example model
+if (!exists("example_model")) example(example_model)
 fit <- example_model
 
 # Intervals and point estimates
@@ -77,8 +78,6 @@ plot(fit, "rhat")
 plot(fit, "ess")
 
 # Using regex_pars
-plot(fit, regex_pars = "period")
-plot(fit, regex_pars = "herd:1")
 plot(fit, regex_pars = "herd:1\\\\]")
 plot(fit, regex_pars = "herd:[279]")
 plot(fit, regex_pars = "herd:[279]|period2")
@@ -89,7 +88,7 @@ plot(fit, regex_pars = c("herd:[279]", "period2"))
 
 }
 \seealso{
-\code{\link{plots}} for details on the individual plotting
+\code{\link{rstanarm-plots}} for details on the individual plotting
   functions.
 }
 

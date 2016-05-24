@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2013, 2014, 2015 Trustees of Columbia University
+# Copyright (C) 2013, 2014, 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -219,6 +219,7 @@ stan_glm.fit <- function(x, y, weights = rep(1, NROW(x)),
     has_intercept = as.integer(has_intercept), prior_PD = as.integer(prior_PD))
   
   if (length(group)) {
+    check_reTrms(group)
     decov <- group$decov
     Z <- t(group$Zt)
     group <- pad_reTrms(Z = Z, cnms = group$cnms, flist = group$flist)
@@ -326,16 +327,22 @@ stan_glm.fit <- function(x, y, weights = rep(1, NROW(x)),
       standata$Z0 <- standata$Z[y0, , drop = FALSE]
       standata$Z1 <- standata$Z[y1, , drop = FALSE]
       standata$Z <- NULL 
-      if (length(weights)) {
+      if (length(weights)) { 
+        # nocov start
+        # this code is unused because weights are interpreted as number of 
+        # trials for binomial glms
         standata$weights0 <- weights[y0]
         standata$weights1 <- weights[y1]
+        # nocov end
       } else {
         standata$weights0 <- double(0)
         standata$weights1 <- double(0)
       }
       if (length(offset)) {
+        # nocov start
         standata$offset0 <- offset[y0]
         standata$offset1 <- offset[y1]
+        # nocov end
       } else {
         standata$offset0 <- double(0)
         standata$offset1 <- double(0)
@@ -357,9 +364,10 @@ stan_glm.fit <- function(x, y, weights = rep(1, NROW(x)),
     stanfit <- stanmodels$count
   } else if (is_gamma) {
     # nothing
-  } else {
+  } else { # nocov start
+    # family already checked above
     stop(paste(famname, "is not supported."))
-  }
+  } # nocov end
   
   pars <- c(if (has_intercept) "alpha", 
             "beta", 
@@ -441,17 +449,28 @@ pad_reTrms <- function(Z, cnms, flist) {
   p <- sapply(cnms, FUN = length)
   last <- cumsum(l * p)
   for (i in attr(flist, "assign")) {
-    levels(flist[[i]]) <- c(levels(flist[[i]]), 
+    levels(flist[[i]]) <- c(gsub(" ", "_", levels(flist[[i]])), 
                             paste0("_NEW_", names(flist)[i]))
   }
   n <- nrow(Z)
-  Z <- cbind(Z, Matrix(0, nrow = n, ncol = p[length(p)], sparse = TRUE))
   mark <- length(p) - 1L
-  for (i in rev(head(last, -1))) {
-    Z <- cbind(Z[, 1:i, drop = FALSE],
-               Matrix(0, n, p[mark], sparse = TRUE),
-               Z[, (i+1):ncol(Z), drop = FALSE])
-    mark <- mark - 1L
+  if (getRversion() < "3.2.0") {
+    Z <- cBind(Z, Matrix(0, nrow = n, ncol = p[length(p)], sparse = TRUE))
+    for (i in rev(head(last, -1))) {
+      Z <- cBind(cBind(Z[, 1:i, drop = FALSE],
+                       Matrix(0, n, p[mark], sparse = TRUE)),
+                 Z[, (i+1):ncol(Z), drop = FALSE])
+      mark <- mark - 1L
+    }
+  }
+  else {
+    Z <- cbind2(Z, Matrix(0, nrow = n, ncol = p[length(p)], sparse = TRUE))
+    for (i in rev(head(last, -1))) {
+      Z <- cbind(Z[, 1:i, drop = FALSE],
+                 Matrix(0, n, p[mark], sparse = TRUE),
+                 Z[, (i+1):ncol(Z), drop = FALSE])
+      mark <- mark - 1L
+    }
   }
   nlist(Z, cnms, flist)
 }

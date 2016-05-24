@@ -34,16 +34,16 @@
 #'   structure of these objects.
 #'   
 #' @details 
-#' The LOO Information Criterion (LOOIC) has the same purpose as the Aikaike
-#' Information Criterion (AIC) that is used by frequentists. Both are intended
-#' to estimate the expected log predicted density (ELPD) for a new dataset.
-#' However, the AIC ignores priors and assumes that the posterior distribution
+#' The LOO Information Criterion (LOOIC) has the same purpose as the Akaike 
+#' Information Criterion (AIC) that is used by frequentists. Both are intended 
+#' to estimate the expected log predictive density (ELPD) for a new dataset. 
+#' However, the AIC ignores priors and assumes that the posterior distribution 
 #' is multivariate normal, whereas the functions from the 
 #' \pkg{\link[=loo-package]{loo}} package do not make this distributional 
 #' assumption and integrate over uncertainty in the parameters. This only 
 #' assumes that any one observation can be omitted without having a major effect
-#' on the posterior distribution, which can be judged using the diagnostic plot
-#' provided by the \code{\link[loo]{plot.loo}} method. The \emph{How to Use the
+#' on the posterior distribution, which can be judged using the diagnostic plot 
+#' provided by the \code{\link[loo]{plot.loo}} method. The \emph{How to Use the 
 #' rstanarm Package} vignette has an example of this entire process.
 #'   
 #' @seealso 
@@ -91,7 +91,7 @@
 loo.stanreg <- function(x, ...) {
   if (!used.sampling(x)) 
     STOP_sampling_only("loo")
-  loo.function(ll_fun(x$family), args = ll_args(x), ...)
+  loo.function(ll_fun(x), args = ll_args(x), ...)
 }
 
 #' @rdname loo.stanreg
@@ -102,24 +102,23 @@ loo.stanreg <- function(x, ...) {
 waic.stanreg <- function(x, ...) {
   if (!used.sampling(x)) 
     STOP_sampling_only("waic")
-  waic.function(ll_fun(x$family), args = ll_args(x))
+  waic.function(ll_fun(x), args = ll_args(x))
 }
 
 # returns log-likelihood function for loo() and waic()
-ll_fun <- function(f) {
-  if (is(f, "family")) {
-    return(get(paste0(".ll_", f$family, "_i")))
-  } else if (is.character(f)) {
+ll_fun <- function(x) {
+  validate_stanreg_object(x)
+  f <- family(x)
+  if (!is(f, "family") || is_scobit(x))
     return(.ll_polr_i)
-  } else {
-    stop("'family' must be a family or a character string.", 
-         call. = FALSE)
-  }
+  
+  get(paste0(".ll_", f$family, "_i"))
 }
 
 # returns args argument for loo.function() and waic.function()
 ll_args <- function(object, newdata = NULL) {
-  f <- object$family
+  validate_stanreg_object(object)
+  f <- family(object)
   draws <- nlist(f)
   has_newdata <- !is.null(newdata)
   if (has_newdata) {
@@ -135,7 +134,7 @@ ll_args <- function(object, newdata = NULL) {
     y <- get_y(object)
   }
 
-  if (is(f, "family")) {
+  if (is(f, "family") && !is_scobit(object)) {
     fname <- f$family
     if (!is.binomial(fname)) {
       data <- data.frame(y, x)
@@ -161,19 +160,21 @@ ll_args <- function(object, newdata = NULL) {
     if (is.nb(fname)) 
       draws$size <- stanmat[,"overdispersion"]
     
-  } else if (is.character(f)) {
+  } else {
     stopifnot(is(object, "polr"))
     y <- as.integer(y)
+    if (has_newdata) 
+      x <- .validate_polr_x(object, x)
     data <- data.frame(y, x)
     draws$beta <- stanmat[, colnames(x), drop = FALSE]
-    zetas <- grep("|", colnames(stanmat), fixed = TRUE, value = TRUE)
+    patt <- if (length(unique(y)) == 2L) "(Intercept)" else "|"
+    zetas <- grep(patt, colnames(stanmat), fixed = TRUE, value = TRUE)
     draws$zeta <- stanmat[, zetas, drop = FALSE]
     draws$max_y <- max(y)
-    if ("alpha" %in% colnames(stanmat)) 
+    if ("alpha" %in% colnames(stanmat)) {
       draws$alpha <- stanmat[, "alpha"]
-    
-  } else {
-    stop("'family' must be a family or a character string.", call. = FALSE)
+      draws$f <- object$method
+    }
   }
   
   data$offset <- object$offset
@@ -201,6 +202,21 @@ ll_args <- function(object, newdata = NULL) {
 }
 
 
+# Check if a model fit with stan_polr has an intercept (i.e. if it's actually a 
+# bernoulli model). If it doesn't have an intercept then the intercept column in
+# x is dropped. This is only necessary if newdata is specified because otherwise
+# the correct x is taken from the fitted model object.
+.validate_polr_x <- function(object, x) {
+  x0 <- get_x(object)
+  has_intercept <- colnames(x0)[1L] == "(Intercept)" 
+  if (!has_intercept && colnames(x)[1L] == "(Intercept)")
+    x <- x[, -1L, drop = FALSE]
+  x
+}
+
+
+
+# log-likelihood function helpers
 .xdata <- function(data) {
   sel <- c("y", "weights","offset", "trials")
   data[, -which(colnames(data) %in% sel)]
@@ -263,10 +279,10 @@ ll_args <- function(object, newdata = NULL) {
                      linkinv(draws$zeta[, y_i - 1L] - eta))
       }
   } else {
-      if (y_i == 1) {
+      if (y_i == 0) {
         val <- draws$alpha * log(linkinv(draws$zeta[, 1] - eta))
-      } else if (y_i == J) {
-        val <- log1p(-linkinv(draws$zeta[, J-1] - eta) ^ draws$alpha)
+      } else if (y_i == 1) {
+        val <- log1p(-linkinv(draws$zeta[, 1] - eta) ^ draws$alpha)
       } else {
         stop("Exponentiation only possible when there are exactly 2 outcomes.")
       }

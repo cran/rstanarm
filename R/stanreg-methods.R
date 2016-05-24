@@ -126,12 +126,19 @@ log_lik <- function(object, ...) UseMethod("log_lik")
 
 #' @rdname stanreg-methods
 #' @export
-#' @param newdata For \code{log_lik}, an optional data frame of new data (e.g.
-#'   holdout data). See \code{\link{posterior_predict}}.
+#' @param newdata For \code{log_lik}, an optional data frame of new data (e.g. 
+#'   holdout data) to use when evaluating the log-likelihood. See the 
+#'   description of \code{newdata} for \code{\link{posterior_predict}}.
 log_lik.stanreg <- function(object, newdata = NULL, ...) {
   if (!used.sampling(object)) 
     STOP_sampling_only("Pointwise log-likelihood matrix")
-  fun <- ll_fun(family(object))
+  if (!is.null(newdata)) {
+    if ("gam" %in% names(object))
+      stop("'log_lik' with 'newdata' not yet supported ", 
+           "for models estimated via 'stan_gamm4'.")
+    newdata <- as.data.frame(newdata)
+  }
+  fun <- ll_fun(object)
   args <- ll_args(object, newdata)
   sapply(seq_len(args$N), function(i) {
     as.vector(fun(i = i, data = args$data[i, , drop = FALSE], 
@@ -167,10 +174,7 @@ se <- function(object, ...) UseMethod("se")
 #' @rdname stanreg-methods
 #' @export
 se.stanreg <- function(object, ...) {
-  ses <- object$ses
-  if (!is.mer(object))
-    return(ses)
-  unpad_reTrms(ses)
+  object$ses
 }
 
 #' @rdname stanreg-methods
@@ -218,15 +222,8 @@ update.stanreg <- function(object, formula., ..., evaluate = TRUE) {
 #'   returned instead.
 #'
 vcov.stanreg <- function(object, correlation = FALSE, ...) {
-  if (!is.mer(object)) {
-    out <- object$covmat
-  } else {
-    sel <- seq_along(fixef(object))
-    out <- object$covmat[sel, sel, drop=FALSE]
-  }
-  if (!correlation) 
-    return(out)
-  
+  out <- object$covmat
+  if (!correlation) return(out)
   cov2cor(out)
 }
 

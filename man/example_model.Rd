@@ -12,16 +12,14 @@
   on a multicore system, the user may well want to set that equal to the
   number of chains being executed.}
 \description{
-A pre-fit model for use in \pkg{rstanarm} examples.
+A model for use in \pkg{rstanarm} examples.
 }
 \examples{
-\dontrun{
 example_model <- 
   stan_glmer(cbind(incidence, size - incidence) ~ size + period + (1|herd),
              data = lme4::cbpp, family = binomial,
              # this next line is only to keep the example small in size!
              chains = 2, cores = 1, seed = 12345, iter = 500)
-}
 example_model
 }
 \seealso{

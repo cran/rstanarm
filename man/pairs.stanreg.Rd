@@ -18,6 +18,7 @@ See \code{\link[rstan]{pairs.stanfit}} for details.
 See the Details section in \code{\link[rstan]{pairs.stanfit}}.
 }
 \examples{
+if (!exists("example_model")) example(example_model)
 pairs(example_model, pars = c("(Intercept)", "log-posterior"))
 
 }

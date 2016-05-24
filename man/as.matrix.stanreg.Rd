@@ -40,6 +40,8 @@ sampling distribution of the parameters or the variational approximation to
 the posterior distribution.
 }
 \examples{
+\dontrun{
+if (!exists("example_model")) example(example_model)
 # Extract posterior sample after MCMC
 draws <- as.matrix(example_model)
 
@@ -48,7 +50,6 @@ draws <- as.matrix(example_model)
 print(median(draws[, "(Intercept)"]))
 print(example_model$coefficients[["(Intercept)"]])
 
-\dontrun{
 # Extract draws from asymptotic Gaussian sampling distribution 
 # after optimization
 fit <- stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing")

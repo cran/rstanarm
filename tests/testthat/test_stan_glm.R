@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2015 Trustees of Columbia University
+# Copyright (C) 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,6 +28,10 @@ test_that("stan_glm throws appropriate errors, warnings, and messages", {
   outcome <- gl(3,1,9)
   treatment <- gl(3,3)
   f <- as.formula(counts ~ outcome + treatment)
+  
+  # error: glmer syntax
+  expect_error(stan_glm(counts ~ treatment + (1|outcome)), 
+               regexp = "model formula not allowed")
   
   # error: empty model
   expect_error(stan_glm(counts ~ 0), 

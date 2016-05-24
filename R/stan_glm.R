@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2013, 2014, 2015 Trustees of Columbia University
+# Copyright (C) 2013, 2014, 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -114,6 +114,7 @@ stan_glm <- function(formula, family = gaussian(), data, weights, subset,
   
   algorithm <- match.arg(algorithm)
   family <- validate_family(family)
+  validate_glm_formula(formula)
   if (missing(data)) 
     data <- environment(formula)
   call <- match.call(expand.dots = TRUE)

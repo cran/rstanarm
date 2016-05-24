@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2015 Trustees of Columbia University
+# Copyright (C) 2015, 2016 Trustees of Columbia University
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -145,6 +145,14 @@ test_that("validate_family works", {
   expect_error(stan_glm(mpg ~ wt, data = mtcars, family = "not a family"))
 })
 
+test_that("validate_glm_formula works", {
+  validate_glm_formula <- rstanarm:::validate_glm_formula
+  expect_silent(validate_glm_formula(mpg ~ wt + cyl))
+  expect_error(validate_glm_formula(mpg ~ wt + (1|cyl)), "not allowed")
+  expect_error(validate_glm_formula(mpg ~ (1|cyl/gear)), "not allowed")
+})
+
+
 test_that("array1D_check works", {
   array1D_check <- rstanarm:::array1D_check
   y1 <- rnorm(10)
@@ -219,13 +227,14 @@ fito <- stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing", seed = SEED)
 fitvb <- update(fito, algorithm = "meanfield", seed = SEED)
 fitvb2 <- update(fitvb, algorithm = "fullrank", seed = SEED)
 
-test_that("is.stanreg works", {
-  is.stanreg <- rstanarm:::is.stanreg
-  expect_true(is.stanreg(fit))
-  expect_true(is.stanreg(fit2))
-  expect_true(is.stanreg(fito))
-  expect_true(is.stanreg(fitvb))
-  expect_false(is.stanreg(fit$stanfit))
+test_that("validate_stanreg_object works", {
+  validate_stanreg_object <- rstanarm:::validate_stanreg_object
+  expect_silent(validate_stanreg_object(fit))
+  expect_silent(validate_stanreg_object(fit2))
+  expect_silent(validate_stanreg_object(fito))
+  expect_silent(validate_stanreg_object(fitvb))
+  expect_error(validate_stanreg_object(fit$stanfit), 
+               "not a stanreg object")
 })
 
 test_that("used.sampling, used.optimizing, and used.variational work", {
@@ -317,11 +326,11 @@ test_that("set_sampling_args works", {
   val2 <- set_sampling_args(fit, prior = normal(), 
                             user_dots = list(control = control1),  
                             user_adapt_delta = 0.9)
-  # cauchy/t_1 prior --> adapt_delta = 0.99
+  # cauchy/t_1 prior --> adapt_delta = 0.95
   val3 <- set_sampling_args(fit, prior = student_t(1), 
                             user_dots = list(control = control1),  
                             user_adapt_delta = NULL)
-  # cauchy/t_1 prior --> adapt_delta = 0.99, but user override to 0.8
+  # cauchy/t_1 prior --> adapt_delta = 0.95, but user override to 0.8
   val4 <- set_sampling_args(fit, prior = cauchy(),
                             user_dots = list(control = control2),  
                             user_adapt_delta = 0.8)
@@ -336,7 +345,7 @@ test_that("set_sampling_args works", {
   expect_equal(val1$iter, 100)
   expect_equal(val1$control, val1b$control)
   expect_equal(val2$control, c(control1, adapt_delta = 0.9))
-  expect_equal(val3$control, c(control1, adapt_delta = 0.99))
+  expect_equal(val3$control, c(control1, adapt_delta = 0.95))
   expect_equal(val4$control, c(control2, adapt_delta = 0.8, max_treedepth = 15))
   expect_equal(val5$control, list(adapt_delta = 0.99, max_treedepth = 15))
   expect_equal(val6$control, list(adapt_delta = 0.99, max_treedepth = 15))

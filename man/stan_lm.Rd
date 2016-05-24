@@ -140,6 +140,11 @@ stan_aov(yield ~ block + N*P*K, data = npk, contrasts = "contr.poly",
 plot(fit)
 
 }
+\references{
+Lewandowski, D., Kurowicka D., and Joe, H. (2009). Generating random
+correlation matrices based on vines and extended onion method. 
+\emph{Journal of Multivariate Analysis}. \strong{100}(9), 1989--2001.
+}
 \seealso{
 The vignettes for \code{stan_lm} and \code{stan_aov}, which have more
 thorough descriptions and examples.

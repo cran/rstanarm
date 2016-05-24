@@ -24,7 +24,8 @@ used. Using \code{pars="beta"} will restrict the displayed parameters to
 only the regression coefficients (without the intercept). \code{"alpha"} 
 can also be used as a shortcut for \code{"(Intercept)"}. If the model has 
 varying intercepts and/or slopes they can be selected using \code{pars = 
-"varying"}. See Examples.}
+"varying"}. If \code{pars} is \code{NULL} all parameters are selected. See 
+Examples.}
 
 \item{regex_pars}{An optional character vector of \link[=grep]{regular 
 expressions} to use for parameter selection. \code{regex_pars} can be used
@@ -49,7 +50,7 @@ The \code{summary} method returns an object of class
   \code{"summary.stanreg"}, which is a matrix of summary statistics and 
   diagnostics, with attributes storing information for use by the
   \code{print} method. The \code{print} method for \code{summary.stanreg}
-  objects is called for its side effect and does not return anything. The 
+  objects is called for its side effect and just returns its input. The 
   \code{as.data.frame} method for \code{summary.stanreg} objects converts the
   matrix to a data.frame, preserving row and column names but dropping the 
   \code{print}-related attributes.
@@ -59,6 +60,7 @@ Summaries of parameter estimates and MCMC convergence diagnostics
 (Monte Carlo error, effective sample size, Rhat).
 }
 \examples{
+if (!exists("example_model")) example(example_model) 
 summary(example_model, probs = c(0.1, 0.9))
 
 # These produce the same output for this example, 
@@ -68,7 +70,8 @@ summary(example_model, pars = c("(Intercept)", "size",
 summary(example_model, pars = c("alpha", "beta"))
 
 # Only show parameters varying by group
-summary(example_model, pars = "varying") 
+summary(example_model, pars = "varying")
+as.data.frame(summary(example_model, pars = "varying"))
 
 }
 \seealso{

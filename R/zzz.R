@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 .onLoad <- function(libname, pkgname) { # nocov start
-  if (!("methods" %in% .packages())) attachNamespace("methods")
-  loadRcppModules()
+  modules <- paste0("stan_fit4", names(stanmodels), "_mod")
+  for (m in modules) loadModule(m, what = TRUE)
 } # nocov end
 
 .onAttach <- function(...) {

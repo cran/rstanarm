@@ -57,7 +57,7 @@ predictive distribution using the observed predictors is useful for checking
 the fit of the model. Drawing from the posterior predictive distribution at 
 interesting values of the predictors also lets us visualize how a 
 manipulation of a predictor affects (a function of) the outcome(s). With new 
-observations of predictor variables we can use posterior predictive 
+observations of predictor variables we can use the posterior predictive 
 distribution to generate predicted outcomes.
 }
 \note{
@@ -76,6 +76,7 @@ For binomial models with a number of trials greater than one (i.e., not
   \emph{How to Use the rstanarm Package} for examples.
 }
 \examples{
+if (!exists("example_model")) example(example_model)
 yrep <- posterior_predict(example_model)
 table(yrep)
 

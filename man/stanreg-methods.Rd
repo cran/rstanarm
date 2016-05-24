@@ -64,8 +64,9 @@ names.}
 \item{level}{For \code{confint}, a scalar between \eqn{0} and \eqn{1}
 indicating the confidence level to use.}
 
-\item{newdata}{For \code{log_lik}, an optional data frame of new data (e.g.
-holdout data). See \code{\link{posterior_predict}}.}
+\item{newdata}{For \code{log_lik}, an optional data frame of new data (e.g. 
+holdout data) to use when evaluating the log-likelihood. See the 
+description of \code{newdata} for \code{\link{posterior_predict}}.}
 
 \item{formula., evaluate}{See \code{\link[stats]{update}}.}
 

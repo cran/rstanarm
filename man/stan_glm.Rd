@@ -42,15 +42,19 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 \code{"sampling"} it is possibly to specify \code{iter}, \code{chains},
 \code{cores}, \code{refresh}, etc.}
 
-\item{prior}{Prior for coefficients. See \code{\link{priors}} for details. 
-Set \code{prior} to \code{NULL} to omit a prior, i.e., use an (improper)
-uniform prior.}
+\item{prior}{The prior distribution for the regression coefficients. 
+\code{prior} can be a call to \code{normal}, \code{student_t},
+\code{cauchy}, \code{hs} or \code{hs_plus}. See \code{\link{priors}} for
+details. To to omit a prior ---i.e., to use a flat (improper) uniform
+prior--- set \code{prior} to \code{NULL}.}
 
-\item{prior_intercept}{Prior for intercept. See \code{\link{priors}} for 
-details. Set \code{prior_intercept} to \code{NULL} to omit a prior, i.e.,
-use an (improper) uniform prior. (\strong{Note:} the prior distribution for
-the intercept is set so it applies to the value when all predictors are 
-centered.)}
+\item{prior_intercept}{The prior distribution for the intercept.
+\code{prior_intercept} can be a call to \code{normal}, \code{student_t} or
+\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior
+---i.e., to use a flat (improper) uniform prior--- set
+\code{prior_intercept} to \code{NULL}. (\strong{Note:} the prior
+distribution for the intercept is set so it applies to the value when all
+predictors are centered.)}
 
 \item{prior_ops}{Additional options related to prior distributions. Can 
 be \code{NULL} to omit a prior on the dispersion and see 
@@ -81,8 +85,10 @@ relative to \eqn{Q^\ast}{Q*} are obtained and then premultiplied by the
 inverse of \eqn{R^{\ast}}{R*} to obtain coefficients relative to the
 original predictors, \eqn{X}. These transformations do not change the 
 likelihood of the data but are recommended for computational reasons when 
-there are multiple predictors but you do not have an informative prior on
-their coefficients.}
+there are multiple predictors. However, because the coefficients relative
+to \eqn{Q^\ast}{Q*} are not very interpretable it is hard to specify an 
+informative prior. Setting \code{QR=TRUE} is therefore only recommended 
+if you do not have an informative prior for the regression coefficients.}
 
 \item{link}{For \code{stan_glm.nb} only, the link function to use. See 
 \code{\link{neg_binomial_2}}.}

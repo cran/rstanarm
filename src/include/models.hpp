@@ -68,26 +68,17 @@ make_theta_L(const int& len_theta_L,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(theta_L, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 47;
             stan::math::assign(zeta_mark, 1);
-            current_statement_begin__ = 48;
             stan::math::assign(rho_mark, 1);
-            current_statement_begin__ = 49;
             stan::math::assign(z_T_mark, 1);
-            current_statement_begin__ = 50;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 53;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 55;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 56;
                     if (as_bool(logical_eq(nc,1))) {
-                        current_statement_begin__ = 57;
                         stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), ((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion));
-                        current_statement_begin__ = 59;
                         stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                     } else {
                         {
@@ -106,29 +97,17 @@ make_theta_L(const int& len_theta_L,
                             stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(std_dev, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(T21, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 68;
                             stan::math::assign(trace_T_i, (square(((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion)) * nc));
-                            current_statement_begin__ = 70;
                             stan::math::assign(pi, segment(zeta,zeta_mark,nc));
-                            current_statement_begin__ = 71;
                             stan::math::assign(pi, divide(pi,sum(pi)));
-                            current_statement_begin__ = 72;
                             stan::math::assign(zeta_mark, (zeta_mark + nc));
-                            current_statement_begin__ = 73;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,1,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 74;
                             stan::math::assign(get_base1_lhs(T_i,1,1,"T_i",1), std_dev);
-                            current_statement_begin__ = 77;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,2,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 78;
                             stan::math::assign(T21, ((2.0 * get_base1(rho,rho_mark,"rho",1)) - 1.0));
-                            current_statement_begin__ = 79;
                             stan::math::assign(rho_mark, (rho_mark + 1));
-                            current_statement_begin__ = 80;
                             stan::math::assign(get_base1_lhs(T_i,2,2,"T_i",1), (std_dev * sqrt((1.0 - square(T21)))));
-                            current_statement_begin__ = 81;
                             stan::math::assign(get_base1_lhs(T_i,2,1,"T_i",1), (std_dev * T21));
-                            current_statement_begin__ = 83;
                             for (int r = 2; r <= (nc - 1); ++r) {
                                 {
                                     int rp1(0);
@@ -139,34 +118,21 @@ make_theta_L(const int& len_theta_L,
                                     (void) scale_factor;  // dummy to suppress unused var warning
                                     stan::math::initialize(T_row, std::numeric_limits<double>::quiet_NaN());
                                     stan::math::initialize(scale_factor, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 87;
                                     stan::math::assign(T_row, segment(z_T,z_T_mark,r));
-                                    current_statement_begin__ = 88;
                                     stan::math::assign(z_T_mark, (z_T_mark + r));
-                                    current_statement_begin__ = 89;
                                     stan::math::assign(rp1, (r + 1));
-                                    current_statement_begin__ = 90;
                                     stan::math::assign(std_dev, sqrt((get_base1(pi,rp1,"pi",1) * trace_T_i)));
-                                    current_statement_begin__ = 91;
                                     stan::math::assign(scale_factor, (sqrt((get_base1(rho,rho_mark,"rho",1) / dot_self(T_row))) * std_dev));
-                                    current_statement_begin__ = 92;
                                     for (int c = 1; c <= r; ++c) {
-                                        current_statement_begin__ = 92;
                                         stan::math::assign(get_base1_lhs(T_i,rp1,c,"T_i",1), (get_base1(T_row,c,"T_row",1) * scale_factor));
                                     }
-                                    current_statement_begin__ = 93;
                                     stan::math::assign(get_base1_lhs(T_i,rp1,rp1,"T_i",1), (sqrt((1.0 - get_base1(rho,rho_mark,"rho",1))) * std_dev));
-                                    current_statement_begin__ = 94;
                                     stan::math::assign(rho_mark, (rho_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 98;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 98;
                                 for (int r = c; r <= nc; ++r) {
-                                    current_statement_begin__ = 99;
                                     stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), get_base1(T_i,r,c,"T_i",1));
-                                    current_statement_begin__ = 100;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
@@ -174,7 +140,6 @@ make_theta_L(const int& len_theta_L,
                     }
                 }
             }
-            current_statement_begin__ = 104;
             return stan::math::promote_scalar<fun_return_scalar_t__>(theta_L);
         }
     } catch (const std::exception& e) {
@@ -222,33 +187,23 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(b, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 122;
             stan::math::assign(b_mark, 1);
-            current_statement_begin__ = 123;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 124;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 126;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 127;
                     if (as_bool(logical_eq(nc,1))) {
                         {
                             fun_scalar_t__ theta_L_start;
                             (void) theta_L_start;  // dummy to suppress unused var warning
                             stan::math::initialize(theta_L_start, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 129;
                             stan::math::assign(theta_L_start, get_base1(theta_L,theta_L_mark,"theta_L",1));
-                            current_statement_begin__ = 130;
                             for (int s = b_mark; s <= ((b_mark + get_base1(l,i,"l",1)) - 1); ++s) {
-                                current_statement_begin__ = 131;
                                 stan::math::assign(get_base1_lhs(b,s,"b",1), (theta_L_start * get_base1(z_b,s,"z_b",1)));
                             }
-                            current_statement_begin__ = 132;
                             stan::math::assign(b_mark, (b_mark + get_base1(l,i,"l",1)));
-                            current_statement_begin__ = 133;
                             stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                         }
                     } else {
@@ -256,38 +211,25 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  T_i(nc,nc);
                             (void) T_i;  // dummy to suppress unused var warning
                             stan::math::initialize(T_i, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 137;
                             stan::math::assign(T_i, rep_matrix(0,nc,nc));
-                            current_statement_begin__ = 138;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 139;
                                 stan::math::assign(get_base1_lhs(T_i,c,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                current_statement_begin__ = 140;
                                 stan::math::assign(theta_L_mark, (theta_L_mark + 1));
-                                current_statement_begin__ = 141;
                                 for (int r = (c + 1); r <= nc; ++r) {
-                                    current_statement_begin__ = 142;
                                     stan::math::assign(get_base1_lhs(T_i,r,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                    current_statement_begin__ = 143;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 146;
                             for (int j = 1; j <= get_base1(l,i,"l",1); ++j) {
                                 {
                                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  temp(nc);
                                     (void) temp;  // dummy to suppress unused var warning
                                     stan::math::initialize(temp, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 148;
                                     stan::math::assign(temp, multiply(T_i,segment(z_b,b_mark,nc)));
-                                    current_statement_begin__ = 149;
                                     stan::math::assign(b_mark, (b_mark - 1));
-                                    current_statement_begin__ = 150;
                                     for (int s = 1; s <= nc; ++s) {
-                                        current_statement_begin__ = 150;
                                         stan::math::assign(get_base1_lhs(b,(b_mark + s),"b",1), get_base1(temp,s,"temp",1));
                                     }
-                                    current_statement_begin__ = 151;
                                     stan::math::assign(b_mark, ((b_mark + nc) + 1));
                                 }
                             }
@@ -295,7 +237,6 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                     }
                 }
             }
-            current_statement_begin__ = 155;
             return stan::math::promote_scalar<fun_return_scalar_t__>(b);
         }
     } catch (const std::exception& e) {
@@ -342,17 +283,11 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             (void) pos_reg;  // dummy to suppress unused var warning
             int pos_rho(0);
             (void) pos_rho;  // dummy to suppress unused var warning
-            current_statement_begin__ = 178;
             lp_accum__.add(normal_log<propto__>(z_b, 0, 1));
-            current_statement_begin__ = 179;
             lp_accum__.add(normal_log<propto__>(z_T, 0, 1));
-            current_statement_begin__ = 180;
             stan::math::assign(pos_reg, 1);
-            current_statement_begin__ = 181;
             stan::math::assign(pos_rho, 1);
-            current_statement_begin__ = 182;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 182;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
                     {
                         Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  shape1((get_base1(p,i,"p",1) - 1));
@@ -364,33 +299,21 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                         stan::math::initialize(shape1, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(shape2, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(nu, std::numeric_limits<double>::quiet_NaN());
-                        current_statement_begin__ = 186;
                         stan::math::assign(nu, (get_base1(regularization,pos_reg,"regularization",1) + (0.5 * (get_base1(p,i,"p",1) - 2))));
-                        current_statement_begin__ = 187;
                         stan::math::assign(pos_reg, (pos_reg + 1));
-                        current_statement_begin__ = 188;
                         stan::math::assign(get_base1_lhs(shape1,1,"shape1",1), nu);
-                        current_statement_begin__ = 189;
                         stan::math::assign(get_base1_lhs(shape2,1,"shape2",1), nu);
-                        current_statement_begin__ = 190;
                         for (int j = 2; j <= (get_base1(p,i,"p",1) - 1); ++j) {
-                            current_statement_begin__ = 191;
                             stan::math::assign(nu, (nu - 0.5));
-                            current_statement_begin__ = 192;
                             stan::math::assign(get_base1_lhs(shape1,j,"shape1",1), (0.5 * j));
-                            current_statement_begin__ = 193;
                             stan::math::assign(get_base1_lhs(shape2,j,"shape2",1), nu);
                         }
-                        current_statement_begin__ = 195;
                         lp_accum__.add(beta_log<propto__>(stan::model::rvalue(rho, stan::model::cons_list(stan::model::index_min_max(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 2)), stan::model::nil_index_list()), "rho"), shape1, shape2));
-                        current_statement_begin__ = 196;
                         stan::math::assign(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 1));
                     }
                 }
             }
-            current_statement_begin__ = 198;
             lp_accum__.add(gamma_log<propto__>(zeta, delta, 1));
-            current_statement_begin__ = 199;
             lp_accum__.add(gamma_log<propto__>(tau, shape, 1));
         }
     } catch (const std::exception& e) {
@@ -433,12 +356,9 @@ sqrt_vec(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y, std::ostream* pstream__
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  out(rows(y));
             (void) out;  // dummy to suppress unused var warning
             stan::math::initialize(out, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 210;
             for (int i = 1; i <= rows(y); ++i) {
-                current_statement_begin__ = 210;
                 stan::math::assign(get_base1_lhs(out,i,"out",1), sqrt(get_base1(out,i,"out",1)));
             }
-            current_statement_begin__ = 211;
             return stan::math::promote_scalar<fun_return_scalar_t__>(out);
         }
     } catch (const std::exception& e) {
@@ -476,14 +396,10 @@ hs_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             int K(0);
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 225;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 226;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 226;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 227;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(z_beta,lambda),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -526,16 +442,11 @@ hsplus_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(lambda_plus, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 242;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 243;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 244;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
-                current_statement_begin__ = 245;
                 stan::math::assign(get_base1_lhs(lambda_plus,k,"lambda_plus",1), (get_base1(get_base1(local,3,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,4,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 247;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(elt_multiply(z_beta,lambda),lambda_plus),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -572,12 +483,9 @@ divide_real_by_vector(const T0__& x,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ret(rows(y));
             (void) ret;  // dummy to suppress unused var warning
             stan::math::initialize(ret, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 259;
             for (int n = 1; n <= rows(y); ++n) {
-                current_statement_begin__ = 259;
                 stan::math::assign(get_base1_lhs(ret,n,"ret",1), (x / get_base1(y,n,"y",1)));
             }
-            current_statement_begin__ = 260;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ret);
         }
     } catch (const std::exception& e) {
@@ -613,47 +521,32 @@ linkinv_bern(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  pi(rows(eta));
             (void) pi;  // dummy to suppress unused var warning
             stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 274;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 275;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 275;
-            current_statement_begin__ = 277;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 278;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 278;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), inv_logit(get_base1(eta,n,"eta",1)));
                 }
             } else if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 280;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 280;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), Phi(get_base1(eta,n,"eta",1)));
                 }
             } else if (as_bool(logical_eq(link,3))) {
-                current_statement_begin__ = 282;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 282;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), cauchy_cdf(get_base1(eta,n,"eta",1),0.0,1.0));
                 }
             } else if (as_bool(logical_eq(link,4))) {
-                current_statement_begin__ = 284;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 284;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), exp(get_base1(eta,n,"eta",1)));
                 }
             } else if (as_bool(logical_eq(link,5))) {
-                current_statement_begin__ = 286;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 286;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), inv_cloglog(get_base1(eta,n,"eta",1)));
                 }
             }
-            current_statement_begin__ = 287;
             return stan::math::promote_scalar<fun_return_scalar_t__>(pi);
         }
     } catch (const std::exception& e) {
@@ -687,43 +580,29 @@ ll_bern_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta0,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 300;
         if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-            current_statement_begin__ = 301;
             std::stringstream errmsg_stream__;
             errmsg_stream__ << "Invalid link";
             throw std::domain_error(errmsg_stream__.str());
         }
-        current_statement_begin__ = 301;
-        current_statement_begin__ = 303;
         if (as_bool(logical_eq(link,1))) {
-            current_statement_begin__ = 306;
             lp_accum__.add(logistic_ccdf_log(eta0,0,1));
-            current_statement_begin__ = 307;
             lp_accum__.add(logistic_cdf_log(eta1,0,1));
         } else if (as_bool(logical_eq(link,2))) {
-            current_statement_begin__ = 310;
             lp_accum__.add(normal_ccdf_log(eta0,0,1));
-            current_statement_begin__ = 311;
             lp_accum__.add(normal_cdf_log(eta1,0,1));
         } else if (as_bool(logical_eq(link,3))) {
-            current_statement_begin__ = 314;
             lp_accum__.add(cauchy_ccdf_log(eta0,0,1));
-            current_statement_begin__ = 315;
             lp_accum__.add(cauchy_cdf_log(eta1,0,1));
         } else if (as_bool(logical_eq(link,4))) {
             {
                 Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  log_pi0(get_base1(N,1,"N",1));
                 (void) log_pi0;  // dummy to suppress unused var warning
                 stan::math::initialize(log_pi0, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 319;
                 for (int n = 1; n <= get_base1(N,1,"N",1); ++n) {
-                    current_statement_begin__ = 319;
                     stan::math::assign(get_base1_lhs(log_pi0,n,"log_pi0",1), log1m_exp(get_base1(eta0,n,"eta0",1)));
                 }
-                current_statement_begin__ = 320;
                 lp_accum__.add(log_pi0);
-                current_statement_begin__ = 321;
                 lp_accum__.add(eta1);
             }
         } else if (as_bool(logical_eq(link,5))) {
@@ -731,18 +610,13 @@ ll_bern_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta0,
                 Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  log_pi1(get_base1(N,2,"N",1));
                 (void) log_pi1;  // dummy to suppress unused var warning
                 stan::math::initialize(log_pi1, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 325;
                 for (int n = 1; n <= get_base1(N,2,"N",1); ++n) {
-                    current_statement_begin__ = 325;
                     stan::math::assign(get_base1_lhs(log_pi1,n,"log_pi1",1), log1m_exp(-(exp(get_base1(eta1,n,"eta1",1)))));
                 }
-                current_statement_begin__ = 326;
                 lp_accum__.add(log_pi1);
-                current_statement_begin__ = 327;
                 lp_accum__.add(minus(exp(eta0)));
             }
         }
-        current_statement_begin__ = 329;
         return stan::math::promote_scalar<fun_return_scalar_t__>(get_lp(lp__, lp_accum__));
     } catch (const std::exception& e) {
         stan::lang::rethrow_located(e,current_statement_begin__);
@@ -780,19 +654,13 @@ pw_bern(const int& y,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ll(rows(eta));
             (void) ll;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 343;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 344;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 344;
-            current_statement_begin__ = 346;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 347;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 347;
                     stan::math::assign(get_base1_lhs(ll,n,"ll",1), bernoulli_logit_log(y,get_base1(eta,n,"eta",1)));
                 }
             } else {
@@ -800,16 +668,12 @@ pw_bern(const int& y,
                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  pi(rows(eta));
                     (void) pi;  // dummy to suppress unused var warning
                     stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
-                    current_statement_begin__ = 352;
                     stan::math::assign(pi, linkinv_bern(eta,link, pstream__));
-                    current_statement_begin__ = 353;
                     for (int n = 1; n <= rows(eta); ++n) {
-                        current_statement_begin__ = 353;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), bernoulli_log(y,get_base1(pi,n,"pi",1)));
                     }
                 }
             }
-            current_statement_begin__ = 355;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
     } catch (const std::exception& e) {
@@ -882,6 +746,8 @@ private:
     int len_rho;
     vector<double> delta;
     int pos;
+    int t_any_124;
+    int t_all_124;
 public:
     model_bernoulli(stan::io::var_context& context__,
         std::ostream* pstream__ = 0)
@@ -1275,6 +1141,8 @@ public:
         validate_non_negative_index("delta", "len_concentration", len_concentration);
         delta = std::vector<double>(len_concentration,double(0));
         pos = int(0);
+        t_any_124 = int(0);
+        t_all_124 = int(0);
 
         double DUMMY_VAR__(std::numeric_limits<double>::quiet_NaN());
         (void) DUMMY_VAR__;  // suppress unused var warning
@@ -1288,46 +1156,46 @@ public:
         stan::math::fill(len_rho,DUMMY_VAR__);
         stan::math::fill(delta,DUMMY_VAR__);
         stan::math::fill(pos,DUMMY_VAR__);
+        stan::math::fill(t_any_124,DUMMY_VAR__);
+        stan::math::fill(t_all_124,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 433;
             if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 433;
                 stan::math::assign(hs, 0);
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 434;
                 stan::math::assign(hs, 2);
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 435;
                 stan::math::assign(hs, 4);
             }
-            current_statement_begin__ = 436;
             stan::math::assign(len_z_T, 0);
-            current_statement_begin__ = 437;
             stan::math::assign(len_var_group, (sum(p) * logical_gt(t,0)));
-            current_statement_begin__ = 438;
             stan::math::assign(len_rho, (sum(p) - t));
-            current_statement_begin__ = 439;
             stan::math::assign(pos, 1);
-            current_statement_begin__ = 440;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 441;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
-                    current_statement_begin__ = 442;
                     for (int j = 1; j <= get_base1(p,i,"p",1); ++j) {
-                        current_statement_begin__ = 443;
                         stan::math::assign(get_base1_lhs(delta,pos,"delta",1), get_base1(concentration,j,"concentration",1));
-                        current_statement_begin__ = 444;
                         stan::math::assign(pos, (pos + 1));
                     }
                 }
-                current_statement_begin__ = 447;
                 for (int j = 3; j <= get_base1(p,i,"p",1); ++j) {
-                    current_statement_begin__ = 447;
                     stan::math::assign(len_z_T, ((len_z_T + get_base1(p,i,"p",1)) - 1));
                 }
             }
-            current_statement_begin__ = 449;
+            if (as_bool(logical_eq(prior_dist,2))) {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 1);
+                for (int k = 1; k <= K; ++k) {
+                    if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                        stan::math::assign(t_any_124, 1);
+                    } else {
+                        stan::math::assign(t_all_124, 0);
+                    }
+                }
+            } else {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 0);
+            }
             stan::math::assign(NN, (get_base1(N,1,"N",1) + get_base1(N,2,"N",1)));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -1344,6 +1212,10 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
             check_greater_or_equal(function__,"delta[k0__]",delta[k0__],0);
         }
         check_greater_or_equal(function__,"pos",pos,1);
+        check_greater_or_equal(function__,"t_any_124",t_any_124,0);
+        check_less_or_equal(function__,"t_any_124",t_any_124,1);
+        check_greater_or_equal(function__,"t_all_124",t_all_124,0);
+        check_less_or_equal(function__,"t_all_124",t_all_124,1);
 
         // set parameter ranges
         num_params_r__ = 0U;
@@ -1622,25 +1494,48 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(theta_L,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 466;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 466;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 467;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        T__ P;
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, DUMMY_VAR__);
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                T__ q_a;
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, DUMMY_VAR__);
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 468;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 469;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 470;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 471;
                 stan::math::assign(theta_L, make_theta_L(len_theta_L,p,1.0,tau,scale,zeta,rho,z_T, pstream__));
-                current_statement_begin__ = 473;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -1686,134 +1581,98 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 stan::math::fill(eta1,DUMMY_VAR__);
                 stan::math::initialize(eta0, DUMMY_VAR__);
                 stan::math::initialize(eta1, DUMMY_VAR__);
-                current_statement_begin__ = 479;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 480;
                     stan::math::assign(eta0, multiply(X0,beta));
-                    current_statement_begin__ = 481;
                     stan::math::assign(eta1, multiply(X1,beta));
                 } else {
-                    current_statement_begin__ = 484;
                     stan::math::assign(eta0, rep_vector(0.0,get_base1(N,1,"N",1)));
-                    current_statement_begin__ = 485;
                     stan::math::assign(eta1, rep_vector(0.0,get_base1(N,2,"N",1)));
                 }
-                current_statement_begin__ = 487;
                 if (as_bool(logical_eq(has_intercept,0))) {
                     {
                         T__ tmp;
                         (void) tmp;  // dummy to suppress unused var warning
                         stan::math::initialize(tmp, DUMMY_VAR__);
-                        current_statement_begin__ = 489;
                         stan::math::assign(tmp, dot_product(xbar,beta));
-                        current_statement_begin__ = 490;
                         stan::math::assign(eta0, add(eta0,tmp));
-                        current_statement_begin__ = 491;
                         stan::math::assign(eta1, add(eta1,tmp));
                     }
                 }
-                current_statement_begin__ = 493;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 494;
                     stan::math::assign(eta0, add(eta0,offset0));
-                    current_statement_begin__ = 495;
                     stan::math::assign(eta1, add(eta1,offset1));
                 }
-                current_statement_begin__ = 497;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 498;
                     stan::math::assign(eta0, add(eta0,csr_matrix_times_vector(get_base1(N,1,"N",1),q,w0,v0,u0,b)));
-                    current_statement_begin__ = 499;
                     stan::math::assign(eta1, add(eta1,csr_matrix_times_vector(get_base1(N,2,"N",1),q,w1,v1,u1,b)));
                 }
-                current_statement_begin__ = 501;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 502;
                     if (as_bool(logical_neq(link,4))) {
-                        current_statement_begin__ = 503;
                         stan::math::assign(eta0, add(get_base1(gamma,1,"gamma",1),eta0));
-                        current_statement_begin__ = 504;
                         stan::math::assign(eta1, add(get_base1(gamma,1,"gamma",1),eta1));
                     } else {
                         {
                             T__ shift;
                             (void) shift;  // dummy to suppress unused var warning
                             stan::math::initialize(shift, DUMMY_VAR__);
-                            current_statement_begin__ = 508;
                             stan::math::assign(shift, fmax(max(eta0),max(eta1)));
-                            current_statement_begin__ = 509;
                             stan::math::assign(eta0, subtract(add(get_base1(gamma,1,"gamma",1),eta0),shift));
-                            current_statement_begin__ = 510;
                             stan::math::assign(eta1, subtract(add(get_base1(gamma,1,"gamma",1),eta1),shift));
                         }
                     }
                 }
-                current_statement_begin__ = 514;
                 if (as_bool((primitive_value(logical_eq(has_weights,0)) && primitive_value(logical_eq(prior_PD,0))))) {
                     {
                         T__ dummy;
                         (void) dummy;  // dummy to suppress unused var warning
                         stan::math::initialize(dummy, DUMMY_VAR__);
-                        current_statement_begin__ = 516;
                         stan::math::assign(dummy, ll_bern_lp(eta0,eta1,link,N, lp__, lp_accum__, pstream__));
                     }
                 } else if (as_bool(logical_eq(prior_PD,0))) {
-                    current_statement_begin__ = 519;
                     lp_accum__.add(dot_product(weights0,pw_bern(0,eta0,link, pstream__)));
-                    current_statement_begin__ = 520;
                     lp_accum__.add(dot_product(weights1,pw_bern(1,eta1,link, pstream__)));
                 }
-                current_statement_begin__ = 524;
                 if (as_bool(logical_eq(prior_dist,1))) {
-                    current_statement_begin__ = 524;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
                 } else if (as_bool(logical_eq(prior_dist,2))) {
-                    current_statement_begin__ = 525;
-                    lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    if (as_bool(t_all_124)) {
+                        lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
+                    } else if (as_bool(t_any_124)) {
+                        for (int k = 1; k <= K; ++k) {
+                            if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                                lp_accum__.add(normal_log<propto__>(get_base1(z_beta,k,"z_beta",1), 0, 1));
+                            } else {
+                                lp_accum__.add(student_t_log<propto__>(get_base1(z_beta,k,"z_beta",1), get_base1(prior_df,k,"prior_df",1), 0, 1));
+                            }
+                        }
+                    } else {
+                        lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    }
                 } else if (as_bool(logical_eq(prior_dist,3))) {
-                    current_statement_begin__ = 527;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 528;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 529;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 530;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 531;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 } else if (as_bool(logical_eq(prior_dist,4))) {
-                    current_statement_begin__ = 534;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 535;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 536;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 537;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,3,"local",1), 0, 1));
-                    current_statement_begin__ = 539;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,4,"local",1), multiply(0.5,prior_scale), multiply(0.5,prior_scale)));
-                    current_statement_begin__ = 540;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 541;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 }
-                current_statement_begin__ = 546;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 547;
                     if (as_bool(logical_eq(prior_dist_for_intercept,1))) {
-                        current_statement_begin__ = 548;
                         lp_accum__.add(normal_log<propto__>(gamma, prior_mean_for_intercept, prior_scale_for_intercept));
                     } else if (as_bool(logical_eq(prior_dist_for_intercept,2))) {
-                        current_statement_begin__ = 550;
                         lp_accum__.add(student_t_log<propto__>(gamma, prior_df_for_intercept, prior_mean_for_intercept, prior_scale_for_intercept));
                     }
                 }
-                current_statement_begin__ = 554;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 554;
                     decov_lp(z_b,z_T,rho,zeta,tau,regularization,delta,shape,t,p, lp__, lp_accum__, pstream__);
                 }
-                current_statement_begin__ = 555;
             }
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -1982,25 +1841,48 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         (void) theta_L;  // dummy to suppress unused var warning
 
         try {
-            current_statement_begin__ = 466;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 466;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 467;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        double P(0.0);
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, std::numeric_limits<double>::quiet_NaN());
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                double q_a(0.0);
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, std::numeric_limits<double>::quiet_NaN());
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 468;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 469;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 470;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 471;
                 stan::math::assign(theta_L, make_theta_L(len_theta_L,p,1.0,tau,scale,zeta,rho,z_T, pstream__));
-                current_statement_begin__ = 473;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -2037,12 +1919,9 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(mean_PPD,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 560;
             if (as_bool(logical_eq(has_intercept,1))) {
-                current_statement_begin__ = 561;
                 stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(gamma,1,"gamma",1) - dot_product(xbar,beta)));
             }
-            current_statement_begin__ = 563;
             stan::math::assign(mean_PPD, 0);
             {
                 vector_d pi0(get_base1(N,1,"N",1));
@@ -2057,85 +1936,55 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 stan::math::initialize(pi1, std::numeric_limits<double>::quiet_NaN());
                 stan::math::initialize(eta0, std::numeric_limits<double>::quiet_NaN());
                 stan::math::initialize(eta1, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 569;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 570;
                     stan::math::assign(eta0, multiply(X0,beta));
-                    current_statement_begin__ = 571;
                     stan::math::assign(eta1, multiply(X1,beta));
                 } else {
-                    current_statement_begin__ = 574;
                     stan::math::assign(eta0, rep_vector(0.0,get_base1(N,1,"N",1)));
-                    current_statement_begin__ = 575;
                     stan::math::assign(eta1, rep_vector(0.0,get_base1(N,2,"N",1)));
                 }
-                current_statement_begin__ = 577;
                 if (as_bool(logical_eq(has_intercept,0))) {
                     {
                         double tmp(0.0);
                         (void) tmp;  // dummy to suppress unused var warning
                         stan::math::initialize(tmp, std::numeric_limits<double>::quiet_NaN());
-                        current_statement_begin__ = 579;
                         stan::math::assign(tmp, dot_product(xbar,beta));
-                        current_statement_begin__ = 580;
                         stan::math::assign(eta0, add(eta0,tmp));
-                        current_statement_begin__ = 581;
                         stan::math::assign(eta1, add(eta1,tmp));
                     }
                 }
-                current_statement_begin__ = 583;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 584;
                     stan::math::assign(eta0, add(eta0,offset0));
-                    current_statement_begin__ = 585;
                     stan::math::assign(eta1, add(eta1,offset1));
                 }
-                current_statement_begin__ = 587;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 588;
                     stan::math::assign(eta0, add(eta0,csr_matrix_times_vector(get_base1(N,1,"N",1),q,w0,v0,u0,b)));
-                    current_statement_begin__ = 589;
                     stan::math::assign(eta1, add(eta1,csr_matrix_times_vector(get_base1(N,2,"N",1),q,w1,v1,u1,b)));
                 }
-                current_statement_begin__ = 591;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 592;
                     if (as_bool(logical_neq(link,4))) {
-                        current_statement_begin__ = 593;
                         stan::math::assign(eta0, add(get_base1(gamma,1,"gamma",1),eta0));
-                        current_statement_begin__ = 594;
                         stan::math::assign(eta1, add(get_base1(gamma,1,"gamma",1),eta1));
                     } else {
                         {
                             double shift(0.0);
                             (void) shift;  // dummy to suppress unused var warning
                             stan::math::initialize(shift, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 598;
                             stan::math::assign(shift, fmax(max(eta0),max(eta1)));
-                            current_statement_begin__ = 599;
                             stan::math::assign(eta0, subtract(add(get_base1(gamma,1,"gamma",1),eta0),shift));
-                            current_statement_begin__ = 600;
                             stan::math::assign(eta1, subtract(add(get_base1(gamma,1,"gamma",1),eta1),shift));
-                            current_statement_begin__ = 601;
                             stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(alpha,1,"alpha",1) - shift));
                         }
                     }
                 }
-                current_statement_begin__ = 604;
                 stan::math::assign(pi0, linkinv_bern(eta0,link, pstream__));
-                current_statement_begin__ = 605;
                 stan::math::assign(pi1, linkinv_bern(eta1,link, pstream__));
-                current_statement_begin__ = 606;
                 for (int n = 1; n <= get_base1(N,1,"N",1); ++n) {
-                    current_statement_begin__ = 606;
                     stan::math::assign(mean_PPD, (mean_PPD + bernoulli_rng(get_base1(pi0,n,"pi0",1), base_rng__)));
                 }
-                current_statement_begin__ = 607;
                 for (int n = 1; n <= get_base1(N,2,"N",1); ++n) {
-                    current_statement_begin__ = 607;
                     stan::math::assign(mean_PPD, (mean_PPD + bernoulli_rng(get_base1(pi1,n,"pi1",1), base_rng__)));
                 }
-                current_statement_begin__ = 608;
                 stan::math::assign(mean_PPD, (mean_PPD / NN));
             }
         } catch (const std::exception& e) {
@@ -2394,26 +2243,17 @@ make_theta_L(const int& len_theta_L,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(theta_L, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 47;
             stan::math::assign(zeta_mark, 1);
-            current_statement_begin__ = 48;
             stan::math::assign(rho_mark, 1);
-            current_statement_begin__ = 49;
             stan::math::assign(z_T_mark, 1);
-            current_statement_begin__ = 50;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 53;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 55;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 56;
                     if (as_bool(logical_eq(nc,1))) {
-                        current_statement_begin__ = 57;
                         stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), ((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion));
-                        current_statement_begin__ = 59;
                         stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                     } else {
                         {
@@ -2432,29 +2272,17 @@ make_theta_L(const int& len_theta_L,
                             stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(std_dev, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(T21, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 68;
                             stan::math::assign(trace_T_i, (square(((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion)) * nc));
-                            current_statement_begin__ = 70;
                             stan::math::assign(pi, segment(zeta,zeta_mark,nc));
-                            current_statement_begin__ = 71;
                             stan::math::assign(pi, divide(pi,sum(pi)));
-                            current_statement_begin__ = 72;
                             stan::math::assign(zeta_mark, (zeta_mark + nc));
-                            current_statement_begin__ = 73;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,1,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 74;
                             stan::math::assign(get_base1_lhs(T_i,1,1,"T_i",1), std_dev);
-                            current_statement_begin__ = 77;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,2,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 78;
                             stan::math::assign(T21, ((2.0 * get_base1(rho,rho_mark,"rho",1)) - 1.0));
-                            current_statement_begin__ = 79;
                             stan::math::assign(rho_mark, (rho_mark + 1));
-                            current_statement_begin__ = 80;
                             stan::math::assign(get_base1_lhs(T_i,2,2,"T_i",1), (std_dev * sqrt((1.0 - square(T21)))));
-                            current_statement_begin__ = 81;
                             stan::math::assign(get_base1_lhs(T_i,2,1,"T_i",1), (std_dev * T21));
-                            current_statement_begin__ = 83;
                             for (int r = 2; r <= (nc - 1); ++r) {
                                 {
                                     int rp1(0);
@@ -2465,34 +2293,21 @@ make_theta_L(const int& len_theta_L,
                                     (void) scale_factor;  // dummy to suppress unused var warning
                                     stan::math::initialize(T_row, std::numeric_limits<double>::quiet_NaN());
                                     stan::math::initialize(scale_factor, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 87;
                                     stan::math::assign(T_row, segment(z_T,z_T_mark,r));
-                                    current_statement_begin__ = 88;
                                     stan::math::assign(z_T_mark, (z_T_mark + r));
-                                    current_statement_begin__ = 89;
                                     stan::math::assign(rp1, (r + 1));
-                                    current_statement_begin__ = 90;
                                     stan::math::assign(std_dev, sqrt((get_base1(pi,rp1,"pi",1) * trace_T_i)));
-                                    current_statement_begin__ = 91;
                                     stan::math::assign(scale_factor, (sqrt((get_base1(rho,rho_mark,"rho",1) / dot_self(T_row))) * std_dev));
-                                    current_statement_begin__ = 92;
                                     for (int c = 1; c <= r; ++c) {
-                                        current_statement_begin__ = 92;
                                         stan::math::assign(get_base1_lhs(T_i,rp1,c,"T_i",1), (get_base1(T_row,c,"T_row",1) * scale_factor));
                                     }
-                                    current_statement_begin__ = 93;
                                     stan::math::assign(get_base1_lhs(T_i,rp1,rp1,"T_i",1), (sqrt((1.0 - get_base1(rho,rho_mark,"rho",1))) * std_dev));
-                                    current_statement_begin__ = 94;
                                     stan::math::assign(rho_mark, (rho_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 98;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 98;
                                 for (int r = c; r <= nc; ++r) {
-                                    current_statement_begin__ = 99;
                                     stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), get_base1(T_i,r,c,"T_i",1));
-                                    current_statement_begin__ = 100;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
@@ -2500,7 +2315,6 @@ make_theta_L(const int& len_theta_L,
                     }
                 }
             }
-            current_statement_begin__ = 104;
             return stan::math::promote_scalar<fun_return_scalar_t__>(theta_L);
         }
     } catch (const std::exception& e) {
@@ -2548,33 +2362,23 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(b, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 122;
             stan::math::assign(b_mark, 1);
-            current_statement_begin__ = 123;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 124;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 126;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 127;
                     if (as_bool(logical_eq(nc,1))) {
                         {
                             fun_scalar_t__ theta_L_start;
                             (void) theta_L_start;  // dummy to suppress unused var warning
                             stan::math::initialize(theta_L_start, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 129;
                             stan::math::assign(theta_L_start, get_base1(theta_L,theta_L_mark,"theta_L",1));
-                            current_statement_begin__ = 130;
                             for (int s = b_mark; s <= ((b_mark + get_base1(l,i,"l",1)) - 1); ++s) {
-                                current_statement_begin__ = 131;
                                 stan::math::assign(get_base1_lhs(b,s,"b",1), (theta_L_start * get_base1(z_b,s,"z_b",1)));
                             }
-                            current_statement_begin__ = 132;
                             stan::math::assign(b_mark, (b_mark + get_base1(l,i,"l",1)));
-                            current_statement_begin__ = 133;
                             stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                         }
                     } else {
@@ -2582,38 +2386,25 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  T_i(nc,nc);
                             (void) T_i;  // dummy to suppress unused var warning
                             stan::math::initialize(T_i, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 137;
                             stan::math::assign(T_i, rep_matrix(0,nc,nc));
-                            current_statement_begin__ = 138;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 139;
                                 stan::math::assign(get_base1_lhs(T_i,c,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                current_statement_begin__ = 140;
                                 stan::math::assign(theta_L_mark, (theta_L_mark + 1));
-                                current_statement_begin__ = 141;
                                 for (int r = (c + 1); r <= nc; ++r) {
-                                    current_statement_begin__ = 142;
                                     stan::math::assign(get_base1_lhs(T_i,r,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                    current_statement_begin__ = 143;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 146;
                             for (int j = 1; j <= get_base1(l,i,"l",1); ++j) {
                                 {
                                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  temp(nc);
                                     (void) temp;  // dummy to suppress unused var warning
                                     stan::math::initialize(temp, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 148;
                                     stan::math::assign(temp, multiply(T_i,segment(z_b,b_mark,nc)));
-                                    current_statement_begin__ = 149;
                                     stan::math::assign(b_mark, (b_mark - 1));
-                                    current_statement_begin__ = 150;
                                     for (int s = 1; s <= nc; ++s) {
-                                        current_statement_begin__ = 150;
                                         stan::math::assign(get_base1_lhs(b,(b_mark + s),"b",1), get_base1(temp,s,"temp",1));
                                     }
-                                    current_statement_begin__ = 151;
                                     stan::math::assign(b_mark, ((b_mark + nc) + 1));
                                 }
                             }
@@ -2621,7 +2412,6 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                     }
                 }
             }
-            current_statement_begin__ = 155;
             return stan::math::promote_scalar<fun_return_scalar_t__>(b);
         }
     } catch (const std::exception& e) {
@@ -2668,17 +2458,11 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             (void) pos_reg;  // dummy to suppress unused var warning
             int pos_rho(0);
             (void) pos_rho;  // dummy to suppress unused var warning
-            current_statement_begin__ = 178;
             lp_accum__.add(normal_log<propto__>(z_b, 0, 1));
-            current_statement_begin__ = 179;
             lp_accum__.add(normal_log<propto__>(z_T, 0, 1));
-            current_statement_begin__ = 180;
             stan::math::assign(pos_reg, 1);
-            current_statement_begin__ = 181;
             stan::math::assign(pos_rho, 1);
-            current_statement_begin__ = 182;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 182;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
                     {
                         Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  shape1((get_base1(p,i,"p",1) - 1));
@@ -2690,33 +2474,21 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                         stan::math::initialize(shape1, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(shape2, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(nu, std::numeric_limits<double>::quiet_NaN());
-                        current_statement_begin__ = 186;
                         stan::math::assign(nu, (get_base1(regularization,pos_reg,"regularization",1) + (0.5 * (get_base1(p,i,"p",1) - 2))));
-                        current_statement_begin__ = 187;
                         stan::math::assign(pos_reg, (pos_reg + 1));
-                        current_statement_begin__ = 188;
                         stan::math::assign(get_base1_lhs(shape1,1,"shape1",1), nu);
-                        current_statement_begin__ = 189;
                         stan::math::assign(get_base1_lhs(shape2,1,"shape2",1), nu);
-                        current_statement_begin__ = 190;
                         for (int j = 2; j <= (get_base1(p,i,"p",1) - 1); ++j) {
-                            current_statement_begin__ = 191;
                             stan::math::assign(nu, (nu - 0.5));
-                            current_statement_begin__ = 192;
                             stan::math::assign(get_base1_lhs(shape1,j,"shape1",1), (0.5 * j));
-                            current_statement_begin__ = 193;
                             stan::math::assign(get_base1_lhs(shape2,j,"shape2",1), nu);
                         }
-                        current_statement_begin__ = 195;
                         lp_accum__.add(beta_log<propto__>(stan::model::rvalue(rho, stan::model::cons_list(stan::model::index_min_max(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 2)), stan::model::nil_index_list()), "rho"), shape1, shape2));
-                        current_statement_begin__ = 196;
                         stan::math::assign(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 1));
                     }
                 }
             }
-            current_statement_begin__ = 198;
             lp_accum__.add(gamma_log<propto__>(zeta, delta, 1));
-            current_statement_begin__ = 199;
             lp_accum__.add(gamma_log<propto__>(tau, shape, 1));
         }
     } catch (const std::exception& e) {
@@ -2759,12 +2531,9 @@ sqrt_vec(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y, std::ostream* pstream__
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  out(rows(y));
             (void) out;  // dummy to suppress unused var warning
             stan::math::initialize(out, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 210;
             for (int i = 1; i <= rows(y); ++i) {
-                current_statement_begin__ = 210;
                 stan::math::assign(get_base1_lhs(out,i,"out",1), sqrt(get_base1(out,i,"out",1)));
             }
-            current_statement_begin__ = 211;
             return stan::math::promote_scalar<fun_return_scalar_t__>(out);
         }
     } catch (const std::exception& e) {
@@ -2802,14 +2571,10 @@ hs_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             int K(0);
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 225;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 226;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 226;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 227;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(z_beta,lambda),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -2852,16 +2617,11 @@ hsplus_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(lambda_plus, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 242;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 243;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 244;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
-                current_statement_begin__ = 245;
                 stan::math::assign(get_base1_lhs(lambda_plus,k,"lambda_plus",1), (get_base1(get_base1(local,3,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,4,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 247;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(elt_multiply(z_beta,lambda),lambda_plus),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -2898,12 +2658,9 @@ divide_real_by_vector(const T0__& x,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ret(rows(y));
             (void) ret;  // dummy to suppress unused var warning
             stan::math::initialize(ret, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 259;
             for (int n = 1; n <= rows(y); ++n) {
-                current_statement_begin__ = 259;
                 stan::math::assign(get_base1_lhs(ret,n,"ret",1), (x / get_base1(y,n,"y",1)));
             }
-            current_statement_begin__ = 260;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ret);
         }
     } catch (const std::exception& e) {
@@ -2939,47 +2696,32 @@ linkinv_binom(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  pi(rows(eta));
             (void) pi;  // dummy to suppress unused var warning
             stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 273;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 274;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 274;
-            current_statement_begin__ = 276;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 277;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 277;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), inv_logit(get_base1(eta,n,"eta",1)));
                 }
             } else if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 279;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 279;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), Phi(get_base1(eta,n,"eta",1)));
                 }
             } else if (as_bool(logical_eq(link,3))) {
-                current_statement_begin__ = 281;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 281;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), cauchy_cdf(get_base1(eta,n,"eta",1),0.0,1.0));
                 }
             } else if (as_bool(logical_eq(link,4))) {
-                current_statement_begin__ = 283;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 283;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), exp(get_base1(eta,n,"eta",1)));
                 }
             } else if (as_bool(logical_eq(link,5))) {
-                current_statement_begin__ = 285;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 285;
                     stan::math::assign(get_base1_lhs(pi,n,"pi",1), inv_cloglog(get_base1(eta,n,"eta",1)));
                 }
             }
-            current_statement_begin__ = 286;
             return stan::math::promote_scalar<fun_return_scalar_t__>(pi);
         }
     } catch (const std::exception& e) {
@@ -3013,27 +2755,18 @@ ll_binom_lp(const std::vector<int>& y,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 298;
         if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-            current_statement_begin__ = 299;
             std::stringstream errmsg_stream__;
             errmsg_stream__ << "Invalid link";
             throw std::domain_error(errmsg_stream__.str());
         }
-        current_statement_begin__ = 299;
-        current_statement_begin__ = 301;
         if (as_bool(logical_eq(link,1))) {
-            current_statement_begin__ = 301;
             lp_accum__.add(binomial_logit_log<propto__>(y, trials, eta));
         } else if (as_bool(logical_lt(link,4))) {
-            current_statement_begin__ = 302;
             lp_accum__.add(binomial_log<propto__>(y, trials, linkinv_binom(eta,link, pstream__)));
         } else if (as_bool(logical_eq(link,4))) {
-            current_statement_begin__ = 304;
             for (int n = 1; n <= num_elements(y); ++n) {
-                current_statement_begin__ = 305;
                 lp_accum__.add((get_base1(y,n,"y",1) * get_base1(eta,n,"eta",1)));
-                current_statement_begin__ = 306;
                 lp_accum__.add(((get_base1(trials,n,"trials",1) - get_base1(y,n,"y",1)) * log1m_exp(get_base1(eta,n,"eta",1))));
             }
         } else if (as_bool(logical_eq(link,5))) {
@@ -3041,18 +2774,13 @@ ll_binom_lp(const std::vector<int>& y,
                 fun_scalar_t__ neg_exp_eta;
                 (void) neg_exp_eta;  // dummy to suppress unused var warning
                 stan::math::initialize(neg_exp_eta, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 311;
                 for (int n = 1; n <= num_elements(y); ++n) {
-                    current_statement_begin__ = 312;
                     stan::math::assign(neg_exp_eta, -(exp(get_base1(eta,n,"eta",1))));
-                    current_statement_begin__ = 313;
                     lp_accum__.add((get_base1(y,n,"y",1) * log1m_exp(neg_exp_eta)));
-                    current_statement_begin__ = 314;
                     lp_accum__.add(((get_base1(trials,n,"trials",1) - get_base1(y,n,"y",1)) * neg_exp_eta));
                 }
             }
         }
-        current_statement_begin__ = 317;
         return stan::math::promote_scalar<fun_return_scalar_t__>(get_lp(lp__, lp_accum__));
     } catch (const std::exception& e) {
         stan::lang::rethrow_located(e,current_statement_begin__);
@@ -3091,19 +2819,13 @@ pw_binom(const std::vector<int>& y,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ll(rows(eta));
             (void) ll;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 329;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 329;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 329;
-            current_statement_begin__ = 330;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 331;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 332;
                     stan::math::assign(get_base1_lhs(ll,n,"ll",1), binomial_logit_log(get_base1(y,n,"y",1),get_base1(trials,n,"trials",1),get_base1(eta,n,"eta",1)));
                 }
             } else {
@@ -3111,16 +2833,12 @@ pw_binom(const std::vector<int>& y,
                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  pi(rows(eta));
                     (void) pi;  // dummy to suppress unused var warning
                     stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
-                    current_statement_begin__ = 336;
                     stan::math::assign(pi, linkinv_binom(eta,link, pstream__));
-                    current_statement_begin__ = 337;
                     for (int n = 1; n <= rows(eta); ++n) {
-                        current_statement_begin__ = 337;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), binomial_log(get_base1(y,n,"y",1),get_base1(trials,n,"trials",1),get_base1(pi,n,"pi",1)));
                     }
                 }
             }
-            current_statement_begin__ = 339;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
     } catch (const std::exception& e) {
@@ -3189,6 +2907,8 @@ private:
     int len_rho;
     vector<double> delta;
     int pos;
+    int t_any_124;
+    int t_all_124;
 public:
     model_binomial(stan::io::var_context& context__,
         std::ostream* pstream__ = 0)
@@ -3529,6 +3249,8 @@ public:
         validate_non_negative_index("delta", "len_concentration", len_concentration);
         delta = std::vector<double>(len_concentration,double(0));
         pos = int(0);
+        t_any_124 = int(0);
+        t_all_124 = int(0);
 
         double DUMMY_VAR__(std::numeric_limits<double>::quiet_NaN());
         (void) DUMMY_VAR__;  // suppress unused var warning
@@ -3541,44 +3263,45 @@ public:
         stan::math::fill(len_rho,DUMMY_VAR__);
         stan::math::fill(delta,DUMMY_VAR__);
         stan::math::fill(pos,DUMMY_VAR__);
+        stan::math::fill(t_any_124,DUMMY_VAR__);
+        stan::math::fill(t_all_124,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 410;
             if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 410;
                 stan::math::assign(hs, 0);
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 411;
                 stan::math::assign(hs, 2);
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 412;
                 stan::math::assign(hs, 4);
             }
-            current_statement_begin__ = 413;
             stan::math::assign(len_z_T, 0);
-            current_statement_begin__ = 414;
             stan::math::assign(len_var_group, (sum(p) * logical_gt(t,0)));
-            current_statement_begin__ = 415;
             stan::math::assign(len_rho, (sum(p) - t));
-            current_statement_begin__ = 416;
             stan::math::assign(pos, 1);
-            current_statement_begin__ = 417;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 418;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
-                    current_statement_begin__ = 419;
                     for (int j = 1; j <= get_base1(p,i,"p",1); ++j) {
-                        current_statement_begin__ = 420;
                         stan::math::assign(get_base1_lhs(delta,pos,"delta",1), get_base1(concentration,j,"concentration",1));
-                        current_statement_begin__ = 421;
                         stan::math::assign(pos, (pos + 1));
                     }
                 }
-                current_statement_begin__ = 424;
                 for (int j = 3; j <= get_base1(p,i,"p",1); ++j) {
-                    current_statement_begin__ = 424;
                     stan::math::assign(len_z_T, ((len_z_T + get_base1(p,i,"p",1)) - 1));
                 }
+            }
+            if (as_bool(logical_eq(prior_dist,2))) {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 1);
+                for (int k = 1; k <= K; ++k) {
+                    if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                        stan::math::assign(t_any_124, 1);
+                    } else {
+                        stan::math::assign(t_all_124, 0);
+                    }
+                }
+            } else {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 0);
             }
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -3595,6 +3318,10 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
             check_greater_or_equal(function__,"delta[k0__]",delta[k0__],0);
         }
         check_greater_or_equal(function__,"pos",pos,1);
+        check_greater_or_equal(function__,"t_any_124",t_any_124,0);
+        check_less_or_equal(function__,"t_any_124",t_any_124,1);
+        check_greater_or_equal(function__,"t_all_124",t_all_124,0);
+        check_less_or_equal(function__,"t_all_124",t_all_124,1);
 
         // set parameter ranges
         num_params_r__ = 0U;
@@ -3873,25 +3600,48 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(theta_L,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 442;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 442;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 443;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        T__ P;
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, DUMMY_VAR__);
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                T__ q_a;
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, DUMMY_VAR__);
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 444;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 445;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 446;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 447;
                 stan::math::assign(theta_L, make_theta_L(len_theta_L,p,1.0,tau,scale,zeta,rho,z_T, pstream__));
-                current_statement_begin__ = 449;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -3933,102 +3683,77 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::fill(eta,DUMMY_VAR__);
                 stan::math::initialize(eta, DUMMY_VAR__);
-                current_statement_begin__ = 454;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 454;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 455;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 456;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 456;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 457;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 457;
                     stan::math::assign(eta, add(eta,csr_matrix_times_vector(N,q,w,v,u,b)));
                 }
-                current_statement_begin__ = 458;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 459;
                     if (as_bool(logical_neq(link,4))) {
-                        current_statement_begin__ = 459;
                         stan::math::assign(eta, add(eta,get_base1(gamma,1,"gamma",1)));
                     } else {
-                        current_statement_begin__ = 460;
                         stan::math::assign(eta, subtract(add(get_base1(gamma,1,"gamma",1),eta),max(eta)));
                     }
                 } else {
-                    current_statement_begin__ = 464;
                     stan::math::assign(eta, add(eta,dot_product(xbar,beta)));
                 }
-                current_statement_begin__ = 468;
                 if (as_bool((primitive_value(logical_eq(has_weights,0)) && primitive_value(logical_eq(prior_PD,0))))) {
                     {
                         T__ dummy;
                         (void) dummy;  // dummy to suppress unused var warning
                         stan::math::initialize(dummy, DUMMY_VAR__);
-                        current_statement_begin__ = 470;
                         stan::math::assign(dummy, ll_binom_lp(y,trials,eta,link, lp__, lp_accum__, pstream__));
                     }
                 } else if (as_bool(logical_eq(prior_PD,0))) {
-                    current_statement_begin__ = 473;
                     lp_accum__.add(dot_product(weights,pw_binom(y,trials,eta,link, pstream__)));
                 }
-                current_statement_begin__ = 476;
                 if (as_bool(logical_eq(prior_dist,1))) {
-                    current_statement_begin__ = 476;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
                 } else if (as_bool(logical_eq(prior_dist,2))) {
-                    current_statement_begin__ = 477;
-                    lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    if (as_bool(t_all_124)) {
+                        lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
+                    } else if (as_bool(t_any_124)) {
+                        for (int k = 1; k <= K; ++k) {
+                            if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                                lp_accum__.add(normal_log<propto__>(get_base1(z_beta,k,"z_beta",1), 0, 1));
+                            } else {
+                                lp_accum__.add(student_t_log<propto__>(get_base1(z_beta,k,"z_beta",1), get_base1(prior_df,k,"prior_df",1), 0, 1));
+                            }
+                        }
+                    } else {
+                        lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    }
                 } else if (as_bool(logical_eq(prior_dist,3))) {
-                    current_statement_begin__ = 479;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 480;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 481;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 482;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 483;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 } else if (as_bool(logical_eq(prior_dist,4))) {
-                    current_statement_begin__ = 486;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 487;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 488;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 489;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,3,"local",1), 0, 1));
-                    current_statement_begin__ = 491;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,4,"local",1), multiply(0.5,prior_scale), multiply(0.5,prior_scale)));
-                    current_statement_begin__ = 492;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 493;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 }
-                current_statement_begin__ = 498;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 499;
                     if (as_bool(logical_eq(prior_dist_for_intercept,1))) {
-                        current_statement_begin__ = 500;
                         lp_accum__.add(normal_log<propto__>(gamma, prior_mean_for_intercept, prior_scale_for_intercept));
                     } else if (as_bool(logical_eq(prior_dist_for_intercept,2))) {
-                        current_statement_begin__ = 502;
                         lp_accum__.add(student_t_log<propto__>(gamma, prior_df_for_intercept, prior_mean_for_intercept, prior_scale_for_intercept));
                     }
                 }
-                current_statement_begin__ = 507;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 507;
                     decov_lp(z_b,z_T,rho,zeta,tau,regularization,delta,shape,t,p, lp__, lp_accum__, pstream__);
                 }
-                current_statement_begin__ = 508;
             }
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -4197,25 +3922,48 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         (void) theta_L;  // dummy to suppress unused var warning
 
         try {
-            current_statement_begin__ = 442;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 442;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 443;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        double P(0.0);
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, std::numeric_limits<double>::quiet_NaN());
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                double q_a(0.0);
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, std::numeric_limits<double>::quiet_NaN());
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 444;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 445;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 446;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 447;
                 stan::math::assign(theta_L, make_theta_L(len_theta_L,p,1.0,tau,scale,zeta,rho,z_T, pstream__));
-                current_statement_begin__ = 449;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -4252,12 +4000,9 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(mean_PPD,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 513;
             if (as_bool(logical_eq(has_intercept,1))) {
-                current_statement_begin__ = 513;
                 stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(gamma,1,"gamma",1) - dot_product(xbar,beta)));
             }
-            current_statement_begin__ = 514;
             stan::math::assign(mean_PPD, 0);
             {
                 vector_d pi(N);
@@ -4266,55 +4011,37 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
                 stan::math::initialize(eta, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 518;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 518;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 519;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 520;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 520;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 521;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 521;
                     stan::math::assign(eta, add(eta,csr_matrix_times_vector(N,q,w,v,u,b)));
                 }
-                current_statement_begin__ = 522;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 523;
                     if (as_bool(logical_neq(link,4))) {
-                        current_statement_begin__ = 523;
                         stan::math::assign(eta, add(eta,get_base1(gamma,1,"gamma",1)));
                     } else {
                         {
                             double shift(0.0);
                             (void) shift;  // dummy to suppress unused var warning
                             stan::math::initialize(shift, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 526;
                             stan::math::assign(shift, max(eta));
-                            current_statement_begin__ = 527;
                             stan::math::assign(eta, subtract(add(get_base1(gamma,1,"gamma",1),eta),shift));
-                            current_statement_begin__ = 528;
                             stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(alpha,1,"alpha",1) - shift));
                         }
                     }
                 } else {
-                    current_statement_begin__ = 533;
                     stan::math::assign(eta, add(eta,dot_product(xbar,beta)));
                 }
-                current_statement_begin__ = 536;
                 stan::math::assign(pi, linkinv_binom(eta,link, pstream__));
-                current_statement_begin__ = 537;
                 for (int n = 1; n <= N; ++n) {
-                    current_statement_begin__ = 537;
                     stan::math::assign(mean_PPD, (mean_PPD + binomial_rng(get_base1(trials,n,"trials",1),get_base1(pi,n,"pi",1), base_rng__)));
                 }
-                current_statement_begin__ = 538;
                 stan::math::assign(mean_PPD, (mean_PPD / N));
             }
         } catch (const std::exception& e) {
@@ -4573,26 +4300,17 @@ make_theta_L(const int& len_theta_L,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(theta_L, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 47;
             stan::math::assign(zeta_mark, 1);
-            current_statement_begin__ = 48;
             stan::math::assign(rho_mark, 1);
-            current_statement_begin__ = 49;
             stan::math::assign(z_T_mark, 1);
-            current_statement_begin__ = 50;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 53;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 55;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 56;
                     if (as_bool(logical_eq(nc,1))) {
-                        current_statement_begin__ = 57;
                         stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), ((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion));
-                        current_statement_begin__ = 59;
                         stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                     } else {
                         {
@@ -4611,29 +4329,17 @@ make_theta_L(const int& len_theta_L,
                             stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(std_dev, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(T21, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 68;
                             stan::math::assign(trace_T_i, (square(((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion)) * nc));
-                            current_statement_begin__ = 70;
                             stan::math::assign(pi, segment(zeta,zeta_mark,nc));
-                            current_statement_begin__ = 71;
                             stan::math::assign(pi, divide(pi,sum(pi)));
-                            current_statement_begin__ = 72;
                             stan::math::assign(zeta_mark, (zeta_mark + nc));
-                            current_statement_begin__ = 73;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,1,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 74;
                             stan::math::assign(get_base1_lhs(T_i,1,1,"T_i",1), std_dev);
-                            current_statement_begin__ = 77;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,2,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 78;
                             stan::math::assign(T21, ((2.0 * get_base1(rho,rho_mark,"rho",1)) - 1.0));
-                            current_statement_begin__ = 79;
                             stan::math::assign(rho_mark, (rho_mark + 1));
-                            current_statement_begin__ = 80;
                             stan::math::assign(get_base1_lhs(T_i,2,2,"T_i",1), (std_dev * sqrt((1.0 - square(T21)))));
-                            current_statement_begin__ = 81;
                             stan::math::assign(get_base1_lhs(T_i,2,1,"T_i",1), (std_dev * T21));
-                            current_statement_begin__ = 83;
                             for (int r = 2; r <= (nc - 1); ++r) {
                                 {
                                     int rp1(0);
@@ -4644,34 +4350,21 @@ make_theta_L(const int& len_theta_L,
                                     (void) scale_factor;  // dummy to suppress unused var warning
                                     stan::math::initialize(T_row, std::numeric_limits<double>::quiet_NaN());
                                     stan::math::initialize(scale_factor, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 87;
                                     stan::math::assign(T_row, segment(z_T,z_T_mark,r));
-                                    current_statement_begin__ = 88;
                                     stan::math::assign(z_T_mark, (z_T_mark + r));
-                                    current_statement_begin__ = 89;
                                     stan::math::assign(rp1, (r + 1));
-                                    current_statement_begin__ = 90;
                                     stan::math::assign(std_dev, sqrt((get_base1(pi,rp1,"pi",1) * trace_T_i)));
-                                    current_statement_begin__ = 91;
                                     stan::math::assign(scale_factor, (sqrt((get_base1(rho,rho_mark,"rho",1) / dot_self(T_row))) * std_dev));
-                                    current_statement_begin__ = 92;
                                     for (int c = 1; c <= r; ++c) {
-                                        current_statement_begin__ = 92;
                                         stan::math::assign(get_base1_lhs(T_i,rp1,c,"T_i",1), (get_base1(T_row,c,"T_row",1) * scale_factor));
                                     }
-                                    current_statement_begin__ = 93;
                                     stan::math::assign(get_base1_lhs(T_i,rp1,rp1,"T_i",1), (sqrt((1.0 - get_base1(rho,rho_mark,"rho",1))) * std_dev));
-                                    current_statement_begin__ = 94;
                                     stan::math::assign(rho_mark, (rho_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 98;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 98;
                                 for (int r = c; r <= nc; ++r) {
-                                    current_statement_begin__ = 99;
                                     stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), get_base1(T_i,r,c,"T_i",1));
-                                    current_statement_begin__ = 100;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
@@ -4679,7 +4372,6 @@ make_theta_L(const int& len_theta_L,
                     }
                 }
             }
-            current_statement_begin__ = 104;
             return stan::math::promote_scalar<fun_return_scalar_t__>(theta_L);
         }
     } catch (const std::exception& e) {
@@ -4727,33 +4419,23 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(b, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 122;
             stan::math::assign(b_mark, 1);
-            current_statement_begin__ = 123;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 124;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 126;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 127;
                     if (as_bool(logical_eq(nc,1))) {
                         {
                             fun_scalar_t__ theta_L_start;
                             (void) theta_L_start;  // dummy to suppress unused var warning
                             stan::math::initialize(theta_L_start, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 129;
                             stan::math::assign(theta_L_start, get_base1(theta_L,theta_L_mark,"theta_L",1));
-                            current_statement_begin__ = 130;
                             for (int s = b_mark; s <= ((b_mark + get_base1(l,i,"l",1)) - 1); ++s) {
-                                current_statement_begin__ = 131;
                                 stan::math::assign(get_base1_lhs(b,s,"b",1), (theta_L_start * get_base1(z_b,s,"z_b",1)));
                             }
-                            current_statement_begin__ = 132;
                             stan::math::assign(b_mark, (b_mark + get_base1(l,i,"l",1)));
-                            current_statement_begin__ = 133;
                             stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                         }
                     } else {
@@ -4761,38 +4443,25 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  T_i(nc,nc);
                             (void) T_i;  // dummy to suppress unused var warning
                             stan::math::initialize(T_i, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 137;
                             stan::math::assign(T_i, rep_matrix(0,nc,nc));
-                            current_statement_begin__ = 138;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 139;
                                 stan::math::assign(get_base1_lhs(T_i,c,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                current_statement_begin__ = 140;
                                 stan::math::assign(theta_L_mark, (theta_L_mark + 1));
-                                current_statement_begin__ = 141;
                                 for (int r = (c + 1); r <= nc; ++r) {
-                                    current_statement_begin__ = 142;
                                     stan::math::assign(get_base1_lhs(T_i,r,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                    current_statement_begin__ = 143;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 146;
                             for (int j = 1; j <= get_base1(l,i,"l",1); ++j) {
                                 {
                                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  temp(nc);
                                     (void) temp;  // dummy to suppress unused var warning
                                     stan::math::initialize(temp, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 148;
                                     stan::math::assign(temp, multiply(T_i,segment(z_b,b_mark,nc)));
-                                    current_statement_begin__ = 149;
                                     stan::math::assign(b_mark, (b_mark - 1));
-                                    current_statement_begin__ = 150;
                                     for (int s = 1; s <= nc; ++s) {
-                                        current_statement_begin__ = 150;
                                         stan::math::assign(get_base1_lhs(b,(b_mark + s),"b",1), get_base1(temp,s,"temp",1));
                                     }
-                                    current_statement_begin__ = 151;
                                     stan::math::assign(b_mark, ((b_mark + nc) + 1));
                                 }
                             }
@@ -4800,7 +4469,6 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                     }
                 }
             }
-            current_statement_begin__ = 155;
             return stan::math::promote_scalar<fun_return_scalar_t__>(b);
         }
     } catch (const std::exception& e) {
@@ -4847,17 +4515,11 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             (void) pos_reg;  // dummy to suppress unused var warning
             int pos_rho(0);
             (void) pos_rho;  // dummy to suppress unused var warning
-            current_statement_begin__ = 178;
             lp_accum__.add(normal_log<propto__>(z_b, 0, 1));
-            current_statement_begin__ = 179;
             lp_accum__.add(normal_log<propto__>(z_T, 0, 1));
-            current_statement_begin__ = 180;
             stan::math::assign(pos_reg, 1);
-            current_statement_begin__ = 181;
             stan::math::assign(pos_rho, 1);
-            current_statement_begin__ = 182;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 182;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
                     {
                         Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  shape1((get_base1(p,i,"p",1) - 1));
@@ -4869,33 +4531,21 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                         stan::math::initialize(shape1, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(shape2, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(nu, std::numeric_limits<double>::quiet_NaN());
-                        current_statement_begin__ = 186;
                         stan::math::assign(nu, (get_base1(regularization,pos_reg,"regularization",1) + (0.5 * (get_base1(p,i,"p",1) - 2))));
-                        current_statement_begin__ = 187;
                         stan::math::assign(pos_reg, (pos_reg + 1));
-                        current_statement_begin__ = 188;
                         stan::math::assign(get_base1_lhs(shape1,1,"shape1",1), nu);
-                        current_statement_begin__ = 189;
                         stan::math::assign(get_base1_lhs(shape2,1,"shape2",1), nu);
-                        current_statement_begin__ = 190;
                         for (int j = 2; j <= (get_base1(p,i,"p",1) - 1); ++j) {
-                            current_statement_begin__ = 191;
                             stan::math::assign(nu, (nu - 0.5));
-                            current_statement_begin__ = 192;
                             stan::math::assign(get_base1_lhs(shape1,j,"shape1",1), (0.5 * j));
-                            current_statement_begin__ = 193;
                             stan::math::assign(get_base1_lhs(shape2,j,"shape2",1), nu);
                         }
-                        current_statement_begin__ = 195;
                         lp_accum__.add(beta_log<propto__>(stan::model::rvalue(rho, stan::model::cons_list(stan::model::index_min_max(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 2)), stan::model::nil_index_list()), "rho"), shape1, shape2));
-                        current_statement_begin__ = 196;
                         stan::math::assign(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 1));
                     }
                 }
             }
-            current_statement_begin__ = 198;
             lp_accum__.add(gamma_log<propto__>(zeta, delta, 1));
-            current_statement_begin__ = 199;
             lp_accum__.add(gamma_log<propto__>(tau, shape, 1));
         }
     } catch (const std::exception& e) {
@@ -4938,12 +4588,9 @@ sqrt_vec(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y, std::ostream* pstream__
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  out(rows(y));
             (void) out;  // dummy to suppress unused var warning
             stan::math::initialize(out, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 210;
             for (int i = 1; i <= rows(y); ++i) {
-                current_statement_begin__ = 210;
                 stan::math::assign(get_base1_lhs(out,i,"out",1), sqrt(get_base1(out,i,"out",1)));
             }
-            current_statement_begin__ = 211;
             return stan::math::promote_scalar<fun_return_scalar_t__>(out);
         }
     } catch (const std::exception& e) {
@@ -4981,14 +4628,10 @@ hs_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             int K(0);
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 225;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 226;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 226;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 227;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(z_beta,lambda),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -5031,16 +4674,11 @@ hsplus_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(lambda_plus, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 242;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 243;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 244;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
-                current_statement_begin__ = 245;
                 stan::math::assign(get_base1_lhs(lambda_plus,k,"lambda_plus",1), (get_base1(get_base1(local,3,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,4,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 247;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(elt_multiply(z_beta,lambda),lambda_plus),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -5077,12 +4715,9 @@ divide_real_by_vector(const T0__& x,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ret(rows(y));
             (void) ret;  // dummy to suppress unused var warning
             stan::math::initialize(ret, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 259;
             for (int n = 1; n <= rows(y); ++n) {
-                current_statement_begin__ = 259;
                 stan::math::assign(get_base1_lhs(ret,n,"ret",1), (x / get_base1(y,n,"y",1)));
             }
-            current_statement_begin__ = 260;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ret);
         }
     } catch (const std::exception& e) {
@@ -5114,29 +4749,21 @@ linkinv_gauss(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 272;
         if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-            current_statement_begin__ = 272;
             std::stringstream errmsg_stream__;
             errmsg_stream__ << "Invalid link";
             throw std::domain_error(errmsg_stream__.str());
         }
-        current_statement_begin__ = 272;
-        current_statement_begin__ = 273;
         if (as_bool(logical_lt(link,3))) {
-            current_statement_begin__ = 274;
             return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
         } else {
             {
                 Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(rows(eta));
                 (void) mu;  // dummy to suppress unused var warning
                 stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 277;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 277;
                     stan::math::assign(get_base1_lhs(mu,n,"mu",1), inv(get_base1(eta,n,"eta",1)));
                 }
-                current_statement_begin__ = 278;
                 return stan::math::promote_scalar<fun_return_scalar_t__>(mu);
             }
         }
@@ -5169,32 +4796,23 @@ linkinv_gamma(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 290;
         if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-            current_statement_begin__ = 290;
             std::stringstream errmsg_stream__;
             errmsg_stream__ << "Invalid link";
             throw std::domain_error(errmsg_stream__.str());
         }
-        current_statement_begin__ = 290;
-        current_statement_begin__ = 291;
         if (as_bool(logical_eq(link,1))) {
-            current_statement_begin__ = 291;
             return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
         } else if (as_bool(logical_eq(link,2))) {
-            current_statement_begin__ = 292;
             return stan::math::promote_scalar<fun_return_scalar_t__>(exp(eta));
         } else {
             {
                 Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(rows(eta));
                 (void) mu;  // dummy to suppress unused var warning
                 stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 295;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 295;
                     stan::math::assign(get_base1_lhs(mu,n,"mu",1), inv(get_base1(eta,n,"eta",1)));
                 }
-                current_statement_begin__ = 296;
                 return stan::math::promote_scalar<fun_return_scalar_t__>(mu);
             }
         }
@@ -5227,41 +4845,29 @@ linkinv_inv_gaussian(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 308;
         if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,4))))) {
-            current_statement_begin__ = 308;
             std::stringstream errmsg_stream__;
             errmsg_stream__ << "Invalid link";
             throw std::domain_error(errmsg_stream__.str());
         }
-        current_statement_begin__ = 308;
-        current_statement_begin__ = 309;
         if (as_bool(logical_eq(link,1))) {
-            current_statement_begin__ = 309;
             return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
         } else if (as_bool(logical_eq(link,2))) {
-            current_statement_begin__ = 310;
             return stan::math::promote_scalar<fun_return_scalar_t__>(exp(eta));
         } else {
             {
                 Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(rows(eta));
                 (void) mu;  // dummy to suppress unused var warning
                 stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 313;
                 if (as_bool(logical_eq(link,3))) {
-                    current_statement_begin__ = 313;
                     for (int n = 1; n <= rows(eta); ++n) {
-                        current_statement_begin__ = 313;
                         stan::math::assign(get_base1_lhs(mu,n,"mu",1), inv(get_base1(eta,n,"eta",1)));
                     }
                 } else {
-                    current_statement_begin__ = 314;
                     for (int n = 1; n <= rows(eta); ++n) {
-                        current_statement_begin__ = 314;
                         stan::math::assign(get_base1_lhs(mu,n,"mu",1), inv_sqrt(get_base1(eta,n,"eta",1)));
                     }
                 }
-                current_statement_begin__ = 315;
                 return stan::math::promote_scalar<fun_return_scalar_t__>(mu);
             }
         }
@@ -5300,19 +4906,13 @@ pw_gauss(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ll(rows(eta));
             (void) ll;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 328;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-                current_statement_begin__ = 328;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 328;
-            current_statement_begin__ = 329;
             if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 330;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 330;
                     stan::math::assign(get_base1_lhs(ll,n,"ll",1), lognormal_log(get_base1(y,n,"y",1),get_base1(eta,n,"eta",1),sigma));
                 }
             } else {
@@ -5320,16 +4920,12 @@ pw_gauss(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(rows(eta));
                     (void) mu;  // dummy to suppress unused var warning
                     stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
-                    current_statement_begin__ = 333;
                     stan::math::assign(mu, linkinv_gauss(eta,link, pstream__));
-                    current_statement_begin__ = 334;
                     for (int n = 1; n <= rows(eta); ++n) {
-                        current_statement_begin__ = 334;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),sigma));
                     }
                 }
             }
-            current_statement_begin__ = 336;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
     } catch (const std::exception& e) {
@@ -5370,28 +4966,19 @@ GammaReg_log(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
             fun_scalar_t__ ret;
             (void) ret;  // dummy to suppress unused var warning
             stan::math::initialize(ret, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 342;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-                current_statement_begin__ = 342;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 342;
-            current_statement_begin__ = 343;
             stan::math::assign(ret, ((rows(y) * ((shape * log(shape)) - lgamma(shape))) + ((shape - 1) * sum_log_y)));
-            current_statement_begin__ = 345;
             if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 346;
                 stan::math::assign(ret, ((ret - (shape * sum(eta))) - (shape * sum(elt_divide(y,exp(eta))))));
             } else if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 348;
                 stan::math::assign(ret, ((ret - (shape * sum(log(eta)))) - (shape * sum(elt_divide(y,eta)))));
             } else {
-                current_statement_begin__ = 350;
                 stan::math::assign(ret, ((ret + (shape * sum(log(eta)))) - (shape * dot_product(eta,y))));
             }
-            current_statement_begin__ = 351;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ret);
         }
     } catch (const std::exception& e) {
@@ -5442,35 +5029,24 @@ pw_gamma(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ll(rows(eta));
             (void) ll;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 363;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-                current_statement_begin__ = 363;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 363;
-            current_statement_begin__ = 364;
             if (as_bool(logical_eq(link,3))) {
-                current_statement_begin__ = 365;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 366;
                     stan::math::assign(get_base1_lhs(ll,n,"ll",1), gamma_log(get_base1(y,n,"y",1),shape,(shape * get_base1(eta,n,"eta",1))));
                 }
             } else if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 370;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 371;
                     stan::math::assign(get_base1_lhs(ll,n,"ll",1), gamma_log(get_base1(y,n,"y",1),shape,(shape / exp(get_base1(eta,n,"eta",1)))));
                 }
             } else {
-                current_statement_begin__ = 375;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 376;
                     stan::math::assign(get_base1_lhs(ll,n,"ll",1), gamma_log(get_base1(y,n,"y",1),shape,(shape / get_base1(eta,n,"eta",1))));
                 }
             }
-            current_statement_begin__ = 379;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
     } catch (const std::exception& e) {
@@ -5507,7 +5083,6 @@ inv_gaussian_log(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 393;
         return stan::math::promote_scalar<fun_return_scalar_t__>(((((0.5 * rows(y)) * log((lambda / (2 * pi())))) - (1.5 * sum_log_y)) - ((0.5 * lambda) * dot_self(elt_divide(subtract(y,mu),elt_multiply(mu,sqrt_y))))));
     } catch (const std::exception& e) {
         stan::lang::rethrow_located(e,current_statement_begin__);
@@ -5562,24 +5137,16 @@ pw_inv_gaussian(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
             (void) mu;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 413;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,4))))) {
-                current_statement_begin__ = 413;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 413;
-            current_statement_begin__ = 414;
             stan::math::assign(mu, linkinv_inv_gaussian(eta,link, pstream__));
-            current_statement_begin__ = 415;
             for (int n = 1; n <= rows(y); ++n) {
-                current_statement_begin__ = 416;
                 stan::math::assign(get_base1_lhs(ll,n,"ll",1), ((-(0.5) * lambda) * square(((get_base1(y,n,"y",1) - get_base1(mu,n,"mu",1)) / (get_base1(mu,n,"mu",1) * get_base1(sqrt_y,n,"sqrt_y",1))))));
             }
-            current_statement_begin__ = 417;
             stan::math::assign(ll, subtract(add(ll,(0.5 * log((lambda / (2 * pi()))))),multiply(1.5,log_y)));
-            current_statement_begin__ = 418;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
     } catch (const std::exception& e) {
@@ -5628,20 +5195,13 @@ inv_gaussian_rng(const T0__& mu,
             stan::math::initialize(y, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(x, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(mu2, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 435;
             stan::math::assign(mu2, square(mu));
-            current_statement_begin__ = 436;
             stan::math::assign(y, square(normal_rng(0,1, base_rng__)));
-            current_statement_begin__ = 437;
             stan::math::assign(z, uniform_rng(0,1, base_rng__));
-            current_statement_begin__ = 438;
             stan::math::assign(x, (mu + (((mu2 * y) - (mu * sqrt(((((4 * mu) * lambda) * y) + (mu2 * square(y)))))) / (2 * lambda))));
-            current_statement_begin__ = 440;
             if (as_bool(logical_lte(z,(mu / (mu + x))))) {
-                current_statement_begin__ = 440;
                 return stan::math::promote_scalar<fun_return_scalar_t__>(x);
             } else {
-                current_statement_begin__ = 441;
                 return stan::math::promote_scalar<fun_return_scalar_t__>((mu2 / x));
             }
         }
@@ -5678,7 +5238,6 @@ test_csr_matrix_times_vector(const int& m,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 457;
         return stan::math::promote_scalar<fun_return_scalar_t__>(csr_matrix_times_vector(m,n,w,v,u,b));
     } catch (const std::exception& e) {
         stan::lang::rethrow_located(e,current_statement_begin__);
@@ -5750,6 +5309,8 @@ private:
     int len_rho;
     vector<double> delta;
     int pos;
+    int t_any_124;
+    int t_all_124;
 public:
     model_continuous(stan::io::var_context& context__,
         std::ostream* pstream__ = 0)
@@ -6080,6 +5641,8 @@ public:
         validate_non_negative_index("delta", "len_concentration", len_concentration);
         delta = std::vector<double>(len_concentration,double(0));
         pos = int(0);
+        t_any_124 = int(0);
+        t_all_124 = int(0);
 
         double DUMMY_VAR__(std::numeric_limits<double>::quiet_NaN());
         (void) DUMMY_VAR__;  // suppress unused var warning
@@ -6095,61 +5658,55 @@ public:
         stan::math::fill(len_rho,DUMMY_VAR__);
         stan::math::fill(delta,DUMMY_VAR__);
         stan::math::fill(pos,DUMMY_VAR__);
+        stan::math::fill(t_any_124,DUMMY_VAR__);
+        stan::math::fill(t_all_124,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 531;
             if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 531;
                 stan::math::assign(hs, 0);
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 532;
                 stan::math::assign(hs, 2);
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 533;
                 stan::math::assign(hs, 4);
             }
-            current_statement_begin__ = 534;
             stan::math::assign(len_z_T, 0);
-            current_statement_begin__ = 535;
             stan::math::assign(len_var_group, (sum(p) * logical_gt(t,0)));
-            current_statement_begin__ = 536;
             stan::math::assign(len_rho, (sum(p) - t));
-            current_statement_begin__ = 537;
             stan::math::assign(pos, 1);
-            current_statement_begin__ = 538;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 539;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
-                    current_statement_begin__ = 540;
                     for (int j = 1; j <= get_base1(p,i,"p",1); ++j) {
-                        current_statement_begin__ = 541;
                         stan::math::assign(get_base1_lhs(delta,pos,"delta",1), get_base1(concentration,j,"concentration",1));
-                        current_statement_begin__ = 542;
                         stan::math::assign(pos, (pos + 1));
                     }
                 }
-                current_statement_begin__ = 545;
                 for (int j = 3; j <= get_base1(p,i,"p",1); ++j) {
-                    current_statement_begin__ = 545;
                     stan::math::assign(len_z_T, ((len_z_T + get_base1(p,i,"p",1)) - 1));
                 }
             }
-            current_statement_begin__ = 547;
+            if (as_bool(logical_eq(prior_dist,2))) {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 1);
+                for (int k = 1; k <= K; ++k) {
+                    if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                        stan::math::assign(t_any_124, 1);
+                    } else {
+                        stan::math::assign(t_all_124, 0);
+                    }
+                }
+            } else {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 0);
+            }
             if (as_bool(logical_eq(family,1))) {
-                current_statement_begin__ = 547;
                 stan::math::assign(sum_log_y, not_a_number());
             } else if (as_bool(logical_eq(family,2))) {
-                current_statement_begin__ = 548;
                 stan::math::assign(sum_log_y, sum(log(y)));
             } else {
-                current_statement_begin__ = 550;
                 for (int n = 1; n <= N; ++n) {
-                    current_statement_begin__ = 550;
                     stan::math::assign(get_base1_lhs(sqrt_y,n,"sqrt_y",1), sqrt(get_base1(y,n,"y",1)));
                 }
-                current_statement_begin__ = 551;
                 stan::math::assign(log_y, log(y));
-                current_statement_begin__ = 552;
                 stan::math::assign(sum_log_y, sum(log_y));
             }
         } catch (const std::exception& e) {
@@ -6167,6 +5724,10 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
             check_greater_or_equal(function__,"delta[k0__]",delta[k0__],0);
         }
         check_greater_or_equal(function__,"pos",pos,1);
+        check_greater_or_equal(function__,"t_any_124",t_any_124,0);
+        check_less_or_equal(function__,"t_any_124",t_any_124,1);
+        check_greater_or_equal(function__,"t_all_124",t_all_124,0);
+        check_less_or_equal(function__,"t_all_124",t_all_124,1);
 
         // set parameter ranges
         num_params_r__ = 0U;
@@ -6469,33 +6030,53 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(theta_L,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 573;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 573;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 574;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        T__ P;
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, DUMMY_VAR__);
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                T__ q_a;
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, DUMMY_VAR__);
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 575;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 576;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 577;
             if (as_bool(logical_gt(prior_scale_for_dispersion,0))) {
-                current_statement_begin__ = 578;
                 stan::math::assign(dispersion, (prior_scale_for_dispersion * dispersion_unscaled));
             } else {
-                current_statement_begin__ = 579;
                 stan::math::assign(dispersion, dispersion_unscaled);
             }
-            current_statement_begin__ = 580;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 581;
                 stan::math::assign(theta_L, make_theta_L(len_theta_L,p,dispersion,tau,scale,zeta,rho,z_T, pstream__));
-                current_statement_begin__ = 583;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -6542,58 +6123,38 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::fill(eta,DUMMY_VAR__);
                 stan::math::initialize(eta, DUMMY_VAR__);
-                current_statement_begin__ = 588;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 588;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 589;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 590;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 590;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 591;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 591;
                     stan::math::assign(eta, add(eta,csr_matrix_times_vector(N,q,w,v,u,b)));
                 }
-                current_statement_begin__ = 592;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 593;
                     if (as_bool((primitive_value(logical_eq(family,1)) || primitive_value(logical_eq(link,2))))) {
-                        current_statement_begin__ = 593;
                         stan::math::assign(eta, add(eta,get_base1(gamma,1,"gamma",1)));
                     } else {
-                        current_statement_begin__ = 594;
                         stan::math::assign(eta, add(subtract(eta,min(eta)),get_base1(gamma,1,"gamma",1)));
                     }
                 } else {
-                    current_statement_begin__ = 598;
                     stan::math::assign(eta, add(eta,dot_product(xbar,beta)));
                 }
-                current_statement_begin__ = 602;
                 if (as_bool((primitive_value(logical_eq(has_weights,0)) && primitive_value(logical_eq(prior_PD,0))))) {
-                    current_statement_begin__ = 603;
                     if (as_bool(logical_eq(family,1))) {
-                        current_statement_begin__ = 604;
                         if (as_bool(logical_eq(link,1))) {
-                            current_statement_begin__ = 604;
                             lp_accum__.add(normal_log<propto__>(y, eta, dispersion));
                         } else if (as_bool(logical_eq(link,2))) {
-                            current_statement_begin__ = 605;
                             lp_accum__.add(lognormal_log<propto__>(y, eta, dispersion));
                         } else {
-                            current_statement_begin__ = 606;
                             lp_accum__.add(normal_log<propto__>(y, divide_real_by_vector(1,eta, pstream__), dispersion));
                         }
                     } else if (as_bool(logical_eq(family,2))) {
-                        current_statement_begin__ = 610;
                         lp_accum__.add(GammaReg_log<propto__>(y, eta, dispersion, link, sum_log_y, pstream__));
                     } else {
-                        current_statement_begin__ = 613;
                         lp_accum__.add(inv_gaussian_log<propto__>(y, linkinv_inv_gaussian(eta,link, pstream__), dispersion, sum_log_y, sqrt_y, pstream__));
                     }
                 } else if (as_bool(logical_eq(prior_PD,0))) {
@@ -6602,77 +6163,60 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                         (void) summands;  // dummy to suppress unused var warning
                         stan::math::fill(summands,DUMMY_VAR__);
                         stan::math::initialize(summands, DUMMY_VAR__);
-                        current_statement_begin__ = 619;
                         if (as_bool(logical_eq(family,1))) {
-                            current_statement_begin__ = 619;
                             stan::math::assign(summands, pw_gauss(y,eta,dispersion,link, pstream__));
                         } else if (as_bool(logical_eq(family,2))) {
-                            current_statement_begin__ = 620;
                             stan::math::assign(summands, pw_gamma(y,eta,dispersion,link, pstream__));
                         } else {
-                            current_statement_begin__ = 621;
                             stan::math::assign(summands, pw_inv_gaussian(y,eta,dispersion,link,log_y,sqrt_y, pstream__));
                         }
-                        current_statement_begin__ = 622;
                         lp_accum__.add(dot_product(weights,summands));
                     }
                 }
-                current_statement_begin__ = 626;
                 if (as_bool(logical_gt(prior_scale_for_dispersion,0))) {
-                    current_statement_begin__ = 626;
                     lp_accum__.add(cauchy_log<propto__>(dispersion_unscaled, 0, 1));
                 }
-                current_statement_begin__ = 628;
                 if (as_bool(logical_eq(prior_dist,1))) {
-                    current_statement_begin__ = 628;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
                 } else if (as_bool(logical_eq(prior_dist,2))) {
-                    current_statement_begin__ = 629;
-                    lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    if (as_bool(t_all_124)) {
+                        lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
+                    } else if (as_bool(t_any_124)) {
+                        for (int k = 1; k <= K; ++k) {
+                            if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                                lp_accum__.add(normal_log<propto__>(get_base1(z_beta,k,"z_beta",1), 0, 1));
+                            } else {
+                                lp_accum__.add(student_t_log<propto__>(get_base1(z_beta,k,"z_beta",1), get_base1(prior_df,k,"prior_df",1), 0, 1));
+                            }
+                        }
+                    } else {
+                        lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    }
                 } else if (as_bool(logical_eq(prior_dist,3))) {
-                    current_statement_begin__ = 631;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 632;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 633;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 634;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 635;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 } else if (as_bool(logical_eq(prior_dist,4))) {
-                    current_statement_begin__ = 638;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 639;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 640;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 641;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,3,"local",1), 0, 1));
-                    current_statement_begin__ = 643;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,4,"local",1), multiply(0.5,prior_scale), multiply(0.5,prior_scale)));
-                    current_statement_begin__ = 644;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 645;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 }
-                current_statement_begin__ = 650;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 651;
                     if (as_bool(logical_eq(prior_dist_for_intercept,1))) {
-                        current_statement_begin__ = 652;
                         lp_accum__.add(normal_log<propto__>(gamma, prior_mean_for_intercept, prior_scale_for_intercept));
                     } else if (as_bool(logical_eq(prior_dist_for_intercept,2))) {
-                        current_statement_begin__ = 654;
                         lp_accum__.add(student_t_log<propto__>(gamma, prior_df_for_intercept, prior_mean_for_intercept, prior_scale_for_intercept));
                     }
                 }
-                current_statement_begin__ = 658;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 658;
                     decov_lp(z_b,z_T,rho,zeta,tau,regularization,delta,shape,t,p, lp__, lp_accum__, pstream__);
                 }
-                current_statement_begin__ = 659;
             }
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -6851,33 +6395,53 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         (void) theta_L;  // dummy to suppress unused var warning
 
         try {
-            current_statement_begin__ = 573;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 573;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 574;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        double P(0.0);
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, std::numeric_limits<double>::quiet_NaN());
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                double q_a(0.0);
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, std::numeric_limits<double>::quiet_NaN());
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 575;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 576;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 577;
             if (as_bool(logical_gt(prior_scale_for_dispersion,0))) {
-                current_statement_begin__ = 578;
                 stan::math::assign(dispersion, (prior_scale_for_dispersion * dispersion_unscaled));
             } else {
-                current_statement_begin__ = 579;
                 stan::math::assign(dispersion, dispersion_unscaled);
             }
-            current_statement_begin__ = 580;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 581;
                 stan::math::assign(theta_L, make_theta_L(len_theta_L,p,dispersion,tau,scale,zeta,rho,z_T, pstream__));
-                current_statement_begin__ = 583;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -6915,94 +6479,63 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(mean_PPD,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 664;
             stan::math::assign(mean_PPD, 0);
-            current_statement_begin__ = 665;
             if (as_bool(logical_eq(has_intercept,1))) {
-                current_statement_begin__ = 666;
                 stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(gamma,1,"gamma",1) - dot_product(xbar,beta)));
             }
             {
                 vector_d eta(N);
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::initialize(eta, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 669;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 669;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 670;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 671;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 671;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 672;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 672;
                     stan::math::assign(eta, add(eta,csr_matrix_times_vector(N,q,w,v,u,b)));
                 }
-                current_statement_begin__ = 673;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 674;
                     if (as_bool((primitive_value(logical_eq(family,1)) || primitive_value(logical_eq(link,2))))) {
-                        current_statement_begin__ = 674;
                         stan::math::assign(eta, add(eta,get_base1(gamma,1,"gamma",1)));
                     } else {
                         {
                             double min_eta(0.0);
                             (void) min_eta;  // dummy to suppress unused var warning
                             stan::math::initialize(min_eta, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 677;
                             stan::math::assign(min_eta, min(eta));
-                            current_statement_begin__ = 678;
                             stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(alpha,1,"alpha",1) - min_eta));
-                            current_statement_begin__ = 679;
                             stan::math::assign(eta, add(subtract(eta,min_eta),get_base1(gamma,1,"gamma",1)));
                         }
                     }
                 } else {
-                    current_statement_begin__ = 684;
                     stan::math::assign(eta, add(eta,dot_product(xbar,beta)));
                 }
-                current_statement_begin__ = 687;
                 if (as_bool(logical_eq(family,1))) {
-                    current_statement_begin__ = 688;
                     if (as_bool(logical_gt(link,1))) {
-                        current_statement_begin__ = 688;
                         stan::math::assign(eta, linkinv_gauss(eta,link, pstream__));
                     }
-                    current_statement_begin__ = 689;
                     for (int n = 1; n <= N; ++n) {
-                        current_statement_begin__ = 689;
                         stan::math::assign(mean_PPD, (mean_PPD + normal_rng(get_base1(eta,n,"eta",1),dispersion, base_rng__)));
                     }
                 } else if (as_bool(logical_eq(family,2))) {
-                    current_statement_begin__ = 692;
                     if (as_bool(logical_gt(link,1))) {
-                        current_statement_begin__ = 692;
                         stan::math::assign(eta, linkinv_gamma(eta,link, pstream__));
                     }
-                    current_statement_begin__ = 693;
                     for (int n = 1; n <= N; ++n) {
-                        current_statement_begin__ = 693;
                         stan::math::assign(mean_PPD, (mean_PPD + gamma_rng(dispersion,(dispersion / get_base1(eta,n,"eta",1)), base_rng__)));
                     }
                 } else if (as_bool(logical_eq(family,3))) {
-                    current_statement_begin__ = 696;
                     if (as_bool(logical_gt(link,1))) {
-                        current_statement_begin__ = 696;
                         stan::math::assign(eta, linkinv_inv_gaussian(eta,link, pstream__));
                     }
-                    current_statement_begin__ = 697;
                     for (int n = 1; n <= N; ++n) {
-                        current_statement_begin__ = 697;
                         stan::math::assign(mean_PPD, (mean_PPD + inv_gaussian_rng(get_base1(eta,n,"eta",1),dispersion, base_rng__, pstream__)));
                     }
                 }
-                current_statement_begin__ = 699;
                 stan::math::assign(mean_PPD, (mean_PPD / N));
             }
         } catch (const std::exception& e) {
@@ -7273,26 +6806,17 @@ make_theta_L(const int& len_theta_L,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(theta_L, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 47;
             stan::math::assign(zeta_mark, 1);
-            current_statement_begin__ = 48;
             stan::math::assign(rho_mark, 1);
-            current_statement_begin__ = 49;
             stan::math::assign(z_T_mark, 1);
-            current_statement_begin__ = 50;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 53;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 55;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 56;
                     if (as_bool(logical_eq(nc,1))) {
-                        current_statement_begin__ = 57;
                         stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), ((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion));
-                        current_statement_begin__ = 59;
                         stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                     } else {
                         {
@@ -7311,29 +6835,17 @@ make_theta_L(const int& len_theta_L,
                             stan::math::initialize(pi, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(std_dev, std::numeric_limits<double>::quiet_NaN());
                             stan::math::initialize(T21, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 68;
                             stan::math::assign(trace_T_i, (square(((get_base1(tau,i,"tau",1) * get_base1(scale,i,"scale",1)) * dispersion)) * nc));
-                            current_statement_begin__ = 70;
                             stan::math::assign(pi, segment(zeta,zeta_mark,nc));
-                            current_statement_begin__ = 71;
                             stan::math::assign(pi, divide(pi,sum(pi)));
-                            current_statement_begin__ = 72;
                             stan::math::assign(zeta_mark, (zeta_mark + nc));
-                            current_statement_begin__ = 73;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,1,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 74;
                             stan::math::assign(get_base1_lhs(T_i,1,1,"T_i",1), std_dev);
-                            current_statement_begin__ = 77;
                             stan::math::assign(std_dev, sqrt((get_base1(pi,2,"pi",1) * trace_T_i)));
-                            current_statement_begin__ = 78;
                             stan::math::assign(T21, ((2.0 * get_base1(rho,rho_mark,"rho",1)) - 1.0));
-                            current_statement_begin__ = 79;
                             stan::math::assign(rho_mark, (rho_mark + 1));
-                            current_statement_begin__ = 80;
                             stan::math::assign(get_base1_lhs(T_i,2,2,"T_i",1), (std_dev * sqrt((1.0 - square(T21)))));
-                            current_statement_begin__ = 81;
                             stan::math::assign(get_base1_lhs(T_i,2,1,"T_i",1), (std_dev * T21));
-                            current_statement_begin__ = 83;
                             for (int r = 2; r <= (nc - 1); ++r) {
                                 {
                                     int rp1(0);
@@ -7344,34 +6856,21 @@ make_theta_L(const int& len_theta_L,
                                     (void) scale_factor;  // dummy to suppress unused var warning
                                     stan::math::initialize(T_row, std::numeric_limits<double>::quiet_NaN());
                                     stan::math::initialize(scale_factor, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 87;
                                     stan::math::assign(T_row, segment(z_T,z_T_mark,r));
-                                    current_statement_begin__ = 88;
                                     stan::math::assign(z_T_mark, (z_T_mark + r));
-                                    current_statement_begin__ = 89;
                                     stan::math::assign(rp1, (r + 1));
-                                    current_statement_begin__ = 90;
                                     stan::math::assign(std_dev, sqrt((get_base1(pi,rp1,"pi",1) * trace_T_i)));
-                                    current_statement_begin__ = 91;
                                     stan::math::assign(scale_factor, (sqrt((get_base1(rho,rho_mark,"rho",1) / dot_self(T_row))) * std_dev));
-                                    current_statement_begin__ = 92;
                                     for (int c = 1; c <= r; ++c) {
-                                        current_statement_begin__ = 92;
                                         stan::math::assign(get_base1_lhs(T_i,rp1,c,"T_i",1), (get_base1(T_row,c,"T_row",1) * scale_factor));
                                     }
-                                    current_statement_begin__ = 93;
                                     stan::math::assign(get_base1_lhs(T_i,rp1,rp1,"T_i",1), (sqrt((1.0 - get_base1(rho,rho_mark,"rho",1))) * std_dev));
-                                    current_statement_begin__ = 94;
                                     stan::math::assign(rho_mark, (rho_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 98;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 98;
                                 for (int r = c; r <= nc; ++r) {
-                                    current_statement_begin__ = 99;
                                     stan::math::assign(get_base1_lhs(theta_L,theta_L_mark,"theta_L",1), get_base1(T_i,r,c,"T_i",1));
-                                    current_statement_begin__ = 100;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
@@ -7379,7 +6878,6 @@ make_theta_L(const int& len_theta_L,
                     }
                 }
             }
-            current_statement_begin__ = 104;
             return stan::math::promote_scalar<fun_return_scalar_t__>(theta_L);
         }
     } catch (const std::exception& e) {
@@ -7427,33 +6925,23 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             int theta_L_mark(0);
             (void) theta_L_mark;  // dummy to suppress unused var warning
             stan::math::initialize(b, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 122;
             stan::math::assign(b_mark, 1);
-            current_statement_begin__ = 123;
             stan::math::assign(theta_L_mark, 1);
-            current_statement_begin__ = 124;
             for (int i = 1; i <= size(p); ++i) {
                 {
                     int nc(0);
                     (void) nc;  // dummy to suppress unused var warning
-                    current_statement_begin__ = 126;
                     stan::math::assign(nc, get_base1(p,i,"p",1));
-                    current_statement_begin__ = 127;
                     if (as_bool(logical_eq(nc,1))) {
                         {
                             fun_scalar_t__ theta_L_start;
                             (void) theta_L_start;  // dummy to suppress unused var warning
                             stan::math::initialize(theta_L_start, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 129;
                             stan::math::assign(theta_L_start, get_base1(theta_L,theta_L_mark,"theta_L",1));
-                            current_statement_begin__ = 130;
                             for (int s = b_mark; s <= ((b_mark + get_base1(l,i,"l",1)) - 1); ++s) {
-                                current_statement_begin__ = 131;
                                 stan::math::assign(get_base1_lhs(b,s,"b",1), (theta_L_start * get_base1(z_b,s,"z_b",1)));
                             }
-                            current_statement_begin__ = 132;
                             stan::math::assign(b_mark, (b_mark + get_base1(l,i,"l",1)));
-                            current_statement_begin__ = 133;
                             stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                         }
                     } else {
@@ -7461,38 +6949,25 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  T_i(nc,nc);
                             (void) T_i;  // dummy to suppress unused var warning
                             stan::math::initialize(T_i, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 137;
                             stan::math::assign(T_i, rep_matrix(0,nc,nc));
-                            current_statement_begin__ = 138;
                             for (int c = 1; c <= nc; ++c) {
-                                current_statement_begin__ = 139;
                                 stan::math::assign(get_base1_lhs(T_i,c,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                current_statement_begin__ = 140;
                                 stan::math::assign(theta_L_mark, (theta_L_mark + 1));
-                                current_statement_begin__ = 141;
                                 for (int r = (c + 1); r <= nc; ++r) {
-                                    current_statement_begin__ = 142;
                                     stan::math::assign(get_base1_lhs(T_i,r,c,"T_i",1), get_base1(theta_L,theta_L_mark,"theta_L",1));
-                                    current_statement_begin__ = 143;
                                     stan::math::assign(theta_L_mark, (theta_L_mark + 1));
                                 }
                             }
-                            current_statement_begin__ = 146;
                             for (int j = 1; j <= get_base1(l,i,"l",1); ++j) {
                                 {
                                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  temp(nc);
                                     (void) temp;  // dummy to suppress unused var warning
                                     stan::math::initialize(temp, std::numeric_limits<double>::quiet_NaN());
-                                    current_statement_begin__ = 148;
                                     stan::math::assign(temp, multiply(T_i,segment(z_b,b_mark,nc)));
-                                    current_statement_begin__ = 149;
                                     stan::math::assign(b_mark, (b_mark - 1));
-                                    current_statement_begin__ = 150;
                                     for (int s = 1; s <= nc; ++s) {
-                                        current_statement_begin__ = 150;
                                         stan::math::assign(get_base1_lhs(b,(b_mark + s),"b",1), get_base1(temp,s,"temp",1));
                                     }
-                                    current_statement_begin__ = 151;
                                     stan::math::assign(b_mark, ((b_mark + nc) + 1));
                                 }
                             }
@@ -7500,7 +6975,6 @@ make_b(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                     }
                 }
             }
-            current_statement_begin__ = 155;
             return stan::math::promote_scalar<fun_return_scalar_t__>(b);
         }
     } catch (const std::exception& e) {
@@ -7547,17 +7021,11 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
             (void) pos_reg;  // dummy to suppress unused var warning
             int pos_rho(0);
             (void) pos_rho;  // dummy to suppress unused var warning
-            current_statement_begin__ = 178;
             lp_accum__.add(normal_log<propto__>(z_b, 0, 1));
-            current_statement_begin__ = 179;
             lp_accum__.add(normal_log<propto__>(z_T, 0, 1));
-            current_statement_begin__ = 180;
             stan::math::assign(pos_reg, 1);
-            current_statement_begin__ = 181;
             stan::math::assign(pos_rho, 1);
-            current_statement_begin__ = 182;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 182;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
                     {
                         Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  shape1((get_base1(p,i,"p",1) - 1));
@@ -7569,33 +7037,21 @@ decov_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_b,
                         stan::math::initialize(shape1, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(shape2, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(nu, std::numeric_limits<double>::quiet_NaN());
-                        current_statement_begin__ = 186;
                         stan::math::assign(nu, (get_base1(regularization,pos_reg,"regularization",1) + (0.5 * (get_base1(p,i,"p",1) - 2))));
-                        current_statement_begin__ = 187;
                         stan::math::assign(pos_reg, (pos_reg + 1));
-                        current_statement_begin__ = 188;
                         stan::math::assign(get_base1_lhs(shape1,1,"shape1",1), nu);
-                        current_statement_begin__ = 189;
                         stan::math::assign(get_base1_lhs(shape2,1,"shape2",1), nu);
-                        current_statement_begin__ = 190;
                         for (int j = 2; j <= (get_base1(p,i,"p",1) - 1); ++j) {
-                            current_statement_begin__ = 191;
                             stan::math::assign(nu, (nu - 0.5));
-                            current_statement_begin__ = 192;
                             stan::math::assign(get_base1_lhs(shape1,j,"shape1",1), (0.5 * j));
-                            current_statement_begin__ = 193;
                             stan::math::assign(get_base1_lhs(shape2,j,"shape2",1), nu);
                         }
-                        current_statement_begin__ = 195;
                         lp_accum__.add(beta_log<propto__>(stan::model::rvalue(rho, stan::model::cons_list(stan::model::index_min_max(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 2)), stan::model::nil_index_list()), "rho"), shape1, shape2));
-                        current_statement_begin__ = 196;
                         stan::math::assign(pos_rho, ((pos_rho + get_base1(p,i,"p",1)) - 1));
                     }
                 }
             }
-            current_statement_begin__ = 198;
             lp_accum__.add(gamma_log<propto__>(zeta, delta, 1));
-            current_statement_begin__ = 199;
             lp_accum__.add(gamma_log<propto__>(tau, shape, 1));
         }
     } catch (const std::exception& e) {
@@ -7638,12 +7094,9 @@ sqrt_vec(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y, std::ostream* pstream__
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  out(rows(y));
             (void) out;  // dummy to suppress unused var warning
             stan::math::initialize(out, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 210;
             for (int i = 1; i <= rows(y); ++i) {
-                current_statement_begin__ = 210;
                 stan::math::assign(get_base1_lhs(out,i,"out",1), sqrt(get_base1(out,i,"out",1)));
             }
-            current_statement_begin__ = 211;
             return stan::math::promote_scalar<fun_return_scalar_t__>(out);
         }
     } catch (const std::exception& e) {
@@ -7681,14 +7134,10 @@ hs_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             int K(0);
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 225;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 226;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 226;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 227;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(z_beta,lambda),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -7731,16 +7180,11 @@ hsplus_prior(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& z_beta,
             (void) K;  // dummy to suppress unused var warning
             stan::math::initialize(lambda, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(lambda_plus, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 242;
             stan::math::assign(K, rows(z_beta));
-            current_statement_begin__ = 243;
             for (int k = 1; k <= K; ++k) {
-                current_statement_begin__ = 244;
                 stan::math::assign(get_base1_lhs(lambda,k,"lambda",1), (get_base1(get_base1(local,1,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,2,"local",1),k,"local",2))));
-                current_statement_begin__ = 245;
                 stan::math::assign(get_base1_lhs(lambda_plus,k,"lambda_plus",1), (get_base1(get_base1(local,3,"local",1),k,"local",2) * sqrt(get_base1(get_base1(local,4,"local",1),k,"local",2))));
             }
-            current_statement_begin__ = 247;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(multiply(elt_multiply(elt_multiply(z_beta,lambda),lambda_plus),get_base1(global,1,"global",1)),sqrt(get_base1(global,2,"global",1))));
         }
     } catch (const std::exception& e) {
@@ -7777,12 +7221,9 @@ divide_real_by_vector(const T0__& x,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ret(rows(y));
             (void) ret;  // dummy to suppress unused var warning
             stan::math::initialize(ret, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 259;
             for (int n = 1; n <= rows(y); ++n) {
-                current_statement_begin__ = 259;
                 stan::math::assign(get_base1_lhs(ret,n,"ret",1), (x / get_base1(y,n,"y",1)));
             }
-            current_statement_begin__ = 260;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ret);
         }
     } catch (const std::exception& e) {
@@ -7818,29 +7259,20 @@ linkinv_count(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  phi(rows(eta));
             (void) phi;  // dummy to suppress unused var warning
             stan::math::initialize(phi, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 266;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-                current_statement_begin__ = 267;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 267;
-            current_statement_begin__ = 269;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 269;
                 return stan::math::promote_scalar<fun_return_scalar_t__>(exp(eta));
             } else if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 270;
                 return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
             } else {
-                current_statement_begin__ = 272;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 272;
                     stan::math::assign(get_base1_lhs(phi,n,"phi",1), square(get_base1(eta,n,"eta",1)));
                 }
             }
-            current_statement_begin__ = 273;
             return stan::math::promote_scalar<fun_return_scalar_t__>(phi);
         }
     } catch (const std::exception& e) {
@@ -7877,19 +7309,13 @@ pw_pois(const std::vector<int>& y,
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ll(rows(eta));
             (void) ll;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 285;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-                current_statement_begin__ = 286;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 286;
-            current_statement_begin__ = 288;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 289;
                 for (int n = 1; n <= rows(eta); ++n) {
-                    current_statement_begin__ = 289;
                     stan::math::assign(get_base1_lhs(ll,n,"ll",1), poisson_log_log(get_base1(y,n,"y",1),get_base1(eta,n,"eta",1)));
                 }
             } else {
@@ -7897,16 +7323,12 @@ pw_pois(const std::vector<int>& y,
                     Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  phi(rows(eta));
                     (void) phi;  // dummy to suppress unused var warning
                     stan::math::initialize(phi, std::numeric_limits<double>::quiet_NaN());
-                    current_statement_begin__ = 292;
                     stan::math::assign(phi, linkinv_count(eta,link, pstream__));
-                    current_statement_begin__ = 293;
                     for (int n = 1; n <= rows(eta); ++n) {
-                        current_statement_begin__ = 293;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), poisson_log(get_base1(y,n,"y",1),get_base1(phi,n,"phi",1)));
                     }
                 }
             }
-            current_statement_begin__ = 295;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
     } catch (const std::exception& e) {
@@ -7948,22 +7370,15 @@ pw_nb(const std::vector<int>& y,
             (void) rho;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(rho, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 308;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-                current_statement_begin__ = 309;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 309;
-            current_statement_begin__ = 311;
             stan::math::assign(rho, linkinv_count(eta,link, pstream__));
-            current_statement_begin__ = 312;
             for (int n = 1; n <= rows(eta); ++n) {
-                current_statement_begin__ = 312;
                 stan::math::assign(get_base1_lhs(ll,n,"ll",1), neg_binomial_2_log(get_base1(y,n,"y",1),get_base1(rho,n,"rho",1),theta));
             }
-            current_statement_begin__ = 313;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
     } catch (const std::exception& e) {
@@ -8032,6 +7447,8 @@ private:
     int len_rho;
     vector<double> delta;
     int pos;
+    int t_any_124;
+    int t_all_124;
 public:
     model_count(stan::io::var_context& context__,
         std::ostream* pstream__ = 0)
@@ -8361,6 +7778,8 @@ public:
         validate_non_negative_index("delta", "len_concentration", len_concentration);
         delta = std::vector<double>(len_concentration,double(0));
         pos = int(0);
+        t_any_124 = int(0);
+        t_all_124 = int(0);
 
         double DUMMY_VAR__(std::numeric_limits<double>::quiet_NaN());
         (void) DUMMY_VAR__;  // suppress unused var warning
@@ -8374,46 +7793,46 @@ public:
         stan::math::fill(len_rho,DUMMY_VAR__);
         stan::math::fill(delta,DUMMY_VAR__);
         stan::math::fill(pos,DUMMY_VAR__);
+        stan::math::fill(t_any_124,DUMMY_VAR__);
+        stan::math::fill(t_all_124,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 384;
             if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 384;
                 stan::math::assign(hs, 0);
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 385;
                 stan::math::assign(hs, 2);
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 386;
                 stan::math::assign(hs, 4);
             }
-            current_statement_begin__ = 387;
             stan::math::assign(len_z_T, 0);
-            current_statement_begin__ = 388;
             stan::math::assign(len_var_group, (sum(p) * logical_gt(t,0)));
-            current_statement_begin__ = 389;
             stan::math::assign(len_rho, (sum(p) - t));
-            current_statement_begin__ = 390;
             stan::math::assign(pos, 1);
-            current_statement_begin__ = 391;
             for (int i = 1; i <= t; ++i) {
-                current_statement_begin__ = 392;
                 if (as_bool(logical_gt(get_base1(p,i,"p",1),1))) {
-                    current_statement_begin__ = 393;
                     for (int j = 1; j <= get_base1(p,i,"p",1); ++j) {
-                        current_statement_begin__ = 394;
                         stan::math::assign(get_base1_lhs(delta,pos,"delta",1), get_base1(concentration,j,"concentration",1));
-                        current_statement_begin__ = 395;
                         stan::math::assign(pos, (pos + 1));
                     }
                 }
-                current_statement_begin__ = 398;
                 for (int j = 3; j <= get_base1(p,i,"p",1); ++j) {
-                    current_statement_begin__ = 398;
                     stan::math::assign(len_z_T, ((len_z_T + get_base1(p,i,"p",1)) - 1));
                 }
             }
-            current_statement_begin__ = 400;
+            if (as_bool(logical_eq(prior_dist,2))) {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 1);
+                for (int k = 1; k <= K; ++k) {
+                    if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                        stan::math::assign(t_any_124, 1);
+                    } else {
+                        stan::math::assign(t_all_124, 0);
+                    }
+                }
+            } else {
+                stan::math::assign(t_any_124, 0);
+                stan::math::assign(t_all_124, 0);
+            }
             stan::math::assign(poisson_max, pow(2.0,30.0));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -8430,6 +7849,10 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
             check_greater_or_equal(function__,"delta[k0__]",delta[k0__],0);
         }
         check_greater_or_equal(function__,"pos",pos,1);
+        check_greater_or_equal(function__,"t_any_124",t_any_124,0);
+        check_less_or_equal(function__,"t_any_124",t_any_124,1);
+        check_greater_or_equal(function__,"t_all_124",t_all_124,0);
+        check_less_or_equal(function__,"t_all_124",t_all_124,1);
 
         // set parameter ranges
         num_params_r__ = 0U;
@@ -8763,39 +8186,57 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(theta_L,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 420;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 420;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 421;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        T__ P;
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, DUMMY_VAR__);
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                T__ q_a;
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, DUMMY_VAR__);
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 422;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 423;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 424;
             if (as_bool((primitive_value(logical_gt(family,1)) && primitive_value(logical_gt(prior_scale_for_dispersion,0))))) {
-                current_statement_begin__ = 425;
                 stan::math::assign(get_base1_lhs(dispersion,1,"dispersion",1), (prior_scale_for_dispersion * get_base1(dispersion_unscaled,1,"dispersion_unscaled",1)));
             } else if (as_bool(logical_gt(family,1))) {
-                current_statement_begin__ = 426;
                 stan::math::assign(get_base1_lhs(dispersion,1,"dispersion",1), get_base1(dispersion_unscaled,1,"dispersion_unscaled",1));
             }
-            current_statement_begin__ = 427;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 428;
                 if (as_bool(logical_eq(family,1))) {
-                    current_statement_begin__ = 429;
                     stan::math::assign(theta_L, make_theta_L(len_theta_L,p,1.0,tau,scale,zeta,rho,z_T, pstream__));
                 } else {
-                    current_statement_begin__ = 432;
                     stan::math::assign(theta_L, make_theta_L(len_theta_L,p,get_base1(dispersion,1,"dispersion",1),tau,scale,zeta,rho,z_T, pstream__));
                 }
-                current_statement_begin__ = 434;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -8844,142 +8285,101 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::fill(eta,DUMMY_VAR__);
                 stan::math::initialize(eta, DUMMY_VAR__);
-                current_statement_begin__ = 439;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 439;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 440;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 441;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 441;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 442;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 442;
                     stan::math::assign(eta, add(eta,csr_matrix_times_vector(N,q,w,v,u,b)));
                 }
-                current_statement_begin__ = 443;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 444;
                     if (as_bool(logical_eq(link,1))) {
-                        current_statement_begin__ = 444;
                         stan::math::assign(eta, add(eta,get_base1(gamma,1,"gamma",1)));
                     } else {
-                        current_statement_begin__ = 445;
                         stan::math::assign(eta, add(subtract(eta,min(eta)),get_base1(gamma,1,"gamma",1)));
                     }
                 } else {
-                    current_statement_begin__ = 449;
                     stan::math::assign(eta, add(eta,dot_product(xbar,beta)));
                 }
-                current_statement_begin__ = 452;
                 if (as_bool(logical_eq(family,3))) {
-                    current_statement_begin__ = 453;
                     if (as_bool(logical_eq(link,1))) {
-                        current_statement_begin__ = 453;
                         stan::math::assign(eta, add(add(eta,log(get_base1(dispersion,1,"dispersion",1))),log(get_base1(noise,1,"noise",1))));
                     } else if (as_bool(logical_eq(link,2))) {
-                        current_statement_begin__ = 454;
                         stan::math::assign(eta, elt_multiply(multiply(eta,get_base1(dispersion,1,"dispersion",1)),get_base1(noise,1,"noise",1)));
                     } else {
-                        current_statement_begin__ = 455;
                         stan::math::assign(eta, add(add(eta,sqrt(get_base1(dispersion,1,"dispersion",1))),sqrt_vec(get_base1(noise,1,"noise",1), pstream__)));
                     }
                 }
-                current_statement_begin__ = 459;
                 if (as_bool((primitive_value(logical_eq(has_weights,0)) && primitive_value(logical_eq(prior_PD,0))))) {
-                    current_statement_begin__ = 460;
                     if (as_bool(logical_neq(family,2))) {
-                        current_statement_begin__ = 461;
                         if (as_bool(logical_eq(link,1))) {
-                            current_statement_begin__ = 461;
                             lp_accum__.add(poisson_log_log<propto__>(y, eta));
                         } else {
-                            current_statement_begin__ = 462;
                             lp_accum__.add(poisson_log<propto__>(y, linkinv_count(eta,link, pstream__)));
                         }
                     } else {
-                        current_statement_begin__ = 465;
                         if (as_bool(logical_eq(link,1))) {
-                            current_statement_begin__ = 465;
                             lp_accum__.add(neg_binomial_2_log_log<propto__>(y, eta, get_base1(dispersion,1,"dispersion",1)));
                         } else {
-                            current_statement_begin__ = 466;
                             lp_accum__.add(neg_binomial_2_log<propto__>(y, linkinv_count(eta,link, pstream__), get_base1(dispersion,1,"dispersion",1)));
                         }
                     }
                 } else if (as_bool((primitive_value(logical_neq(family,1)) && primitive_value(logical_eq(prior_PD,0))))) {
-                    current_statement_begin__ = 470;
                     lp_accum__.add(dot_product(weights,pw_pois(y,eta,link, pstream__)));
                 } else if (as_bool(logical_eq(prior_PD,0))) {
-                    current_statement_begin__ = 472;
                     lp_accum__.add(dot_product(weights,pw_nb(y,eta,get_base1(dispersion,1,"dispersion",1),link, pstream__)));
                 }
-                current_statement_begin__ = 475;
                 if (as_bool((primitive_value(logical_gt(family,1)) && primitive_value(logical_gt(prior_scale_for_dispersion,0))))) {
-                    current_statement_begin__ = 476;
                     lp_accum__.add(cauchy_log<propto__>(dispersion_unscaled, 0, 1));
                 }
-                current_statement_begin__ = 479;
                 if (as_bool(logical_eq(prior_dist,1))) {
-                    current_statement_begin__ = 479;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
                 } else if (as_bool(logical_eq(prior_dist,2))) {
-                    current_statement_begin__ = 480;
-                    lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    if (as_bool(t_all_124)) {
+                        lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
+                    } else if (as_bool(t_any_124)) {
+                        for (int k = 1; k <= K; ++k) {
+                            if (as_bool((primitive_value((primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),1)) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),2)))) || primitive_value(logical_eq(get_base1(prior_df,k,"prior_df",1),4))))) {
+                                lp_accum__.add(normal_log<propto__>(get_base1(z_beta,k,"z_beta",1), 0, 1));
+                            } else {
+                                lp_accum__.add(student_t_log<propto__>(get_base1(z_beta,k,"z_beta",1), get_base1(prior_df,k,"prior_df",1), 0, 1));
+                            }
+                        }
+                    } else {
+                        lp_accum__.add(student_t_log<propto__>(z_beta, prior_df, 0, 1));
+                    }
                 } else if (as_bool(logical_eq(prior_dist,3))) {
-                    current_statement_begin__ = 482;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 483;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 484;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 485;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 486;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 } else if (as_bool(logical_eq(prior_dist,4))) {
-                    current_statement_begin__ = 489;
                     lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                    current_statement_begin__ = 490;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,1,"local",1), 0, 1));
-                    current_statement_begin__ = 491;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,2,"local",1), multiply(0.5,prior_df), multiply(0.5,prior_df)));
-                    current_statement_begin__ = 492;
                     lp_accum__.add(normal_log<propto__>(get_base1(local,3,"local",1), 0, 1));
-                    current_statement_begin__ = 494;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(local,4,"local",1), multiply(0.5,prior_scale), multiply(0.5,prior_scale)));
-                    current_statement_begin__ = 495;
                     lp_accum__.add(normal_log<propto__>(get_base1(global,1,"global",1), 0, 1));
-                    current_statement_begin__ = 496;
                     lp_accum__.add(inv_gamma_log<propto__>(get_base1(global,2,"global",1), 0.5, 0.5));
                 }
-                current_statement_begin__ = 501;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 502;
                     if (as_bool(logical_eq(prior_dist_for_intercept,1))) {
-                        current_statement_begin__ = 503;
                         lp_accum__.add(normal_log<propto__>(gamma, prior_mean_for_intercept, prior_scale_for_intercept));
                     } else if (as_bool(logical_eq(prior_dist_for_intercept,2))) {
-                        current_statement_begin__ = 505;
                         lp_accum__.add(student_t_log<propto__>(gamma, prior_df_for_intercept, prior_mean_for_intercept, prior_scale_for_intercept));
                     }
                 }
-                current_statement_begin__ = 511;
                 if (as_bool(logical_eq(family,3))) {
-                    current_statement_begin__ = 511;
                     lp_accum__.add(gamma_log<propto__>(get_base1(noise,1,"noise",1), get_base1(dispersion,1,"dispersion",1), 1));
                 }
-                current_statement_begin__ = 513;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 513;
                     decov_lp(z_b,z_T,rho,zeta,tau,regularization,delta,shape,t,p, lp__, lp_accum__, pstream__);
                 }
-                current_statement_begin__ = 514;
             }
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -9180,39 +8580,57 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         (void) theta_L;  // dummy to suppress unused var warning
 
         try {
-            current_statement_begin__ = 420;
             if (as_bool(logical_eq(prior_dist,0))) {
-                current_statement_begin__ = 420;
                 stan::math::assign(beta, z_beta);
-            } else if (as_bool(logical_lte(prior_dist,2))) {
-                current_statement_begin__ = 421;
+            } else if (as_bool(logical_eq(prior_dist,1))) {
                 stan::math::assign(beta, add(elt_multiply(z_beta,prior_scale),prior_mean));
+            } else if (as_bool(logical_eq(prior_dist,2))) {
+                for (int k = 1; k <= K; ++k) {
+                    {
+                        double P(0.0);
+                        (void) P;  // dummy to suppress unused var warning
+                        stan::math::initialize(P, std::numeric_limits<double>::quiet_NaN());
+                        if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),1))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), tan((pi() * (P - 0.5))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),2))) {
+                            stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((2 * (P - 0.5)) / sqrt(((2.0 * P) * (1 - P)))));
+                        } else if (as_bool(logical_eq(get_base1(prior_df,k,"prior_df",1),4))) {
+                            {
+                                double q_a(0.0);
+                                (void) q_a;  // dummy to suppress unused var warning
+                                stan::math::initialize(q_a, std::numeric_limits<double>::quiet_NaN());
+                                stan::math::assign(P, Phi(get_base1(z_beta,k,"z_beta",1)));
+                                stan::math::assign(q_a, sqrt(((4.0 * P) * (1 - P))));
+                                stan::math::assign(q_a, (cos((acos(q_a) / 3)) / q_a));
+                                stan::math::assign(get_base1_lhs(beta,k,"beta",1), (2 * sqrt((q_a - 1))));
+                                if (as_bool(logical_lt(P,0.5))) {
+                                    stan::math::assign(get_base1_lhs(beta,k,"beta",1), -(get_base1(beta,k,"beta",1)));
+                                }
+                            }
+                        } else {
+                            stan::math::assign(get_base1_lhs(beta,k,"beta",1), get_base1(z_beta,k,"z_beta",1));
+                        }
+                        stan::math::assign(get_base1_lhs(beta,k,"beta",1), ((get_base1(beta,k,"beta",1) * get_base1(prior_scale,k,"prior_scale",1)) + get_base1(prior_mean,k,"prior_mean",1)));
+                    }
+                }
             } else if (as_bool(logical_eq(prior_dist,3))) {
-                current_statement_begin__ = 422;
                 stan::math::assign(beta, hs_prior(z_beta,global,local, pstream__));
             } else if (as_bool(logical_eq(prior_dist,4))) {
-                current_statement_begin__ = 423;
                 stan::math::assign(beta, hsplus_prior(z_beta,global,local, pstream__));
             }
-            current_statement_begin__ = 424;
             if (as_bool((primitive_value(logical_gt(family,1)) && primitive_value(logical_gt(prior_scale_for_dispersion,0))))) {
-                current_statement_begin__ = 425;
                 stan::math::assign(get_base1_lhs(dispersion,1,"dispersion",1), (prior_scale_for_dispersion * get_base1(dispersion_unscaled,1,"dispersion_unscaled",1)));
             } else if (as_bool(logical_gt(family,1))) {
-                current_statement_begin__ = 426;
                 stan::math::assign(get_base1_lhs(dispersion,1,"dispersion",1), get_base1(dispersion_unscaled,1,"dispersion_unscaled",1));
             }
-            current_statement_begin__ = 427;
             if (as_bool(logical_gt(t,0))) {
-                current_statement_begin__ = 428;
                 if (as_bool(logical_eq(family,1))) {
-                    current_statement_begin__ = 429;
                     stan::math::assign(theta_L, make_theta_L(len_theta_L,p,1.0,tau,scale,zeta,rho,z_T, pstream__));
                 } else {
-                    current_statement_begin__ = 432;
                     stan::math::assign(theta_L, make_theta_L(len_theta_L,p,get_base1(dispersion,1,"dispersion",1),tau,scale,zeta,rho,z_T, pstream__));
                 }
-                current_statement_begin__ = 434;
                 stan::math::assign(b, make_b(z_b,theta_L,p,l, pstream__));
             }
         } catch (const std::exception& e) {
@@ -9252,12 +8670,9 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(mean_PPD,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 519;
             if (as_bool(logical_eq(has_intercept,1))) {
-                current_statement_begin__ = 519;
                 stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(gamma,1,"gamma",1) - dot_product(xbar,beta)));
             }
-            current_statement_begin__ = 520;
             stan::math::assign(mean_PPD, 0);
             {
                 vector_d nu(N);
@@ -9266,103 +8681,70 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::initialize(nu, std::numeric_limits<double>::quiet_NaN());
                 stan::math::initialize(eta, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 524;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 524;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 525;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 526;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 526;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 527;
                 if (as_bool(logical_gt(t,0))) {
-                    current_statement_begin__ = 527;
                     stan::math::assign(eta, add(eta,csr_matrix_times_vector(N,q,w,v,u,b)));
                 }
-                current_statement_begin__ = 528;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 529;
                     if (as_bool(logical_eq(link,1))) {
-                        current_statement_begin__ = 529;
                         stan::math::assign(eta, add(eta,get_base1(gamma,1,"gamma",1)));
                     } else {
                         {
                             double shift(0.0);
                             (void) shift;  // dummy to suppress unused var warning
                             stan::math::initialize(shift, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 532;
                             stan::math::assign(shift, min(eta));
-                            current_statement_begin__ = 533;
                             stan::math::assign(eta, add(subtract(eta,shift),get_base1(gamma,1,"gamma",1)));
-                            current_statement_begin__ = 534;
                             stan::math::assign(get_base1_lhs(alpha,1,"alpha",1), (get_base1(alpha,1,"alpha",1) - shift));
                         }
                     }
                 } else {
-                    current_statement_begin__ = 539;
                     stan::math::assign(eta, add(eta,dot_product(xbar,beta)));
                 }
-                current_statement_begin__ = 542;
                 if (as_bool(logical_eq(family,3))) {
-                    current_statement_begin__ = 543;
                     if (as_bool(logical_eq(link,1))) {
-                        current_statement_begin__ = 543;
                         stan::math::assign(eta, add(add(eta,log(get_base1(dispersion,1,"dispersion",1))),log(get_base1(noise,1,"noise",1))));
                     } else if (as_bool(logical_eq(link,2))) {
-                        current_statement_begin__ = 544;
                         stan::math::assign(eta, elt_multiply(multiply(eta,get_base1(dispersion,1,"dispersion",1)),get_base1(noise,1,"noise",1)));
                     } else {
-                        current_statement_begin__ = 545;
                         stan::math::assign(eta, add(add(eta,sqrt(get_base1(dispersion,1,"dispersion",1))),sqrt_vec(get_base1(noise,1,"noise",1), pstream__)));
                     }
                 }
-                current_statement_begin__ = 547;
                 stan::math::assign(nu, linkinv_count(eta,link, pstream__));
-                current_statement_begin__ = 548;
                 if (as_bool(logical_neq(family,2))) {
-                    current_statement_begin__ = 548;
                     for (int n = 1; n <= N; ++n) {
-                        current_statement_begin__ = 549;
                         if (as_bool(logical_lt(get_base1(nu,n,"nu",1),poisson_max))) {
-                            current_statement_begin__ = 549;
                             stan::math::assign(mean_PPD, (mean_PPD + poisson_rng(get_base1(nu,n,"nu",1), base_rng__)));
                         } else {
-                            current_statement_begin__ = 550;
                             stan::math::assign(mean_PPD, (mean_PPD + normal_rng(get_base1(nu,n,"nu",1),sqrt(get_base1(nu,n,"nu",1)), base_rng__)));
                         }
                     }
                 } else {
-                    current_statement_begin__ = 552;
                     for (int n = 1; n <= N; ++n) {
                         {
                             double gamma_temp(0.0);
                             (void) gamma_temp;  // dummy to suppress unused var warning
                             stan::math::initialize(gamma_temp, std::numeric_limits<double>::quiet_NaN());
-                            current_statement_begin__ = 554;
                             if (as_bool(is_inf(get_base1(dispersion,1,"dispersion",1)))) {
-                                current_statement_begin__ = 554;
                                 stan::math::assign(gamma_temp, get_base1(nu,n,"nu",1));
                             } else {
-                                current_statement_begin__ = 555;
                                 stan::math::assign(gamma_temp, gamma_rng(get_base1(dispersion,1,"dispersion",1),(get_base1(dispersion,1,"dispersion",1) / get_base1(nu,n,"nu",1)), base_rng__));
                             }
-                            current_statement_begin__ = 556;
                             if (as_bool(logical_lt(gamma_temp,poisson_max))) {
-                                current_statement_begin__ = 557;
                                 stan::math::assign(mean_PPD, (mean_PPD + poisson_rng(gamma_temp, base_rng__)));
                             } else {
-                                current_statement_begin__ = 558;
                                 stan::math::assign(mean_PPD, (mean_PPD + normal_rng(gamma_temp,sqrt(gamma_temp), base_rng__)));
                             }
                         }
                     }
                 }
-                current_statement_begin__ = 560;
                 stan::math::assign(mean_PPD, (mean_PPD / N));
             }
         } catch (const std::exception& e) {
@@ -9642,9 +9024,7 @@ ll_mvn_ols_qr_lp(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& theta,
     (void) propto__;
     int current_statement_begin__ = -1;
     try {
-        current_statement_begin__ = 36;
         lp_accum__.add((((-(0.5) * ((dot_self(subtract(theta,b)) + (N * square((intercept - ybar)))) + SSR)) / square(sigma)) - (N * (log(sigma) + 0.91893853320467267))));
-        current_statement_begin__ = 40;
         return stan::math::promote_scalar<fun_return_scalar_t__>(get_lp(lp__, lp_accum__));
     } catch (const std::exception& e) {
         stan::lang::rethrow_located(e,current_statement_begin__);
@@ -9871,13 +9251,9 @@ public:
         stan::math::fill(sqrt_Nm1,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 69;
             stan::math::assign(half_K, (0.5 * K));
-            current_statement_begin__ = 70;
             for (int j = 1; j <= J; ++j) {
-                current_statement_begin__ = 71;
                 stan::math::assign(get_base1_lhs(sqrt_inv_N,j,"sqrt_inv_N",1), sqrt((1.0 / get_base1(N,j,"N",1))));
-                current_statement_begin__ = 72;
                 stan::math::assign(get_base1_lhs(sqrt_Nm1,j,"sqrt_Nm1",1), sqrt((get_base1(N,j,"N",1) - 1.0)));
             }
         } catch (const std::exception& e) {
@@ -10052,50 +9428,34 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(shift,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 86;
             for (int j = 1; j <= J; ++j) {
                 {
                     T__ Delta_y;
                     (void) Delta_y;  // dummy to suppress unused var warning
                     stan::math::initialize(Delta_y, DUMMY_VAR__);
-                    current_statement_begin__ = 88;
                     if (as_bool(logical_eq(prior_PD,0))) {
-                        current_statement_begin__ = 88;
                         stan::math::assign(Delta_y, (get_base1(s_Y,j,"s_Y",1) * exp(get_base1(log_omega,j,"log_omega",1))));
                     } else {
-                        current_statement_begin__ = 89;
                         stan::math::assign(Delta_y, 1);
                     }
-                    current_statement_begin__ = 92;
                     if (as_bool(logical_gt(K,1))) {
-                        current_statement_begin__ = 93;
                         stan::math::assign(get_base1_lhs(theta,j,"theta",1), multiply(multiply(multiply(get_base1(z_beta,j,"z_beta",1),sqrt((get_base1(R2,j,"R2",1) / dot_self(get_base1(z_beta,j,"z_beta",1))))),get_base1(sqrt_Nm1,j,"sqrt_Nm1",1)),Delta_y));
                     } else {
-                        current_statement_begin__ = 96;
-                        stan::math::assign(get_base1_lhs(get_base1_lhs(theta,j,"theta",1),1,"theta",2), ((sqrt(get_base1(R2,j,"R2",1)) * get_base1(sqrt_Nm1,j,"sqrt_Nm1",1)) * Delta_y));
+                        stan::math::assign(get_base1_lhs(get_base1_lhs(theta,j,"theta",1),1,"theta",2), (((get_base1(get_base1(z_beta,j,"z_beta",1),1,"z_beta",2) * sqrt(get_base1(R2,j,"R2",1))) * get_base1(sqrt_Nm1,j,"sqrt_Nm1",1)) * Delta_y));
                     }
-                    current_statement_begin__ = 98;
                     stan::math::assign(get_base1_lhs(sigma,j,"sigma",1), (Delta_y * sqrt((1 - get_base1(R2,j,"R2",1)))));
-                    current_statement_begin__ = 100;
                     if (as_bool(logical_eq(has_intercept,1))) {
-                        current_statement_begin__ = 101;
                         if (as_bool(logical_eq(prior_dist_for_intercept,0))) {
-                            current_statement_begin__ = 102;
                             stan::math::assign(get_base1_lhs(alpha,j,"alpha",1), get_base1(z_alpha,j,"z_alpha",1));
                         } else if (as_bool(logical_eq(prior_scale_for_intercept,0))) {
-                            current_statement_begin__ = 104;
                             stan::math::assign(get_base1_lhs(alpha,j,"alpha",1), (((get_base1(z_alpha,j,"z_alpha",1) * Delta_y) * get_base1(sqrt_inv_N,j,"sqrt_inv_N",1)) + prior_mean_for_intercept));
                         } else {
-                            current_statement_begin__ = 106;
                             stan::math::assign(get_base1_lhs(alpha,j,"alpha",1), ((get_base1(z_alpha,j,"z_alpha",1) * prior_scale_for_intercept) + prior_mean_for_intercept));
                         }
                     }
-                    current_statement_begin__ = 111;
                     if (as_bool(logical_eq(center_y,1))) {
-                        current_statement_begin__ = 111;
                         stan::math::assign(get_base1_lhs(shift,j,"shift",1), 0);
                     } else {
-                        current_statement_begin__ = 112;
                         stan::math::assign(get_base1_lhs(shift,j,"shift",1), dot_product(get_base1(xbarR_inv,j,"xbarR_inv",1),get_base1(theta,j,"theta",1)));
                     }
                 }
@@ -10146,35 +9506,25 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
 
         // model body
         try {
-            current_statement_begin__ = 116;
             for (int j = 1; j <= J; ++j) {
-                current_statement_begin__ = 117;
                 if (as_bool(logical_eq(prior_PD,0))) {
                     {
                         T__ dummy;
                         (void) dummy;  // dummy to suppress unused var warning
                         stan::math::initialize(dummy, DUMMY_VAR__);
-                        current_statement_begin__ = 119;
                         if (as_bool(has_intercept)) {
-                            current_statement_begin__ = 120;
                             stan::math::assign(dummy, ll_mvn_ols_qr_lp(get_base1(theta,j,"theta",1),get_base1(Rb,j,"Rb",1),(get_base1(alpha,j,"alpha",1) + get_base1(shift,j,"shift",1)),get_base1(ybar,j,"ybar",1),get_base1(SSR,j,"SSR",1),get_base1(sigma,j,"sigma",1),get_base1(N,j,"N",1), lp__, lp_accum__, pstream__));
                         } else {
-                            current_statement_begin__ = 122;
                             stan::math::assign(dummy, ll_mvn_ols_qr_lp(get_base1(theta,j,"theta",1),get_base1(Rb,j,"Rb",1),get_base1(shift,j,"shift",1),get_base1(ybar,j,"ybar",1),get_base1(SSR,j,"SSR",1),get_base1(sigma,j,"sigma",1),get_base1(N,j,"N",1), lp__, lp_accum__, pstream__));
                         }
                     }
                 }
-                current_statement_begin__ = 125;
                 lp_accum__.add(normal_log<propto__>(get_base1(z_beta,j,"z_beta",1), 0, 1));
             }
-            current_statement_begin__ = 127;
             if (as_bool((primitive_value(logical_eq(has_intercept,1)) && primitive_value(logical_gt(prior_dist_for_intercept,0))))) {
-                current_statement_begin__ = 127;
                 lp_accum__.add(normal_log<propto__>(z_alpha, 0, 1));
             }
-            current_statement_begin__ = 128;
             if (as_bool(logical_eq(prior_dist,1))) {
-                current_statement_begin__ = 128;
                 lp_accum__.add(beta_log<propto__>(R2, half_K, eta));
             }
         } catch (const std::exception& e) {
@@ -10309,50 +9659,34 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         vector<double> shift(J, 0.0);
 
         try {
-            current_statement_begin__ = 86;
             for (int j = 1; j <= J; ++j) {
                 {
                     double Delta_y(0.0);
                     (void) Delta_y;  // dummy to suppress unused var warning
                     stan::math::initialize(Delta_y, std::numeric_limits<double>::quiet_NaN());
-                    current_statement_begin__ = 88;
                     if (as_bool(logical_eq(prior_PD,0))) {
-                        current_statement_begin__ = 88;
                         stan::math::assign(Delta_y, (get_base1(s_Y,j,"s_Y",1) * exp(get_base1(log_omega,j,"log_omega",1))));
                     } else {
-                        current_statement_begin__ = 89;
                         stan::math::assign(Delta_y, 1);
                     }
-                    current_statement_begin__ = 92;
                     if (as_bool(logical_gt(K,1))) {
-                        current_statement_begin__ = 93;
                         stan::math::assign(get_base1_lhs(theta,j,"theta",1), multiply(multiply(multiply(get_base1(z_beta,j,"z_beta",1),sqrt((get_base1(R2,j,"R2",1) / dot_self(get_base1(z_beta,j,"z_beta",1))))),get_base1(sqrt_Nm1,j,"sqrt_Nm1",1)),Delta_y));
                     } else {
-                        current_statement_begin__ = 96;
-                        stan::math::assign(get_base1_lhs(get_base1_lhs(theta,j,"theta",1),1,"theta",2), ((sqrt(get_base1(R2,j,"R2",1)) * get_base1(sqrt_Nm1,j,"sqrt_Nm1",1)) * Delta_y));
+                        stan::math::assign(get_base1_lhs(get_base1_lhs(theta,j,"theta",1),1,"theta",2), (((get_base1(get_base1(z_beta,j,"z_beta",1),1,"z_beta",2) * sqrt(get_base1(R2,j,"R2",1))) * get_base1(sqrt_Nm1,j,"sqrt_Nm1",1)) * Delta_y));
                     }
-                    current_statement_begin__ = 98;
                     stan::math::assign(get_base1_lhs(sigma,j,"sigma",1), (Delta_y * sqrt((1 - get_base1(R2,j,"R2",1)))));
-                    current_statement_begin__ = 100;
                     if (as_bool(logical_eq(has_intercept,1))) {
-                        current_statement_begin__ = 101;
                         if (as_bool(logical_eq(prior_dist_for_intercept,0))) {
-                            current_statement_begin__ = 102;
                             stan::math::assign(get_base1_lhs(alpha,j,"alpha",1), get_base1(z_alpha,j,"z_alpha",1));
                         } else if (as_bool(logical_eq(prior_scale_for_intercept,0))) {
-                            current_statement_begin__ = 104;
                             stan::math::assign(get_base1_lhs(alpha,j,"alpha",1), (((get_base1(z_alpha,j,"z_alpha",1) * Delta_y) * get_base1(sqrt_inv_N,j,"sqrt_inv_N",1)) + prior_mean_for_intercept));
                         } else {
-                            current_statement_begin__ = 106;
                             stan::math::assign(get_base1_lhs(alpha,j,"alpha",1), ((get_base1(z_alpha,j,"z_alpha",1) * prior_scale_for_intercept) + prior_mean_for_intercept));
                         }
                     }
-                    current_statement_begin__ = 111;
                     if (as_bool(logical_eq(center_y,1))) {
-                        current_statement_begin__ = 111;
                         stan::math::assign(get_base1_lhs(shift,j,"shift",1), 0);
                     } else {
-                        current_statement_begin__ = 112;
                         stan::math::assign(get_base1_lhs(shift,j,"shift",1), dot_product(get_base1(xbarR_inv,j,"xbarR_inv",1),get_base1(theta,j,"theta",1)));
                     }
                 }
@@ -10398,17 +9732,12 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(beta,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 134;
             for (int j = 1; j <= J; ++j) {
-                current_statement_begin__ = 135;
                 if (as_bool(logical_eq(has_intercept,1))) {
-                    current_statement_begin__ = 136;
-                    stan::math::assign(get_base1_lhs(mean_PPD,j,"mean_PPD",1), normal_rng((get_base1(alpha,j,"alpha",1) + get_base1(shift,j,"shift",1)),get_base1(sigma,j,"sigma",1), base_rng__));
+                    stan::math::assign(get_base1_lhs(mean_PPD,j,"mean_PPD",1), normal_rng((get_base1(alpha,j,"alpha",1) + get_base1(shift,j,"shift",1)),(get_base1(sigma,j,"sigma",1) * get_base1(sqrt_inv_N,j,"sqrt_inv_N",1)), base_rng__));
                 } else {
-                    current_statement_begin__ = 137;
-                    stan::math::assign(get_base1_lhs(mean_PPD,j,"mean_PPD",1), normal_rng(get_base1(shift,j,"shift",1),get_base1(sigma,j,"sigma",1), base_rng__));
+                    stan::math::assign(get_base1_lhs(mean_PPD,j,"mean_PPD",1), normal_rng(get_base1(shift,j,"shift",1),(get_base1(sigma,j,"sigma",1) * get_base1(sqrt_inv_N,j,"sqrt_inv_N",1)), base_rng__));
                 }
-                current_statement_begin__ = 138;
                 stan::math::assign(get_base1_lhs(beta,j,"beta",1), multiply(get_base1(R_inv,j,"R_inv",1),get_base1(theta,j,"theta",1)));
             }
         } catch (const std::exception& e) {
@@ -10629,32 +9958,22 @@ CDF_polr(const T0__& x,
             fun_scalar_t__ p;
             (void) p;  // dummy to suppress unused var warning
             stan::math::initialize(p, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 33;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 34;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 34;
-            current_statement_begin__ = 36;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 36;
                 stan::math::assign(p, inv_logit(x));
             } else if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 37;
                 stan::math::assign(p, Phi(x));
             } else if (as_bool(logical_eq(link,3))) {
-                current_statement_begin__ = 38;
                 stan::math::assign(p, gumbel_cdf(x,0,1));
             } else if (as_bool(logical_eq(link,4))) {
-                current_statement_begin__ = 39;
                 stan::math::assign(p, inv_cloglog(x));
             } else {
-                current_statement_begin__ = 40;
                 stan::math::assign(p, cauchy_cdf(x,0,1));
             }
-            current_statement_begin__ = 41;
             return stan::math::promote_scalar<fun_return_scalar_t__>(p);
         }
     } catch (const std::exception& e) {
@@ -10697,53 +10016,36 @@ pw_polr(const std::vector<int>& y,
             int J(0);
             (void) J;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 58;
             stan::math::assign(N, rows(eta));
-            current_statement_begin__ = 59;
             stan::math::assign(J, (rows(cutpoints) + 1));
-            current_statement_begin__ = 60;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 61;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 61;
-            current_statement_begin__ = 63;
             if (as_bool(logical_eq(alpha,1))) {
-                current_statement_begin__ = 63;
                 for (int n = 1; n <= N; ++n) {
-                    current_statement_begin__ = 64;
                     if (as_bool(logical_eq(get_base1(y,n,"y",1),1))) {
-                        current_statement_begin__ = 64;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), CDF_polr((get_base1(cutpoints,1,"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__));
                     } else if (as_bool(logical_eq(get_base1(y,n,"y",1),J))) {
-                        current_statement_begin__ = 65;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), (1 - CDF_polr((get_base1(cutpoints,(J - 1),"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__)));
                     } else {
-                        current_statement_begin__ = 66;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), (CDF_polr((get_base1(cutpoints,get_base1(y,n,"y",1),"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__) - CDF_polr((get_base1(cutpoints,(get_base1(y,n,"y",1) - 1),"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__)));
                     }
                 }
             } else {
-                current_statement_begin__ = 69;
                 for (int n = 1; n <= N; ++n) {
-                    current_statement_begin__ = 70;
                     if (as_bool(logical_eq(get_base1(y,n,"y",1),1))) {
-                        current_statement_begin__ = 70;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), pow(CDF_polr((get_base1(cutpoints,1,"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__),alpha));
                     } else if (as_bool(logical_eq(get_base1(y,n,"y",1),J))) {
-                        current_statement_begin__ = 71;
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), (1 - pow(CDF_polr((get_base1(cutpoints,(J - 1),"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__),alpha)));
                     } else {
-                        current_statement_begin__ = 72;
                         std::stringstream errmsg_stream__;
                         errmsg_stream__ << "alpha not allowed with more than 2 outcome categories";
                         throw std::domain_error(errmsg_stream__.str());
                     }
                 }
             }
-            current_statement_begin__ = 74;
             return stan::math::promote_scalar<fun_return_scalar_t__>(log(ll));
         }
     } catch (const std::exception& e) {
@@ -10786,59 +10088,38 @@ make_cutpoints(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& probabilities,
             (void) running_sum;  // dummy to suppress unused var warning
             stan::math::initialize(cutpoints, std::numeric_limits<double>::quiet_NaN());
             stan::math::initialize(running_sum, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 90;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 91;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 91;
-            current_statement_begin__ = 93;
             stan::math::assign(running_sum, 0);
-            current_statement_begin__ = 94;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 94;
                 for (int c = 1; c <= rows(cutpoints); ++c) {
-                    current_statement_begin__ = 95;
                     stan::math::assign(running_sum, (running_sum + get_base1(probabilities,c,"probabilities",1)));
-                    current_statement_begin__ = 96;
                     stan::math::assign(get_base1_lhs(cutpoints,c,"cutpoints",1), logit(running_sum));
                 }
             } else if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 98;
                 for (int c = 1; c <= rows(cutpoints); ++c) {
-                    current_statement_begin__ = 99;
                     stan::math::assign(running_sum, (running_sum + get_base1(probabilities,c,"probabilities",1)));
-                    current_statement_begin__ = 100;
                     stan::math::assign(get_base1_lhs(cutpoints,c,"cutpoints",1), inv_Phi(running_sum));
                 }
             } else if (as_bool(logical_eq(link,3))) {
-                current_statement_begin__ = 102;
                 for (int c = 1; c <= rows(cutpoints); ++c) {
-                    current_statement_begin__ = 103;
                     stan::math::assign(running_sum, (running_sum + get_base1(probabilities,c,"probabilities",1)));
-                    current_statement_begin__ = 104;
                     stan::math::assign(get_base1_lhs(cutpoints,c,"cutpoints",1), -(log(-(log(running_sum)))));
                 }
             } else if (as_bool(logical_eq(link,4))) {
-                current_statement_begin__ = 106;
                 for (int c = 1; c <= rows(cutpoints); ++c) {
-                    current_statement_begin__ = 107;
                     stan::math::assign(running_sum, (running_sum + get_base1(probabilities,c,"probabilities",1)));
-                    current_statement_begin__ = 108;
                     stan::math::assign(get_base1_lhs(cutpoints,c,"cutpoints",1), log(-(log1m(running_sum))));
                 }
             } else {
-                current_statement_begin__ = 110;
                 for (int c = 1; c <= rows(cutpoints); ++c) {
-                    current_statement_begin__ = 111;
                     stan::math::assign(running_sum, (running_sum + get_base1(probabilities,c,"probabilities",1)));
-                    current_statement_begin__ = 112;
                     stan::math::assign(get_base1_lhs(cutpoints,c,"cutpoints",1), tan((pi() * (running_sum - 0.5))));
                 }
             }
-            current_statement_begin__ = 114;
             return stan::math::promote_scalar<fun_return_scalar_t__>(multiply(scale,cutpoints));
         }
     } catch (const std::exception& e) {
@@ -10879,59 +10160,39 @@ draw_ystar_rng(const T0__& lower,
             fun_scalar_t__ ystar;
             (void) ystar;  // dummy to suppress unused var warning
             stan::math::initialize(ystar, std::numeric_limits<double>::quiet_NaN());
-            current_statement_begin__ = 129;
             stan::math::assign(iter, 0);
-            current_statement_begin__ = 130;
             stan::math::assign(ystar, not_a_number());
-            current_statement_begin__ = 131;
             if (as_bool(logical_gte(lower,upper))) {
-                current_statement_begin__ = 132;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "lower must be less than upper";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 132;
-            current_statement_begin__ = 136;
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,5))))) {
-                current_statement_begin__ = 137;
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            current_statement_begin__ = 137;
-            current_statement_begin__ = 139;
             if (as_bool(logical_eq(link,1))) {
-                current_statement_begin__ = 139;
                 while (as_bool(logical_negation((primitive_value(logical_gt(ystar,lower)) && primitive_value(logical_lt(ystar,upper)))))) {
-                    current_statement_begin__ = 140;
                     stan::math::assign(ystar, logistic_rng(eta,1, base_rng__));
                 }
             } else if (as_bool(logical_eq(link,2))) {
-                current_statement_begin__ = 141;
                 while (as_bool(logical_negation((primitive_value(logical_gt(ystar,lower)) && primitive_value(logical_lt(ystar,upper)))))) {
-                    current_statement_begin__ = 142;
                     stan::math::assign(ystar, normal_rng(eta,1, base_rng__));
                 }
             } else if (as_bool(logical_eq(link,3))) {
-                current_statement_begin__ = 143;
                 while (as_bool(logical_negation((primitive_value(logical_gt(ystar,lower)) && primitive_value(logical_lt(ystar,upper)))))) {
-                    current_statement_begin__ = 144;
                     stan::math::assign(ystar, gumbel_rng(eta,1, base_rng__));
                 }
             } else if (as_bool(logical_eq(link,4))) {
-                current_statement_begin__ = 145;
                 while (as_bool(logical_negation((primitive_value(logical_gt(ystar,lower)) && primitive_value(logical_lt(ystar,upper)))))) {
-                    current_statement_begin__ = 146;
                     stan::math::assign(ystar, log(-(log1m(uniform_rng(0,1, base_rng__)))));
                 }
             } else if (as_bool(logical_eq(link,5))) {
-                current_statement_begin__ = 147;
                 while (as_bool(logical_negation((primitive_value(logical_gt(ystar,lower)) && primitive_value(logical_lt(ystar,upper)))))) {
-                    current_statement_begin__ = 148;
                     stan::math::assign(ystar, cauchy_rng(eta,1, base_rng__));
                 }
             }
-            current_statement_begin__ = 149;
             return stan::math::promote_scalar<fun_return_scalar_t__>(ystar);
         }
     } catch (const std::exception& e) {
@@ -11176,19 +10437,13 @@ public:
         stan::math::fill(sqrt_Nm1,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 198;
             stan::math::assign(half_K, (0.5 * K));
-            current_statement_begin__ = 199;
             stan::math::assign(is_constant, 1);
-            current_statement_begin__ = 200;
             for (int j = 1; j <= J; ++j) {
-                current_statement_begin__ = 200;
                 if (as_bool(logical_neq(get_base1(prior_counts,j,"prior_counts",1),1))) {
-                    current_statement_begin__ = 200;
                     stan::math::assign(is_constant, 0);
                 }
             }
-            current_statement_begin__ = 201;
             stan::math::assign(sqrt_Nm1, sqrt((N - 1.0)));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e,current_statement_begin__);
@@ -11359,17 +10614,12 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 T__ Delta_y;
                 (void) Delta_y;  // dummy to suppress unused var warning
                 stan::math::initialize(Delta_y, DUMMY_VAR__);
-                current_statement_begin__ = 214;
                 stan::math::assign(Delta_y, inv(sqrt((1 - R2))));
-                current_statement_begin__ = 215;
                 if (as_bool(logical_gt(K,1))) {
-                    current_statement_begin__ = 216;
                     stan::math::assign(beta, multiply(multiply(multiply(z_beta,sqrt((R2 / dot_self(z_beta)))),Delta_y),sqrt_Nm1));
                 } else {
-                    current_statement_begin__ = 217;
                     stan::math::assign(get_base1_lhs(beta,1,"beta",1), ((sqrt(R2) * Delta_y) * sqrt_Nm1));
                 }
-                current_statement_begin__ = 218;
                 stan::math::assign(cutpoints, make_cutpoints(pi,Delta_y,link, pstream__));
             }
         } catch (const std::exception& e) {
@@ -11404,54 +10654,35 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::fill(eta,DUMMY_VAR__);
                 stan::math::initialize(eta, DUMMY_VAR__);
-                current_statement_begin__ = 223;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 223;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 224;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 225;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 225;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 226;
                 if (as_bool((primitive_value(logical_eq(has_weights,0)) && primitive_value(logical_eq(prior_PD,0))))) {
-                    current_statement_begin__ = 227;
                     if (as_bool(logical_eq(is_skewed,0))) {
-                        current_statement_begin__ = 228;
                         lp_accum__.add(pw_polr(y,eta,cutpoints,link,1.0, pstream__));
                     } else {
-                        current_statement_begin__ = 229;
                         lp_accum__.add(pw_polr(y,eta,cutpoints,link,get_base1(alpha,1,"alpha",1), pstream__));
                     }
                 } else if (as_bool(logical_eq(prior_PD,0))) {
-                    current_statement_begin__ = 232;
                     if (as_bool(logical_eq(is_skewed,0))) {
-                        current_statement_begin__ = 233;
                         lp_accum__.add(dot_product(weights,pw_polr(y,eta,cutpoints,link,1.0, pstream__)));
                     } else {
-                        current_statement_begin__ = 234;
                         lp_accum__.add(dot_product(weights,pw_polr(y,eta,cutpoints,link,get_base1(alpha,1,"alpha",1), pstream__)));
                     }
                 }
-                current_statement_begin__ = 237;
                 if (as_bool(logical_eq(is_constant,0))) {
-                    current_statement_begin__ = 237;
                     lp_accum__.add(dirichlet_log<propto__>(pi, prior_counts));
                 }
-                current_statement_begin__ = 238;
                 lp_accum__.add(normal_log<propto__>(z_beta, 0, 1));
-                current_statement_begin__ = 239;
                 if (as_bool(logical_eq(prior_dist,1))) {
-                    current_statement_begin__ = 239;
                     lp_accum__.add(beta_log<propto__>(R2, half_K, regularization));
                 }
-                current_statement_begin__ = 240;
                 if (as_bool(logical_eq(is_skewed,1))) {
-                    current_statement_begin__ = 240;
                     lp_accum__.add(gamma_log<propto__>(alpha, shape, rate));
                 }
             }
@@ -11571,17 +10802,12 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                 double Delta_y(0.0);
                 (void) Delta_y;  // dummy to suppress unused var warning
                 stan::math::initialize(Delta_y, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 214;
                 stan::math::assign(Delta_y, inv(sqrt((1 - R2))));
-                current_statement_begin__ = 215;
                 if (as_bool(logical_gt(K,1))) {
-                    current_statement_begin__ = 216;
                     stan::math::assign(beta, multiply(multiply(multiply(z_beta,sqrt((R2 / dot_self(z_beta)))),Delta_y),sqrt_Nm1));
                 } else {
-                    current_statement_begin__ = 217;
                     stan::math::assign(get_base1_lhs(beta,1,"beta",1), ((sqrt(R2) * Delta_y) * sqrt_Nm1));
                 }
-                current_statement_begin__ = 218;
                 stan::math::assign(cutpoints, make_cutpoints(pi,Delta_y,link, pstream__));
             }
         } catch (const std::exception& e) {
@@ -11619,33 +10845,23 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
         stan::math::fill(residuals,DUMMY_VAR__);
 
         try {
-            current_statement_begin__ = 248;
             stan::math::assign(zeta, add(cutpoints,dot_product(xbar,beta)));
-            current_statement_begin__ = 249;
             if (as_bool(logical_eq(J,2))) {
-                current_statement_begin__ = 249;
                 stan::math::assign(zeta, minus(zeta));
             }
-            current_statement_begin__ = 250;
             stan::math::assign(mean_PPD, rep_vector(0,rows(mean_PPD)));
             {
                 vector_d eta(N);
                 (void) eta;  // dummy to suppress unused var warning
                 stan::math::initialize(eta, std::numeric_limits<double>::quiet_NaN());
-                current_statement_begin__ = 253;
                 if (as_bool(logical_gt(K,0))) {
-                    current_statement_begin__ = 253;
                     stan::math::assign(eta, multiply(X,beta));
                 } else {
-                    current_statement_begin__ = 254;
                     stan::math::assign(eta, rep_vector(0.0,N));
                 }
-                current_statement_begin__ = 255;
                 if (as_bool(logical_eq(has_offset,1))) {
-                    current_statement_begin__ = 255;
                     stan::math::assign(eta, add(eta,offset));
                 }
-                current_statement_begin__ = 256;
                 for (int n = 1; n <= N; ++n) {
                     {
                         vector_d theta(J);
@@ -11659,67 +10875,45 @@ throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
                         stan::math::initialize(theta, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(previous, std::numeric_limits<double>::quiet_NaN());
                         stan::math::initialize(ystar, std::numeric_limits<double>::quiet_NaN());
-                        current_statement_begin__ = 261;
                         stan::math::assign(get_base1_lhs(theta,1,"theta",1), CDF_polr((get_base1(cutpoints,1,"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__));
-                        current_statement_begin__ = 262;
                         if (as_bool(is_skewed)) {
-                            current_statement_begin__ = 262;
                             stan::math::assign(get_base1_lhs(theta,1,"theta",1), pow(get_base1(theta,1,"theta",1),get_base1(alpha,1,"alpha",1)));
                         }
-                        current_statement_begin__ = 263;
                         stan::math::assign(previous, get_base1(theta,1,"theta",1));
-                        current_statement_begin__ = 264;
                         for (int j = 2; j <= (J - 1); ++j) {
                             {
                                 double current(0.0);
                                 (void) current;  // dummy to suppress unused var warning
                                 stan::math::initialize(current, std::numeric_limits<double>::quiet_NaN());
-                                current_statement_begin__ = 266;
                                 stan::math::assign(current, CDF_polr((get_base1(cutpoints,j,"cutpoints",1) - get_base1(eta,n,"eta",1)),link, pstream__));
-                                current_statement_begin__ = 267;
                                 stan::math::assign(get_base1_lhs(theta,j,"theta",1), (current - previous));
-                                current_statement_begin__ = 268;
                                 stan::math::assign(previous, current);
                             }
                         }
-                        current_statement_begin__ = 270;
                         if (as_bool(logical_eq(is_skewed,0))) {
-                            current_statement_begin__ = 270;
                             stan::math::assign(get_base1_lhs(theta,J,"theta",1), (1 - previous));
                         } else {
-                            current_statement_begin__ = 271;
                             stan::math::assign(get_base1_lhs(theta,J,"theta",1), (1 - pow(previous,get_base1(alpha,1,"alpha",1))));
                         }
-                        current_statement_begin__ = 272;
                         if (as_bool((primitive_value(logical_lte(previous,0)) || primitive_value(logical_gte(previous,1))))) {
                         } else if (as_bool(logical_eq(J,2))) {
-                            current_statement_begin__ = 276;
                             stan::math::assign(get_base1_lhs(mean_PPD,1,"mean_PPD",1), (get_base1(mean_PPD,1,"mean_PPD",1) + bernoulli_rng(get_base1(theta,J,"theta",1), base_rng__)));
                         } else {
-                            current_statement_begin__ = 279;
                             stan::math::assign(y_tilde, categorical_rng(theta, base_rng__));
-                            current_statement_begin__ = 280;
                             stan::math::assign(get_base1_lhs(mean_PPD,y_tilde,"mean_PPD",1), (get_base1(mean_PPD,y_tilde,"mean_PPD",1) + 1));
                         }
-                        current_statement_begin__ = 283;
                         if (as_bool(do_residuals)) {
-                            current_statement_begin__ = 284;
                             if (as_bool(logical_eq(get_base1(y,n,"y",1),1))) {
-                                current_statement_begin__ = 285;
                                 stan::math::assign(ystar, draw_ystar_rng(negative_infinity(),get_base1(cutpoints,1,"cutpoints",1),get_base1(eta,n,"eta",1),link, base_rng__, pstream__));
                             } else if (as_bool(logical_eq(get_base1(y,n,"y",1),J))) {
-                                current_statement_begin__ = 287;
                                 stan::math::assign(ystar, draw_ystar_rng(get_base1(cutpoints,(J - 1),"cutpoints",1),positive_infinity(),get_base1(eta,n,"eta",1),link, base_rng__, pstream__));
                             } else {
-                                current_statement_begin__ = 288;
                                 stan::math::assign(ystar, draw_ystar_rng(get_base1(cutpoints,(get_base1(y,n,"y",1) - 1),"cutpoints",1),get_base1(cutpoints,get_base1(y,n,"y",1),"cutpoints",1),get_base1(eta,n,"eta",1),link, base_rng__, pstream__));
                             }
-                            current_statement_begin__ = 289;
                             stan::math::assign(get_base1_lhs(residuals,n,"residuals",1), (ystar - get_base1(eta,n,"eta",1)));
                         }
                     }
                 }
-                current_statement_begin__ = 292;
                 stan::math::assign(mean_PPD, divide(mean_PPD,N));
             }
         } catch (const std::exception& e) {

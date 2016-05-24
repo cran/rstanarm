@@ -41,7 +41,7 @@ not exist and \code{location} is the prior median. The default value is
 \code{location}. For \code{R2}, \code{location} pertains to the prior
 location of the \eqn{R^2} under a Beta distribution, but the interpretation
 of the \code{location} parameter depends on the specified value of the
-\code{what} argument (see Details).}
+\code{what} argument (see the "R2 family" section in Details).}
 
 \item{scale}{Prior scale. The default depends on the family (see Details).}
 
@@ -90,12 +90,19 @@ A named list to be used internally by the \pkg{rstanarm} model
   fitting functions.
 }
 \description{
-These functions are used to specify the prior-related arguments of various
-modeling functions in the \pkg{rstanarm} package.
+These functions are used to specify the prior-related arguments of the
+various modeling functions in the \pkg{rstanarm} package.
 }
 \details{
 The details depend on the family of the prior being used:
 \subsection{Student t family}{
+  Family members:
+  \itemize{
+  \item \code{normal(location, scale)}
+  \item \code{student_t(df, location, scale)}
+  \item \code{cauchy(location, scale)}
+  }
+  
   For the prior distribution for the intercept, \code{location}, 
   \code{scale}, and \code{df} should be scalars. For the prior for the other
   coefficients they can either be vectors of length equal to the number of
@@ -111,6 +118,12 @@ The details depend on the family of the prior being used:
   \code{dnorm(0)/dlogis(0)}, which is roughly 1.6.
 }
 \subsection{Hierarchical shrinkage family}{
+  Family members:
+  \itemize{
+  \item \code{hs(df)}
+  \item \code{hs_plus(df1, df2)}
+  }
+  
   The hierarchical shrinkage priors are normal with a mean of zero and a 
   standard deviation that is also a random variable. The traditional 
   hierarchical shrinkage prior utilizes a standard deviation that is 
@@ -139,6 +152,11 @@ The details depend on the family of the prior being used:
   \emph{How to Use the rstanarm Package} vignette.
 }
 \subsection{Dirichlet family}{
+  Family members:
+  \itemize{
+  \item \code{dirichlet(concentration)}
+  }
+  
   The Dirichlet distribution is a multivariate generalization of the beta
   distribution. It is perhaps the easiest prior distribution to specify
   because the concentration parameters can be interpreted as prior counts
@@ -164,6 +182,11 @@ The details depend on the family of the prior being used:
   not all outcome categories are a priori equiprobable.
 }
 \subsection{Covariance matrices}{
+  Family members:
+  \itemize{
+  \item \code{decov(regularization, concentration, shape, scale)}
+  }
+  
   Covariance matrices are decomposed into correlation matrices and 
   variances. The variances are in turn decomposed into the product of a
   simplex vector and the trace of the matrix. Finally, the trace is the
@@ -217,6 +240,11 @@ The details depend on the family of the prior being used:
   variable.
 }
 \subsection{R2 family}{
+  Family members:
+  \itemize{
+  \item \code{R2(location, what)}
+  }
+  
   The \code{\link{stan_lm}}, \code{\link{stan_aov}}, and 
   \code{\link{stan_polr}} functions allow the user to utilize a function 
   called \code{R2} to convey prior information about all the parameters. 
@@ -224,11 +252,11 @@ The details depend on the family of the prior being used:
   proportion of variance in the outcome attributable to the predictors, 
   which has a \code{\link[stats]{Beta}} prior with first shape 
   hyperparameter equal to half the number of predictors and second shape 
-  hyperparameter free. By specifying the prior mode (the default), mean, 
-  median, or expected log of \eqn{R^2}, the second shape parameter for this 
-  Beta distribution is determined internally. If \code{what = 'log'}, 
-  location should be a negative scalar; otherwise it should be a scalar on 
-  the \eqn{(0,1)} interval.
+  hyperparameter free. By specifying \code{what} to be the prior mode (the
+  default), mean, median, or expected log of \eqn{R^2}, the second shape
+  parameter for this Beta distribution is determined internally. If
+  \code{what = 'log'}, location should be a negative scalar; otherwise it
+  should be a scalar on the \eqn{(0,1)} interval.
   
   For example, if \eqn{R^2 = 0.5}, then the mode, mean, and median of
   the \code{\link[stats]{Beta}} distribution are all the same and thus the
@@ -298,6 +326,10 @@ compare_priors(scale = 1000, xlim = c(-1000,1000))
 Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari,
   A., and Rubin, D. B. (2013). \emph{Bayesian Data Analysis.} Chapman & Hall/CRC
   Press, London, third edition. \url{http://stat.columbia.edu/~gelman/book/}
+
+Gelman, A., Jakulin, A., Pittau, M. G., and Su, Y. (2008). A weakly
+informative default prior distribution for logistic and other regression
+models. \emph{Annals of Applied Statistics}. 2(4), 1360--1383.
 
 Piironen, J., and Vehtari, A. (2015). Projection predictive variable
 selection using Stan+R. \url{http://arxiv.org/abs/1508.02502/}
