@@ -10,15 +10,20 @@ stan_glm(formula, family = gaussian(), data, weights, subset,
   na.action = NULL, offset = NULL, model = TRUE, x = FALSE, y = TRUE,
   contrasts = NULL, ..., prior = normal(), prior_intercept = normal(),
   prior_ops = prior_options(), prior_PD = FALSE, algorithm = c("sampling",
-  "optimizing", "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
+  "optimizing", "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE,
+  sparse = FALSE)
 
-stan_glm.nb(..., link = "log")
+stan_glm.nb(formula, data, weights, subset, na.action = NULL, offset = NULL,
+  model = TRUE, x = FALSE, y = TRUE, contrasts = NULL, link = "log",
+  ..., prior = normal(), prior_intercept = normal(),
+  prior_ops = prior_options(), prior_PD = FALSE, algorithm = c("sampling",
+  "optimizing", "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
 
 stan_glm.fit(x, y, weights = rep(1, NROW(x)), offset = rep(0, NROW(x)),
   family = gaussian(), ..., prior = normal(), prior_intercept = normal(),
   prior_ops = prior_options(), group = list(), prior_PD = FALSE,
   algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE)
+  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[stats]{glm}}.}
@@ -48,13 +53,15 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 details. To to omit a prior ---i.e., to use a flat (improper) uniform
 prior--- set \code{prior} to \code{NULL}.}
 
-\item{prior_intercept}{The prior distribution for the intercept.
-\code{prior_intercept} can be a call to \code{normal}, \code{student_t} or
-\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior
----i.e., to use a flat (improper) uniform prior--- set
-\code{prior_intercept} to \code{NULL}. (\strong{Note:} the prior
-distribution for the intercept is set so it applies to the value when all
-predictors are centered.)}
+\item{prior_intercept}{The prior distribution for the intercept. 
+\code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
+\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior 
+---i.e., to use a flat (improper) uniform prior--- set 
+\code{prior_intercept} to \code{NULL}. (\strong{Note:} if a dense 
+representation of the design matrix is utilized ---i.e., if the
+\code{sparse} argument is left at its default value of \code{FALSE}--- then
+the prior distribution for the intercept is set so it applies to the value
+when all predictors are centered.)}
 
 \item{prior_ops}{Additional options related to prior distributions. Can 
 be \code{NULL} to omit a prior on the dispersion and see 
@@ -89,6 +96,15 @@ there are multiple predictors. However, because the coefficients relative
 to \eqn{Q^\ast}{Q*} are not very interpretable it is hard to specify an 
 informative prior. Setting \code{QR=TRUE} is therefore only recommended 
 if you do not have an informative prior for the regression coefficients.}
+
+\item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
+whether to use a sparse representation of the design (X) matrix. 
+Setting this to \code{TRUE} will likely be twice as slow, even if the
+design matrix has a considerable number of zeros, but it may allow the
+model to be estimated when the computer has too little RAM to
+utilize a dense design matrix. If \code{TRUE}, the the design matrix
+is not centered (since that would destroy the sparsity) and it is
+not possible to specify both \code{QR = TRUE} and \code{sparse = TRUE}.}
 
 \item{link}{For \code{stan_glm.nb} only, the link function to use. See 
 \code{\link{neg_binomial_2}}.}

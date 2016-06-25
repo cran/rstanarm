@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2016-05-24" />
+<meta name="date" content="2016-06-24" />
 
 <title>Estimating ANOVA Models with rstanarm</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating ANOVA Models with rstanarm</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2016-05-24</em></h4>
+<h4 class="date"><em>2016-06-24</em></h4>
 
 
 <div id="TOC">
@@ -132,24 +132,24 @@ post1</code></pre></div>
 
 Estimates:
                      Median MAD_SD
-(Intercept)           98.8    4.6 
-sourceCereal         -13.0    6.4 
-typeLow              -18.7    6.4 
-sourceCereal:typeLow  17.0    9.0 
-sigma                 14.8    1.7 
+(Intercept)           98.6    4.2 
+sourceCereal         -12.6    6.3 
+typeLow              -18.6    6.2 
+sourceCereal:typeLow  17.0    8.6 
+sigma                 14.7    1.6 
 log-fit_ratio          0.0    0.1 
 R2                     0.2    0.1 
 
 Sample avg. posterior predictive 
 distribution of y (X = xbar):
          Median MAD_SD
-mean_PPD 87.2    3.4  
+mean_PPD 87.4    3.3  
 
 ANOVA-like table:
                     Median MAD_SD
-Mean Sq source      558.0  433.4 
-Mean Sq type        994.5  605.9 
-Mean Sq source:type 721.0  700.2 </code></pre>
+Mean Sq source      533.7  410.7 
+Mean Sq type        974.7  578.3 
+Mean Sq source:type 721.1  698.6 </code></pre>
 <p>Here we have specified <code>adapt_delta = 0.999</code> to decrease the stepsize and largely prevent divergent transitions. See the Troubleshooting section in the main rstanarm <a href="rstanarm.html">vignette</a> for more details about <code>adapt_delta</code>. Also, our prior guess that <span class="math inline">\(R^2 = 0.5\)</span> was overly optimistic. However, the frequentist estimates presumably overfit the data even more.</p>
 <p>Alternatively, we could prepend <code>stan_</code> to <code>lmer</code> and specify the corresponding priors</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post2 &lt;-<span class="st"> </span><span class="kw">stan_lmer</span>(weightgain ~<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span>(<span class="dv">1</span>|source) +<span class="st"> </span>(<span class="dv">1</span>|type) +<span class="st"> </span>(<span class="dv">1</span>|source:type),

@@ -10,7 +10,8 @@ stan_gamm4(formula, random = NULL, family = gaussian(), data = list(),
   drop.unused.levels = TRUE, ..., prior = normal(),
   prior_intercept = normal(), prior_ops = prior_options(),
   prior_covariance = decov(), prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
+  "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE,
+  sparse = FALSE)
 }
 \arguments{
 \item{formula, random, family, data, knots, drop.unused.levels}{Same as for 
@@ -30,13 +31,15 @@ but rarely specified.}
 details. To to omit a prior ---i.e., to use a flat (improper) uniform
 prior--- set \code{prior} to \code{NULL}.}
 
-\item{prior_intercept}{The prior distribution for the intercept.
-\code{prior_intercept} can be a call to \code{normal}, \code{student_t} or
-\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior
----i.e., to use a flat (improper) uniform prior--- set
-\code{prior_intercept} to \code{NULL}. (\strong{Note:} the prior
-distribution for the intercept is set so it applies to the value when all
-predictors are centered.)}
+\item{prior_intercept}{The prior distribution for the intercept. 
+\code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
+\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior 
+---i.e., to use a flat (improper) uniform prior--- set 
+\code{prior_intercept} to \code{NULL}. (\strong{Note:} if a dense 
+representation of the design matrix is utilized ---i.e., if the
+\code{sparse} argument is left at its default value of \code{FALSE}--- then
+the prior distribution for the intercept is set so it applies to the value
+when all predictors are centered.)}
 
 \item{prior_ops}{Additional options related to prior distributions. Can 
 be \code{NULL} to omit a prior on the dispersion and see 
@@ -74,6 +77,15 @@ there are multiple predictors. However, because the coefficients relative
 to \eqn{Q^\ast}{Q*} are not very interpretable it is hard to specify an 
 informative prior. Setting \code{QR=TRUE} is therefore only recommended 
 if you do not have an informative prior for the regression coefficients.}
+
+\item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
+whether to use a sparse representation of the design (X) matrix. 
+Setting this to \code{TRUE} will likely be twice as slow, even if the
+design matrix has a considerable number of zeros, but it may allow the
+model to be estimated when the computer has too little RAM to
+utilize a dense design matrix. If \code{TRUE}, the the design matrix
+is not centered (since that would destroy the sparsity) and it is
+not possible to specify both \code{QR = TRUE} and \code{sparse = TRUE}.}
 }
 \value{
 A \link[=stanreg-objects]{stanreg} object is returned 

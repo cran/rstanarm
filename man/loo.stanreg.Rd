@@ -2,13 +2,16 @@
 % Please edit documentation in R/loo.R
 \name{loo.stanreg}
 \alias{compare}
+\alias{kfold}
 \alias{loo}
 \alias{loo.stanreg}
 \alias{waic}
 \alias{waic.stanreg}
-\title{Leave-one-out cross-validation (LOO)}
+\title{Leave-one-out (LOO) and K-fold cross-validation}
 \usage{
-\method{loo}{stanreg}(x, ...)
+\method{loo}{stanreg}(x, ..., k_threshold = NULL)
+
+kfold(x, K = 10)
 
 \method{waic}{stanreg}(x, ...)
 }
@@ -33,33 +36,89 @@
 
  We recommend using the default values for the \code{psislw} arguments unless
  there are problems (e.g. \code{NA} or \code{NaN} results).}
+
+\item{k_threshold}{Threshold for flagging estimates of the Pareto shape 
+parameters \eqn{k} estimated by \code{loo}. See the \emph{How to proceed
+when \code{loo} gives warnings} section, below, for details.}
+
+\item{K}{The number of subsets of equal (if possible) size into which the 
+data will be randomly partitioned for performing \eqn{K}-fold 
+cross-validation. The model is refit \code{K} times, each time leaving out
+one of the \code{K} subsets. If \code{K} is equal to the total number of
+observations in the data then \eqn{K}-fold cross-validation is equivalent
+to exact leave-one-out cross-validation.}
 }
 \value{
 An object of class 'loo'. See the 'Value' section in 
   \code{\link[loo]{loo}} and \code{\link[loo]{waic}} for details on the
-  structure of these objects.
+  structure of these objects. The object returned by \code{kfold} also 
+  has class 'kfold' in addition to 'loo'.
 }
 \description{
 For models fit using MCMC, compute approximate leave-one-out cross-validation
-(LOO) or, less preferably, the Widely Applicable Information Criterion (WAIC) 
-using the \pkg{\link[=loo-package]{loo}} package. Compare two or more models 
-using the \code{\link[loo]{compare}} function.
-}
-\details{
-The LOO Information Criterion (LOOIC) has the same purpose as the Akaike 
-Information Criterion (AIC) that is used by frequentists. Both are intended 
-to estimate the expected log predictive density (ELPD) for a new dataset. 
-However, the AIC ignores priors and assumes that the posterior distribution 
-is multivariate normal, whereas the functions from the 
-\pkg{\link[=loo-package]{loo}} package do not make this distributional 
-assumption and integrate over uncertainty in the parameters. This only 
-assumes that any one observation can be omitted without having a major effect
-on the posterior distribution, which can be judged using the diagnostic plot 
-provided by the \code{\link[loo]{plot.loo}} method. The \emph{How to Use the 
-rstanarm Package} vignette has an example of this entire process.
+(LOO) or, less preferably, the Widely Applicable Information Criterion (WAIC)
+using the \pkg{\link[=loo-package]{loo}} package. Exact \eqn{K}-fold
+cross-validation is also available. Compare two or more models using the
+\code{\link[loo]{compare}} function.
 }
 \note{
 The \code{...} is ignored for \code{waic}.
+}
+\section{Approximate LOO CV}{
+
+The \code{loo} method for stanreg objects provides an interface to
+the \pkg{\link[=loo-package]{loo}} package for approximate leave-one-out 
+cross-validation (LOO). The LOO Information Criterion (LOOIC) has the same 
+purpose as the Akaike Information Criterion (AIC) that is used by 
+frequentists. Both are intended to estimate the expected log predictive 
+density (ELPD) for a new dataset. However, the AIC ignores priors and assumes
+that the posterior distribution is multivariate normal, whereas the functions
+from the \pkg{loo} package do not make this distributional assumption and 
+integrate over uncertainty in the parameters. This only assumes that any one 
+observation can be omitted without having a major effect on the posterior 
+distribution, which can be judged using the diagnostic plot provided by the 
+\code{\link[loo]{plot.loo}} method and the warnings provided by the 
+\code{\link[loo]{print.loo}} method (see the \emph{How to Use the rstanarm 
+Package} vignette for an example of this process).
+
+\subsection{How to proceed when \code{loo} gives warnings (k_threshold)}{
+The \code{k_threshold} argument to the \code{loo} method for \pkg{rstanarm} 
+models is provided as a possible remedy when the diagnostics reveal problems
+stemming from the posterior's sensitivity to particular observations.
+Warnings about Pareto \eqn{k} estimates indicate observations for which the
+approximation to LOO is problematic (this is described in detail in Vehtari,
+Gelman, and Gabry (2016) and the \pkg{\link[=loo-package]{loo}} package
+documentation). The \code{k_threshold} argument can be used to set the
+\eqn{k} value above which an observation is flagged. If \code{k_threshold} is
+not \code{NULL} and there are \eqn{J} observations with \eqn{k} estimates
+above \code{k_threshold} then when \code{loo} is called it will refit the
+original model \eqn{J} times, each time leaving out one of the \eqn{J}
+problematic observations. The pointwise contributions of these observations
+to the total ELPD are then computed directly and substituted for the previous
+estimates from these \eqn{J} observations that are stored in the object
+created by \code{loo}.
+
+\strong{Note}: in the warning messages issued by \code{loo} about large 
+Pareto \eqn{k} estimates we recommend setting \code{k_threshold} to at least 
+\eqn{0.7}. There is a theoretical reason, explained in Vehtari et al. (2016),
+for setting the threshold to the stricter value of \eqn{0.5}, but in
+practice we find that errors in the LOO approximation start to increase
+non-negligibly when \eqn{k > 0.7}. Finally, as is also explained in Vehtari 
+et al. (2016), it is never recommended to set \code{k_threshold} to a value 
+greater than \eqn{1}.
+}
+}
+
+\section{K-fold CV}{
+
+The \code{kfold} function performs exact \eqn{K}-fold cross-validation. First
+the data are randomly partitioned into \eqn{K} subsets of equal (or as close 
+to equal as possible) size. Then the model is refit \eqn{K} times, each time 
+leaving out one of the \code{K} subsets. If \eqn{K} is equal to the total 
+number of observations in the data then \eqn{K}-fold cross-validation is 
+equivalent to exact leave-one-out cross-validation (to which \code{loo} is an
+efficient approximation). The \code{compare} function is also compatible with
+the objects returned by \code{kfold}.
 }
 \examples{
 \dontrun{
@@ -68,11 +127,17 @@ set.seed(SEED)
 
 fit1 <- stan_glm(mpg ~ wt, data = mtcars, seed = SEED)
 fit2 <- update(fit1, formula = . ~ . + cyl)
+
+# compare on LOOIC
 (loo1 <- loo(fit1))
 loo2 <- loo(fit2)
 compare(loo1, loo2)
 plot(loo2)
 
+# 10-fold cross-validation
+(kfold1 <- kfold(fit1, K = 10))
+kfold2 <- kfold(fit2, K = 10)
+compare(kfold1, kfold2)
 
 # dataset description at help("lalonde", package = "arm")
 data(lalonde, package = "arm") 
@@ -87,6 +152,7 @@ f2 <- treat ~ age + I(age^2) + educ + I(educ^2) + black + hisp +
    married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) + u74 + u75   
 lalonde2 <- update(lalonde1, formula = f2)
 
+# compare on LOOIC
 (loo_lalonde1 <- loo(lalonde1))
 (loo_lalonde2 <- loo(lalonde2))
 plot(loo_lalonde2, label_points = TRUE)
@@ -100,7 +166,8 @@ evaluation using leave-one-out cross-validation and WAIC.
 \url{http://arxiv.org/abs/1507.04544/} (preprint)
 }
 \seealso{
-\code{\link[loo]{compare}} for comparing two or more models on LOO and WAIC.
+\code{\link[loo]{compare}} for comparing two or more models on LOO, WAIC, or
+\eqn{K}-fold CV.
 
 \code{\link[loo]{loo-package}} (in particular the \emph{PSIS-LOO} section) 
 for details on the computations implemented by the \pkg{loo} package and the 
