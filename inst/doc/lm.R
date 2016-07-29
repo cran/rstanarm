@@ -1,7 +1,10 @@
+params <-
+structure(list(EVAL = TRUE), .Names = "EVAL")
+
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE,
+  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
   fig.align='center', fig.width = 7, fig.height = 3
 )
 

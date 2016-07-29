@@ -55,6 +55,9 @@
 #'   by a call to \code{\link{match.fun}} and so can be specified as a function
 #'   object, a string naming a function, etc.
 #' @param seed An optional \code{\link[=set.seed]{seed}} to use.
+#' @param offset A vector of offsets. Only required if \code{newdata} is
+#'   specified and an \code{offset} argument was specified when fitting the
+#'   model.
 #' @param ... Currently unused.
 #' 
 #' @return A \code{draws} by \code{nrow(newdata)} matrix of simulations
@@ -85,7 +88,7 @@
 #' yrep <- posterior_predict(example_model)
 #' table(yrep)
 #' 
-#' \dontrun{
+#' \donttest{
 #' # Using newdata
 #' counts <- c(18,17,15,20,10,20,25,13,12)
 #' outcome <- gl(3,1,9)
@@ -97,9 +100,9 @@
 #' print(dim(ytilde))  # 500 by 3 matrix (draws by nrow(nd))
 #' ytilde <- data.frame(count = c(ytilde), 
 #'                      outcome = rep(nd$outcome, each = 500))
-#' ggplot(ytilde, aes(x=outcome, y=count)) + 
-#'   geom_boxplot() + 
-#'   ylab("predicted count")
+#' ggplot2::ggplot(ytilde, ggplot2::aes(x=outcome, y=count)) + 
+#'   ggplot2::geom_boxplot() + 
+#'   ggplot2::ylab("predicted count")
 #' 
 #' 
 #' # Using newdata with a binomial model
@@ -123,7 +126,8 @@
 #' }
 #' 
 posterior_predict <- function(object, newdata = NULL, draws = NULL, 
-                              re.form = NULL, fun = NULL, seed = NULL, ...) {
+                              re.form = NULL, fun = NULL, seed = NULL, 
+                              offset = NULL, ...) {
   validate_stanreg_object(object)
   if (used.optimizing(object))
     STOP_not_optimizing("posterior_predict")
@@ -139,7 +143,12 @@ posterior_predict <- function(object, newdata = NULL, draws = NULL,
     if (any(is.na(newdata))) 
       stop("Currently NAs are not allowed in 'newdata'.")
   }
-  dat <- pp_data(object, newdata, re.form, ...)
+  dat <-
+    pp_data(object,
+            newdata = newdata,
+            re.form = re.form,
+            offset = offset,
+            ...)
   if (is_scobit(object)) {
     data <- pp_eta(object, dat, NULL)
     if (!is.null(draws)) {

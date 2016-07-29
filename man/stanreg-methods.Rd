@@ -29,7 +29,7 @@
 
 \method{fitted}{stanreg}(object, ...)
 
-\method{log_lik}{stanreg}(object, newdata = NULL, ...)
+\method{log_lik}{stanreg}(object, newdata = NULL, offset = NULL, ...)
 
 \method{nobs}{stanreg}(object, ...)
 
@@ -67,6 +67,10 @@ indicating the confidence level to use.}
 \item{newdata}{For \code{log_lik}, an optional data frame of new data (e.g. 
 holdout data) to use when evaluating the log-likelihood. See the 
 description of \code{newdata} for \code{\link{posterior_predict}}.}
+
+\item{offset}{For \code{log_lik}, a vector of offsets. Only required if
+\code{newdata} is specified and an \code{offset} was specified when fitting
+the model.}
 
 \item{formula., evaluate}{See \code{\link[stats]{update}}.}
 

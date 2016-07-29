@@ -5,7 +5,7 @@
 \title{Posterior distribution of the linear predictor}
 \usage{
 posterior_linpred(object, transform = FALSE, newdata = NULL,
-  re.form = NULL, ...)
+  re.form = NULL, offset = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the
@@ -15,7 +15,7 @@ posterior_linpred(object, transform = FALSE, newdata = NULL,
 inverse-link function? The default is \code{FALSE}, in which case the 
 untransformed linear predictor is returned.}
 
-\item{newdata, re.form}{Same as for \code{\link{posterior_predict}}.}
+\item{newdata, re.form, offset}{Same as for \code{\link{posterior_predict}}.}
 
 \item{...}{Currently unused.}
 }

@@ -68,7 +68,7 @@ In order to make it through \code{nreps} replications without running
 \examples{
 \dontrun{
 if (!exists("example_model")) example(example_model) 
-pp_validate(example_model)
+try(pp_validate(example_model)) # fails with default seed / priors
 }
 
 }

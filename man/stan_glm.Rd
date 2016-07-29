@@ -165,7 +165,7 @@ plot(fit2, pars = c("black", "hisp", "nodegr", "u74", "u75"),
 pp_check(fit2, check = "resid")
 pp_check(fit2, check = "test", test = "mean")
 }
-\dontrun{
+\donttest{
 ### Poisson regression (example from help("glm")) 
 counts <- c(18,17,15,20,10,20,25,13,12)
 outcome <- gl(3,1,9)

@@ -1,3 +1,6 @@
+params <-
+structure(list(EVAL = TRUE), .Names = "EVAL")
+
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
 CHAINS <- 2L

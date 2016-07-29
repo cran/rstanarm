@@ -1,8 +1,8 @@
 Package: rstanarm
 Type: Package
 Title: Bayesian Applied Regression Modeling via Stan
-Version: 2.10.1
-Date: 2016-06-24
+Version: 2.11.1
+Date: 2016-07-29
 Authors@R: c(person("Jonah", "Gabry", email = "jsg2201@columbia.edu", role = "aut"),
              person("Trustees of", "Columbia University", role = "cph"),
              person("R Core", "Deveopment Team", role = "cph", 
@@ -22,12 +22,12 @@ Description: Estimates pre-compiled regression models using the 'rstan' package,
 License: GPL (>= 3)
 Depends: R (>= 3.0.2), Rcpp (>= 0.12.0), methods
 Imports: ggplot2 (>= 2.0.0), lme4 (>= 1.1-8), loo (>= 0.1.6), Matrix,
-        nlme (>= 3.1-124), rstan (>= 2.10.1), shinystan (>= 2.2.0),
+        nlme (>= 3.1-124), rstan (>= 2.11.1), shinystan (>= 2.2.0),
         stats, utils
 Suggests: arm, gamm4, gridExtra, HSAUR3, KernSmooth, knitr, MASS,
         rmarkdown, roxygen2, testthat (>= 1.0.2)
-LinkingTo: StanHeaders (>= 2.10.0-2), rstan (>= 2.10.1), BH (>=
-        1.58.0), Rcpp (>= 0.12.0), RcppEigen
+LinkingTo: StanHeaders (>= 2.11.0), rstan (>= 2.11.1), BH (>= 1.60.0),
+        Rcpp (>= 0.12.0), RcppEigen
 VignetteBuilder: knitr
 LazyData: true
 NeedsCompilation: yes
@@ -35,7 +35,7 @@ URL: https://groups.google.com/forum/#!forum/stan-users,
         http://mc-stan.org/
 BugReports: https://github.com/stan-dev/rstanarm/issues
 RoxygenNote: 5.0.1
-Packaged: 2016-06-24 17:54:22 UTC; goodrich
+Packaged: 2016-07-29 14:31:44 UTC; goodrich
 Author: Jonah Gabry [aut],
   Trustees of Columbia University [cph],
   R Core Deveopment Team [cph] (R/pp_data.R, R/stan_aov.R),
@@ -48,4 +48,4 @@ Author: Jonah Gabry [aut],
   Ben Goodrich [cre, aut]
 Maintainer: Ben Goodrich <benjamin.goodrich@columbia.edu>
 Repository: CRAN
-Date/Publication: 2016-06-25 19:07:48
+Date/Publication: 2016-07-29 18:27:13

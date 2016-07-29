@@ -47,9 +47,7 @@ indicate a standard uniform prior for the \eqn{R^2}.}
 
 \item{prior_PD}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to draw from the prior predictive distribution instead of
-conditioning on the outcome. Note that if \code{TRUE}, the draws are
-merely proportional to the actual distribution because of an improper
-prior on a scale parameter.}
+conditioning on the outcome.}
 
 \item{algorithm}{Character string (possibly abbreviated) indicating the 
 estimation approach to use. Can be \code{"sampling"} for MCMC (the
@@ -129,7 +127,7 @@ The \code{stan_lm} function is similar in syntax to the
   variance.
 }
 \examples{
-\dontrun{
+\donttest{
 stan_aov(yield ~ block + N*P*K, data = npk, contrasts = "contr.poly",
          prior = R2(0.5), seed = 12345) 
 }

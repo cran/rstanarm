@@ -1,7 +1,10 @@
+params <-
+structure(list(EVAL = TRUE), .Names = "EVAL")
+
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE,
+  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
   fig.align='center', fig.width = 7, fig.height = 3
 )
 
@@ -114,6 +117,7 @@ pp_check(post4, check = "test", test = c("mean", "sd"))
 IQ_SEQ <- seq(from = 75, to = 135, by = 5)
 y_nohs <- posterior_predict(post4, newdata = data.frame(mom_hs = 0, mom_iq = IQ_SEQ))
 y_hs <- posterior_predict(post4, newdata = data.frame(mom_hs = 1, mom_iq = IQ_SEQ))
+dim(y_hs)
 
 ## ---- continuous-kidiq-plot-predict, fig.width=9-------------------------
 par(mfrow = c(1:2), mar = c(5,4,2,1))
