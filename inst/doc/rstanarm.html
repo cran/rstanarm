@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2016-07-29" />
+<meta name="date" content="2016-09-12" />
 
 <title>How to Use the rstanarm Package</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">How to Use the rstanarm Package</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2016-07-29</em></h4>
+<h4 class="date"><em>2016-09-12</em></h4>
 
 
 <div id="TOC">
@@ -159,7 +159,9 @@ genderFemale  0.0    0.1
 Sample avg. posterior predictive 
 distribution of y (X = xbar):
          Median MAD_SD
-mean_PPD 24.3    0.8  </code></pre>
+mean_PPD 24.3    0.8  
+
+Observations: 42  Number of unconstrained parameters: 3 </code></pre>
 <p>As can be seen, the “Bayesian point estimates” — which are represented by the posterior medians — are very similar to the maximum likelihood estimates. Frequentists would ask whether the point estimate is greater in magnitude than double the estimated standard deviation of the sampling distribution. But here we simply have estimates of the standard deviation of the marginal posterior distributions, which are based on a scaling of the Median Absolute Deviation (MAD) from the posterior medians to obtain a robust estimator of the posterior standard deviation. In addition, we can use the <code>posterior_interval</code> function to obtain a Bayesian uncertainty interval for <span class="math inline">\(\beta_1\)</span>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ci95 &lt;-<span class="st"> </span><span class="kw">posterior_interval</span>(womensrole_bglm_1, <span class="dt">prob =</span> <span class="fl">0.95</span>, <span class="dt">pars =</span> <span class="st">&quot;education&quot;</span>)
 <span class="kw">round</span>(ci95, <span class="dv">2</span>)</code></pre></div>
@@ -238,7 +240,9 @@ I(education^2)  0.0    0.0
 Sample avg. posterior predictive 
 distribution of y (X = xbar):
          Median MAD_SD
-mean_PPD 24.3    0.8  </code></pre>
+mean_PPD 24.3    0.8  
+
+Observations: 42  Number of unconstrained parameters: 4 </code></pre>
 <p>Frequentists would test the null hypothesis that the coefficient on the squared level of education is zero. Bayesians might ask whether such a model is expected to produce better out-of-sample predictions than a model with only the level of education. The latter question can be answered using leave-one-out cross-validation or the approximation thereof provided by the <code>loo</code> function in the <strong>loo</strong> package, for which a method is provided by the <strong>rstanarm</strong> package.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">loo_bglm_1 &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_1)
 loo_bglm_2 &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_2)</code></pre></div>

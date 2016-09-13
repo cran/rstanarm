@@ -5,7 +5,7 @@
 \title{Posterior distribution of the linear predictor}
 \usage{
 posterior_linpred(object, transform = FALSE, newdata = NULL,
-  re.form = NULL, offset = NULL, ...)
+  re.form = NULL, offset = NULL, XZ = FALSE, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the
@@ -17,11 +17,18 @@ untransformed linear predictor is returned.}
 
 \item{newdata, re.form, offset}{Same as for \code{\link{posterior_predict}}.}
 
+\item{XZ}{If \code{TRUE} then instead of computing the linear predictor the 
+design matrix \code{X} (or \code{cbind(X,Z)} for models with group-specific
+terms) constructed from \code{newdata} is returned. The default is 
+\code{FALSE}.}
+
 \item{...}{Currently unused.}
 }
 \value{
-A \code{draws} by \code{nrow(newdata)} matrix of simulations from the
-  posterior distribution of the (possibly transformed) linear predictor.
+The default is to return a \code{draws} by \code{nrow(newdata)} 
+  matrix of simulations from the posterior distribution of the (possibly 
+  transformed) linear predictor. The exception is if the argument \code{XZ} 
+  is set to \code{TRUE} (see the \code{XZ} argument description above).
 }
 \description{
 Extract the posterior draws of the linear predictor, possibly transformed by 

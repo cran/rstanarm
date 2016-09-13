@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2016-07-29" />
+<meta name="date" content="2016-09-12" />
 
 <title>Estimating Ordinal Regression Models with rstanarm</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating Ordinal Regression Models with rstanarm</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2016-07-29</em></h4>
+<h4 class="date"><em>2016-09-12</em></h4>
 
 
 <div id="TOC">
@@ -173,7 +173,9 @@ distribution of y (X = xbar):
 mean_PPD:0-9g/day 0.3    0.1   
 mean_PPD:10-19    0.3    0.1   
 mean_PPD:20-29    0.2    0.1   
-mean_PPD:30+      0.2    0.1   </code></pre>
+mean_PPD:30+      0.2    0.1   
+
+Observations: 88  Number of unconstrained parameters: 12 </code></pre>
 <p>The point estimates, represented by the posterior medians, are qualitatively similar to the maximum-likelihood estimates but are somewhat shrunk toward zero due to the regularizing prior on the coefficients. Since these cutpoints are actually <em>known</em>, it would be more appropriate for the model to take that into account, but <code>stan_polr</code> does not currently support that.</p>
 <p>Next, we utilize an example from the <strong>MASS</strong> package where low birthweight is the binary outcome of interest. First, we recode some of the variables:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;birthwt&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;MASS&quot;</span>)
@@ -207,7 +209,9 @@ R2             0.2    0.0
 Sample avg. posterior predictive 
 distribution of y (X = xbar):
          Median MAD_SD
-mean_PPD -2.9    0.1  </code></pre>
+mean_PPD -2.9    0.1  
+
+Observations: 189  Number of unconstrained parameters: 10 </code></pre>
 <p>Next, we estimate an “ordinal” model for the incidence of low birthweight, which is defined as a birth weight of less than <span class="math inline">\(2.5\)</span> kilograms. Even though this outcome is binary, a binary variable is a special case of an ordinal variable with <span class="math inline">\(J=2\)</span> categories and is acceptable to <code>stan_polr</code>. We can think of <code>bwt</code> as something proportional to <span class="math inline">\(y^\ast\)</span> and pretend that it is not observed, forcing us to estimate an ordinal model.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post2 &lt;-<span class="st"> </span><span class="kw">stan_polr</span>(low ~<span class="st"> </span>smoke +<span class="st"> </span>age +<span class="st"> </span>race +<span class="st"> </span>ptl +<span class="st"> </span>ht +<span class="st"> </span>ftv, <span class="dt">data =</span> birthwt,
                    <span class="dt">prior =</span> <span class="kw">R2</span>(<span class="fl">0.5</span>), <span class="dt">prior_counts =</span> <span class="kw">dirichlet</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)), 
