@@ -4965,8 +4965,10 @@ linkinv_gauss(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
             errmsg_stream__ << "Invalid link";
             throw std::domain_error(errmsg_stream__.str());
         }
-        if (as_bool(logical_lt(link,3))) {
+        if (as_bool(logical_eq(link,1))) {
             return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
+        } else if (as_bool(logical_eq(link,2))) {
+            return stan::math::promote_scalar<fun_return_scalar_t__>(exp(eta));
         } else {
             {
                 Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(static_cast<Eigen::VectorXd::Index>(rows(eta)));
@@ -5116,26 +5118,18 @@ pw_gauss(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
         {
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  ll(static_cast<Eigen::VectorXd::Index>(rows(eta)));
             (void) ll;  // dummy to suppress unused var warning
+            Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(static_cast<Eigen::VectorXd::Index>(rows(eta)));
+            (void) mu;  // dummy to suppress unused var warning
             stan::math::initialize(ll, std::numeric_limits<double>::quiet_NaN());
+            stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
             if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
                 std::stringstream errmsg_stream__;
                 errmsg_stream__ << "Invalid link";
                 throw std::domain_error(errmsg_stream__.str());
             }
-            if (as_bool(logical_eq(link,2))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(ll,n,"ll",1), lognormal_log(get_base1(y,n,"y",1),get_base1(eta,n,"eta",1),sigma));
-                }
-            } else {
-                {
-                    Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(static_cast<Eigen::VectorXd::Index>(rows(eta)));
-                    (void) mu;  // dummy to suppress unused var warning
-                    stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
-                    stan::math::assign(mu, linkinv_gauss(eta,link, pstream__));
-                    for (int n = 1; n <= rows(eta); ++n) {
-                        stan::math::assign(get_base1_lhs(ll,n,"ll",1), normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),sigma));
-                    }
-                }
+            stan::math::assign(mu, linkinv_gauss(eta,link, pstream__));
+            for (int n = 1; n <= rows(eta); ++n) {
+                stan::math::assign(get_base1_lhs(ll,n,"ll",1), normal_log(get_base1(y,n,"y",1),get_base1(mu,n,"mu",1),sigma));
             }
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
@@ -6411,7 +6405,7 @@ public:
                         if (as_bool(logical_eq(link,1))) {
                             lp_accum__.add(normal_log(y,eta,dispersion));
                         } else if (as_bool(logical_eq(link,2))) {
-                            lp_accum__.add(lognormal_log(y,eta,dispersion));
+                            lp_accum__.add(normal_log(y,exp(eta),dispersion));
                         } else {
                             lp_accum__.add(normal_log(y,divide_real_by_vector(1,eta, pstream__),dispersion));
                         }

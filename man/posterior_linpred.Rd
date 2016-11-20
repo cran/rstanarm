@@ -2,17 +2,22 @@
 % Please edit documentation in R/posterior_linpred.R
 \name{posterior_linpred}
 \alias{posterior_linpred}
+\alias{posterior_linpred.stanreg}
 \title{Posterior distribution of the linear predictor}
 \usage{
-posterior_linpred(object, transform = FALSE, newdata = NULL,
-  re.form = NULL, offset = NULL, XZ = FALSE, ...)
+posterior_linpred(object, ...)
+
+\method{posterior_linpred}{stanreg}(object, transform = FALSE,
+  newdata = NULL, re.form = NULL, offset = NULL, XZ = FALSE, ...)
 }
 \arguments{
-\item{object}{A fitted model object returned by one of the
+\item{object}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
+\item{...}{Currently ignored.}
+
 \item{transform}{Should the linear predictor be transformed using the
-inverse-link function? The default is \code{FALSE}, in which case the 
+inverse-link function? The default is \code{FALSE}, in which case the
 untransformed linear predictor is returned.}
 
 \item{newdata, re.form, offset}{Same as for \code{\link{posterior_predict}}.}
@@ -21,8 +26,6 @@ untransformed linear predictor is returned.}
 design matrix \code{X} (or \code{cbind(X,Z)} for models with group-specific
 terms) constructed from \code{newdata} is returned. The default is 
 \code{FALSE}.}
-
-\item{...}{Currently unused.}
 }
 \value{
 The default is to return a \code{draws} by \code{nrow(newdata)} 
@@ -31,9 +34,9 @@ The default is to return a \code{draws} by \code{nrow(newdata)}
   is set to \code{TRUE} (see the \code{XZ} argument description above).
 }
 \description{
-Extract the posterior draws of the linear predictor, possibly transformed by 
-the inverse-link function. This function is occasionally convenient, but it 
-should be used sparingly. Inference and model checking should generally be 
+Extract the posterior draws of the linear predictor, possibly transformed by
+the inverse-link function. This function is occasionally convenient, but it
+should be used sparingly. Inference and model checking should generally be
 carried out using the posterior predictive distribution (see
 \code{\link{posterior_predict}}).
 }

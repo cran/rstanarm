@@ -4,7 +4,7 @@ structure(list(EVAL = TRUE), .Names = "EVAL")
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
 CHAINS <- 2L
-CORES <- 1L
+CORES <- 2L
 SEED <- 12345
 
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------
@@ -103,6 +103,7 @@ shift_draws <- function(draws) {
 }
 alphas <- shift_draws(as.matrix(fit_partialpool))
 partialpool <- summary_stats(alphas)
+partialpool <- partialpool[-nrow(partialpool),]
 rownames(partialpool) <- as.character(bball$Player)
 batting_avg(partialpool)
 
@@ -129,11 +130,16 @@ ggplot(plotdata, aes(x = observed, y = median, ymin = lb, ymax = ub)) +
 
 ## ---- log_p_new----------------------------------------------------------
 newdata <- data.frame(Hits = y_new, AB = K_new, Player = bball$Player)
-fits <- list(Pooling = fit_pool, NoPooling = fit_nopool, 
+fits <- list(Pooling = fit_pool, 
+             NoPooling = fit_nopool, 
              PartialPooling = fit_partialpool)
 
-# compute log_p_new with each of the models in 'fits'
-log_p_new <- sapply(fits, function(x) rowSums(log_lik(x, newdata)))
+# compute log_p_new matrix with each of the models in 'fits'
+log_p_new_mats <- lapply(fits, log_lik, newdata = newdata)
+
+# for each matrix in the list take the row sums
+log_p_new <- sapply(log_p_new_mats, rowSums)
+M <- nrow(log_p_new)
 head(log_p_new)
 
 ## ---- log_p_new-mean-----------------------------------------------------
@@ -156,10 +162,19 @@ log_sum_exp <- function(u) {
   max_u + log(sum(exp(u - max_u)))
 }
 
+## ---- log_mean_exp-------------------------------------------------------
+log_mean_exp <- function(u) {
+  M <- length(u)
+  -log(M) + log_sum_exp(u)
+}
+
 ## ----comment=NA----------------------------------------------------------
-M <- nrow(log_p_new) 
-new_lps <- -log(M) + apply(log_p_new, 2, log_sum_exp)
-round(sort(new_lps, decreasing = TRUE), digits = 1)
+new_lps <- lapply(log_p_new_mats, function(x) apply(x, 2, log_mean_exp))
+
+# sum over the data points
+new_lps_sums <- sapply(new_lps, sum)
+
+round(sort(new_lps_sums, decreasing = TRUE), digits = 1)
 
 ## ---- loo----------------------------------------------------------------
 compare(loo(fit_partialpool), loo(fit_pool), loo(fit_nopool))
@@ -202,6 +217,7 @@ ggplot(df_ppd, aes(x=player, y=y, ymin=lb, ymax=ub)) +
 ## ---- event-probabilities, results="hold"--------------------------------
 draws_partialpool <- shift_draws(as.matrix(fit_partialpool))
 thetas_partialpool <- plogis(draws_partialpool)
+thetas_partialpool <- thetas_partialpool[,-ncol(thetas_partialpool)]
 colnames(thetas_partialpool) <- as.character(bball$Player)
 ability_gt_400 <- thetas_partialpool > 0.4
 cat("Pr(theta_n >= 0.400 | y)\n")
@@ -254,13 +270,13 @@ ggplot(df_is_best, aes(x=unit, y=is_best)) +
   theme(axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0))
 
 ## ---- plot-ppc-stats-mean, fig.width=3, fig.height=2.5-------------------
-pp_check(fit_nopool, check = "test", test = "mean")
+pp_check(fit_nopool, plotfun = "stat", stat = "mean")
 
 ## ---- plot-ppc-stats-----------------------------------------------------
 tstat_plots <- function(model, stats) {
   lapply(stats, function(stat) {
-    graph <- pp_check(model, check = "test", test = stat, 
-                      binwidth = .025, seed = SEED) # optional arguments
+    graph <- pp_check(model, plotfun = "stat", stat = stat, 
+                      seed = SEED) # optional arguments
     graph + xlab(stat) + theme(legend.position = "none")
   })
 }
@@ -273,7 +289,8 @@ library(gridExtra)
 grid.arrange(
   arrangeGrob(grobs = ppcs_pool, nrow = 1, left = "Pooling"), 
   arrangeGrob(grobs = ppcs_nopool, nrow = 1, left = "No Pooling"),
-  arrangeGrob(grobs = ppcs_partialpool, nrow = 1, left = "Partial Pooling"))
+  arrangeGrob(grobs = ppcs_partialpool, nrow = 1, left = "Partial Pooling")
+)
 
 ## ---- p-value------------------------------------------------------------
 yrep <- posterior_predict(fit_nopool, seed = SEED) # seed is optional
@@ -285,7 +302,6 @@ p <- 1 - mean(Tyrep > Ty)
 print(p)
 
 ## ---- plot-ppc-y-vs-yrep-------------------------------------------------
-pp_check(fit_partialpool, check = "distributions", nreps = 15, 
-         overlay = FALSE, binwidth = 0.05) +  # optional arguments
+pp_check(fit_partialpool, plotfun = "hist", nreps = 15, binwidth = 0.05) +
   ggtitle("Model: Partial Pooling")
 

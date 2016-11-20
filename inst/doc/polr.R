@@ -19,7 +19,7 @@ theme_set(theme_classic() %+replace% thm_els)
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
 CHAINS <- 2L
-CORES <- 1L
+CORES <- 2L
 SEED <- 12345
 
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------

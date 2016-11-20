@@ -15,7 +15,7 @@
 \method{as.data.frame}{summary.stanreg}(x, ...)
 }
 \arguments{
-\item{object}{A fitted model object returned by one of the
+\item{object}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{pars}{An optional character vector specifying a subset of parameters to
@@ -75,6 +75,7 @@ as.data.frame(summary(example_model, pars = "varying"))
 
 }
 \seealso{
-\code{\link{print.stanreg}}, \code{\link{stanreg-methods}}
+\code{\link{prior_summary}} to extract or print a summary of the 
+  priors used for a particular model.
 }
 

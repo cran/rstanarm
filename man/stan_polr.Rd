@@ -36,11 +36,11 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 \item{method}{One of 'logistic', 'probit', 'loglog', 'cloglog' or 'cauchit',
 but can be abbreviated. See \code{\link[MASS]{polr}} for more details.}
 
-\item{prior}{Prior for coefficients. Should be a call to \code{\link{R2}} 
+\item{prior}{Prior for coefficients. Should be a call to \code{\link{R2}}
 to specify the prior location of the \eqn{R^2} but can be \code{NULL}
 to indicate a standard uniform prior. See \code{\link{priors}}.}
 
-\item{prior_counts}{A call to \code{\link{dirichlet}} to specify the 
+\item{prior_counts}{A call to \code{\link{dirichlet}} to specify the
 prior counts of the outcome when the predictors are at their sample
 means.}
 
@@ -60,7 +60,7 @@ exponent is taken to be fixed at \eqn{1}.}
 whether to draw from the prior predictive distribution instead of
 conditioning on the outcome.}
 
-\item{algorithm}{Character string (possibly abbreviated) indicating the 
+\item{algorithm}{A string (possibly abbreviated) indicating the 
 estimation approach to use. Can be \code{"sampling"} for MCMC (the
 default), \code{"optimizing"} for optimization, \code{"meanfield"} for
 variational inference with independent normal distributions, or
@@ -92,23 +92,23 @@ Bayesian inference for ordinal (or binary) regression models under
 a proportional odds assumption.
 }
 \details{
-The \code{stan_polr} function is similar in syntax to 
-  \code{\link[MASS]{polr}} but rather than performing maximum likelihood 
+The \code{stan_polr} function is similar in syntax to
+  \code{\link[MASS]{polr}} but rather than performing maximum likelihood
   estimation of a proportional odds model, Bayesian estimation is performed
-  (if \code{algorithm = "sampling"}) via MCMC. The \code{stan_polr} 
-  function calls the workhorse \code{stan_polr.fit} function, but it is 
+  (if \code{algorithm = "sampling"}) via MCMC. The \code{stan_polr}
+  function calls the workhorse \code{stan_polr.fit} function, but it is
   possible to call the latter directly.
-  
-  As for \code{\link{stan_lm}}, it is necessary to specify the prior 
+
+  As for \code{\link{stan_lm}}, it is necessary to specify the prior
   location of \eqn{R^2}. In this case, the \eqn{R^2} pertains to the
   proportion of variance in the latent variable (which is discretized
-  by the cutpoints) attributable to the predictors in the model. 
-  
+  by the cutpoints) attributable to the predictors in the model.
+
   Prior beliefs about the cutpoints are governed by prior beliefs about the
   outcome when the predictors are at their sample means. Both of these
-  are explained in the help page on \code{\link{priors}} and in the 
+  are explained in the help page on \code{\link{priors}} and in the
   \pkg{rstanarm} vignettes.
- 
+
   Unlike \code{\link[MASS]{polr}}, \code{stan_polr} also allows the "ordinal"
   outcome to contain only two levels, in which case the likelihood is the
   same by default as for \code{\link{stan_glm}} with \code{family = binomial}
@@ -120,17 +120,17 @@ The \code{stan_polr} function is similar in syntax to
   likelihood is called \dQuote{scobit} by Nagler (1994) because if \code{alpha}
   is not equal to \eqn{1}, then the relationship between the linear predictor
   and the probability of success is skewed. If \code{shape} or \code{rate} is
-  \code{NULL}, then \code{alpha} is assumed to be fixed to \eqn{1}. 
-  
+  \code{NULL}, then \code{alpha} is assumed to be fixed to \eqn{1}.
+
   Otherwise, it is usually advisible to set \code{shape} and \code{rate} to
   the same number so that the expected value of \code{alpha} is \eqn{1} while
   leaving open the possibility that \code{alpha} may depart from \eqn{1} a
   little bit. It is often necessary to have a lot of data in order to estimate
   \code{alpha} with much precision and always necessary to inspect the
-  Pareto shape parameters calculated by \code{\link{loo}} to see if the 
+  Pareto shape parameters calculated by \code{\link{loo}} to see if the
   results are particularly sensitive to individual observations.
-  
-  Users should think carefully about how the outcome is coded when using 
+
+  Users should think carefully about how the outcome is coded when using
   a scobit-type model. When \code{alpha} is not \eqn{1}, the asymmetry
   implies that the probability of success is most sensitive to the predictors
   when the probability of success is less than \eqn{0.63}. Reversing the

@@ -16,7 +16,7 @@ kfold(x, K = 10)
 \method{waic}{stanreg}(x, ...)
 }
 \arguments{
-\item{x}{A fitted model object returned by one of the
+\item{x}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{...}{Optional arguments to pass to \code{\link{psislw}}. Possible
@@ -100,12 +100,10 @@ created by \code{loo}.
 
 \strong{Note}: in the warning messages issued by \code{loo} about large 
 Pareto \eqn{k} estimates we recommend setting \code{k_threshold} to at least 
-\eqn{0.7}. There is a theoretical reason, explained in Vehtari et al. (2016),
-for setting the threshold to the stricter value of \eqn{0.5}, but in
-practice we find that errors in the LOO approximation start to increase
-non-negligibly when \eqn{k > 0.7}. Finally, as is also explained in Vehtari 
-et al. (2016), it is never recommended to set \code{k_threshold} to a value 
-greater than \eqn{1}.
+\eqn{0.7}. There is a theoretical reason, explained in Vehtari, Gelman, and 
+Gabry (2016), for setting the threshold to the stricter value of \eqn{0.5}, 
+but in practice they find that errors in the LOO approximation start to 
+increase non-negligibly when \eqn{k > 0.7}.
 }
 }
 
@@ -122,11 +120,8 @@ the objects returned by \code{kfold}.
 }
 \examples{
 \donttest{
-SEED <- 42024
-set.seed(SEED)
-
-fit1 <- stan_glm(mpg ~ wt, data = mtcars, seed = SEED)
-fit2 <- update(fit1, formula = . ~ . + cyl)
+fit1 <- stan_glm(mpg ~ wt, data = mtcars)
+fit2 <- stan_glm(mpg ~ wt + cyl, data = mtcars)
 
 # compare on LOOIC
 (loo1 <- loo(fit1, cores = 2))
@@ -138,40 +133,27 @@ plot(loo2)
 (kfold1 <- kfold(fit1, K = 10))
 kfold2 <- kfold(fit2, K = 10)
 compare(kfold1, kfold2)
-
-# dataset description at help("lalonde", package = "arm")
-data(lalonde, package = "arm") 
-t7 <- student_t(df = 7) # prior for coefficients
-
-f1 <- treat ~ re74 + re75 + educ + black + hisp + married + 
-   nodegr + u74 + u75
-lalonde1 <- stan_glm(f1, data = lalonde, family = binomial(link="logit"), 
-                     prior = t7, cores = 2, seed = SEED)
-                 
-f2 <- treat ~ age + I(age^2) + educ + I(educ^2) + black + hisp + 
-   married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) + u74 + u75   
-lalonde2 <- update(lalonde1, formula = f2)
-
-# compare on LOOIC
-(loo_lalonde1 <- loo(lalonde1, cores = 2))
-(loo_lalonde2 <- loo(lalonde2, cores = 2))
-plot(loo_lalonde2, label_points = TRUE)
-compare(loo_lalonde1, loo_lalonde2)
 }
-
 }
 \references{
-Vehtari, A., Gelman, A., and Gabry, J. (2016). Practical Bayesian model
-evaluation using leave-one-out cross-validation and WAIC.
-\url{http://arxiv.org/abs/1507.04544/} (preprint)
+Vehtari, A., Gelman, A., and Gabry, J. (2016a). Practical
+  Bayesian model evaluation using leave-one-out cross-validation and WAIC.
+  \emph{Statistics and Computing}. Advance online publication.
+  doi:10.1007/s11222-016-9696-4. arXiv preprint:
+  \url{http://arxiv.org/abs/1507.04544/}
 }
 \seealso{
 \code{\link[loo]{compare}} for comparing two or more models on LOO, WAIC, or
 \eqn{K}-fold CV.
 
+The various \pkg{rstanarm} vignettes for more examples of using \code{loo}.
+
 \code{\link[loo]{loo-package}} (in particular the \emph{PSIS-LOO} section) 
 for details on the computations implemented by the \pkg{loo} package and the 
 interpretation of the Pareto \eqn{k} estimates displayed when using the 
 \code{\link{plot.loo}} method.
+
+\code{\link{log_lik.stanreg}} to directly access the pointwise log-likelihood
+matrix.
 }
 

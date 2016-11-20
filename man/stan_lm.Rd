@@ -49,7 +49,7 @@ indicate a standard uniform prior for the \eqn{R^2}.}
 whether to draw from the prior predictive distribution instead of
 conditioning on the outcome.}
 
-\item{algorithm}{Character string (possibly abbreviated) indicating the 
+\item{algorithm}{A string (possibly abbreviated) indicating the 
 estimation approach to use. Can be \code{"sampling"} for MCMC (the
 default), \code{"optimizing"} for optimization, \code{"meanfield"} for
 variational inference with independent normal distributions, or
@@ -135,7 +135,9 @@ stan_aov(yield ~ block + N*P*K, data = npk, contrasts = "contr.poly",
 (fit <- stan_lm(mpg ~ wt + qsec + am, data = mtcars, prior = R2(0.75), 
                 # the next line is only to make the example go fast enough
                 chains = 1, iter = 1000, seed = 12345))
-plot(fit)
+plot(fit, prob = 0.8)
+plot(fit, "hist", pars = c("wt", "am", "qsec", "sigma"), 
+     transformations = list(sigma = "log"))
 
 }
 \references{

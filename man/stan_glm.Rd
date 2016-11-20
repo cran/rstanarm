@@ -48,10 +48,17 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 \code{cores}, \code{refresh}, etc.}
 
 \item{prior}{The prior distribution for the regression coefficients. 
-\code{prior} can be a call to \code{normal}, \code{student_t},
-\code{cauchy}, \code{hs} or \code{hs_plus}. See \code{\link{priors}} for
-details. To to omit a prior ---i.e., to use a flat (improper) uniform
-prior--- set \code{prior} to \code{NULL}.}
+\code{prior} can be a call to \code{normal}, \code{student_t}, 
+\code{cauchy}, \code{hs} or \code{hs_plus}. See \code{\link{priors}} for 
+details. To omit a prior ---i.e., to use a flat (improper) uniform prior---
+\code{prior} can be set to \code{NULL}, although this is rarely a good 
+idea. (\strong{Note:} unless \code{QR=TRUE}, if the \code{scaled} argument
+to \code{\link{prior_options}} is left at its default and recommended value
+of \code{TRUE}, then the scale(s) of \code{prior} may be modified
+internally based on the scales of the predictors, as in the \pkg{arm}
+package. See \code{\link{priors}} for details on the rescaling and 
+\code{\link{prior_summary}} for a summary of the priors used for a
+particular model.)}
 
 \item{prior_intercept}{The prior distribution for the intercept. 
 \code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
@@ -71,7 +78,7 @@ be \code{NULL} to omit a prior on the dispersion and see
 whether to draw from the prior predictive distribution instead of
 conditioning on the outcome.}
 
-\item{algorithm}{Character string (possibly abbreviated) indicating the 
+\item{algorithm}{A string (possibly abbreviated) indicating the 
 estimation approach to use. Can be \code{"sampling"} for MCMC (the
 default), \code{"optimizing"} for optimization, \code{"meanfield"} for
 variational inference with independent normal distributions, or
@@ -144,35 +151,41 @@ The \code{stan_glm} function is similar in syntax to
 if (!grepl("^sparc",  R.version$platform)) {
 ### Linear regression
 fit <- stan_glm(mpg / 10 ~ ., data = mtcars, QR = TRUE,
-                algorithm = "fullrank") # for speed only
-plot(fit, ci_level = 0.5)
-plot(fit, ci_level = 0.5, pars = "beta")
-
-### Logistic regression
-data(lalonde, package = "arm")
-dat <- within(lalonde, {
- re74_1k <- re74 / 1000
- re75_1k <- re75 / 1000
-})
-t7 <- student_t(df = 7)
-fmla <- treat ~ re74_1k + re75_1k + educ + black + hisp + 
-               married + nodegr + u74 + u75
-fit2 <- stan_glm(fmla, data = dat, family = binomial(link="logit"), 
-                 prior = t7, prior_intercept = t7, 
-                 algorithm = "fullrank") # for speed only
-plot(fit2, pars = c("black", "hisp", "nodegr", "u74", "u75"), 
-     ci_level = 0.67, outer_level = 1, show_density = TRUE)
-pp_check(fit2, check = "resid")
-pp_check(fit2, check = "test", test = "mean")
+                algorithm = "fullrank") # only to make example fast enoug
+plot(fit, prob = 0.5)
+plot(fit, prob = 0.5, pars = "beta")
 }
 \donttest{
+### Logistic regression
+head(wells)
+wells$dist100 <- wells$dist / 100
+fit2 <- stan_glm(
+  switch ~ dist100 + arsenic, 
+  data = wells, 
+  family = binomial(link = "logit"), 
+  prior = student_t(df = 7, location = 0, scale = 2.5), 
+  prior_intercept = normal(0, 10)
+)
+print(fit2)
+prior_summary(fit2)
+
+plot(fit2, plotfun = "areas", prob = 0.9, # ?bayesplot::mcmc_areas
+     pars = c("(Intercept)", "arsenic"))
+pp_check(fit2, plotfun = "error_binned")  # ?bayesplot::ppc_error_binned
+
+
 ### Poisson regression (example from help("glm")) 
 counts <- c(18,17,15,20,10,20,25,13,12)
 outcome <- gl(3,1,9)
 treatment <- gl(3,3)
 fit3 <- stan_glm(counts ~ outcome + treatment, family = poisson(link="log"),
                  prior = normal(0, 1), prior_intercept = normal(0, 5))
-plot(fit3, fill_color = "skyblue4", est_color = "maroon")
+print(fit3)
+
+bayesplot::color_scheme_set("green")
+plot(fit3)
+plot(fit3, regex_pars = c("outcome", "treatment"))
+plot(fit3, plotfun = "combo", regex_pars = "treatment") # ?bayesplot::mcmc_combo
 
 ### Gamma regression (example from help("glm"))
 clotting <- data.frame(log_u = log(c(5,10,15,20,30,40,60,80,100)),

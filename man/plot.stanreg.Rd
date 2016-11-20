@@ -4,22 +4,20 @@
 \alias{plot.stanreg}
 \title{Plot method for stanreg objects}
 \usage{
-\method{plot}{stanreg}(x, plotfun = NULL, pars = NULL, regex_pars = NULL,
-  ...)
+\method{plot}{stanreg}(x, plotfun = "intervals", pars = NULL,
+  regex_pars = NULL, ...)
 }
 \arguments{
-\item{x}{A fitted model object returned by one of the
+\item{x}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
-\item{plotfun}{A character string naming the plotting function to apply to 
-the stanreg object. See \code{\link{rstanarm-plots}} for the names and
-descriptions. Also see the Examples section below. \code{plotfun} can be
-either the full name of the plotting function (e.g. \code{"stan_hist"}) or
-can be abbreviated to the part of the name following the underscore (e.g. 
-\code{"hist"}). The default plot shows intervals and point estimates for 
-the coefficients. Note: \code{plotfun} should not be specified for models 
-fit using \code{algorithm="optimizing"} as there is currently only one 
-plotting function for these models.}
+\item{plotfun}{A character string naming the \pkg{bayesplot} 
+\link[bayesplot]{MCMC} function to use. The default is to call
+\code{\link[bayesplot]{mcmc_intervals}}. \code{plotfun} can be specified
+either as the full name of a \pkg{bayesplot} plotting function (e.g.
+\code{"mcmc_hist"}) or can be abbreviated to the part of the name following
+the \code{"mcmc_"} prefix (e.g. \code{"hist"}). To get the names of all
+available MCMC functions see \code{\link[bayesplot]{available_mcmc}}.}
 
 \item{pars}{An optional character vector of parameter names.}
 
@@ -29,66 +27,133 @@ in place of \code{pars} or in addition to \code{pars}. Currently, all
 functions that accept a \code{regex_pars} argument ignore it for models fit
 using optimization.}
 
-\item{...}{Additional arguments to pass to \code{plotfun} (see
-\code{\link{rstanarm-plots}}) or, for models fit using
-\code{algorithm="optimizing"}, \code{\link[arm]{coefplot}}.}
+\item{...}{Additional arguments to pass to \code{plotfun} for customizing the
+plot. These are described on the help pages for the individual plotting 
+functions. For example, the arguments accepted for the default
+\code{plotfun="intervals"} can be found at
+\code{\link[bayesplot]{mcmc_intervals}}.}
 }
 \value{
-In most cases, a ggplot object (or several) that can be further 
-  customized using the \pkg{ggplot2} package. The exception is for models fit
-  using \code{"optimizing"} as the estimation algorithm, in which case a plot
-  is produced but nothing is returned.
+Either a ggplot object that can be further customized using the
+  \pkg{ggplot2} package, or an object created from multiple ggplot objects
+  (e.g. a gtable object created by \code{\link[gridExtra]{arrangeGrob}}).
 }
 \description{
-For models fit using MCMC or one of the variational approximations, there are
-a variety of plots that can be generated. For models fit using optimization,
-the regression coefficients and standard errors are passed to
-\code{\link[arm]{coefplot}} (\pkg{arm}).
+The \code{plot} method for \link{stanreg-objects} provides a convenient 
+interface to the \link[bayesplot]{MCMC} module in the \pkg{\link{bayesplot}} 
+package for plotting MCMC draws and diagnostics. It is also straightforward 
+to use the functions from the \pkg{bayesplot} package directly rather than 
+via the \code{plot} method. Examples of both methods of plotting are given
+below.
 }
 \examples{
+\donttest{
 # Use rstanarm example model
 if (!exists("example_model")) example(example_model)
 fit <- example_model
 
-# Intervals and point estimates
-plot(fit) + 
-ggplot2::ggtitle("Posterior medians \\n with 80\% and 95\% credible intervals")
-plot(fit, pars = "size", regex_pars = "period", 
-     ci_level = 0.95, outer_level = 1, show_density = TRUE)
+#####################################
+### Intervals and point estimates ###
+#####################################
+plot(fit) # same as plot(fit, "intervals"), plot(fit, "mcmc_intervals")
 
-# Traceplot
-# note: rstanarm doesn't store the warmup draws by default 
+p <- plot(fit, pars = "size", regex_pars = "period",
+          prob = 0.5, prob_outer = 0.9)
+p + ggplot2::ggtitle("Posterior medians \\n with 50\% and 90\% intervals")
+
+# Shaded areas under densities
+bayesplot::color_scheme_set("brightblue")
+plot(fit, "areas", regex_pars = "period",
+     prob = 0.5, prob_outer = 0.9)
+
+# Make the same plot by extracting posterior draws and calling
+# bayesplot::mcmc_areas directly
+x <- as.array(fit, regex_pars = "period")
+bayesplot::mcmc_areas(x, prob = 0.5, prob_outer = 0.9)
+
+
+##################################
+### Histograms & density plots ###
+##################################
+plot_title <- ggplot2::ggtitle("Posterior Distributions")
+plot(fit, "hist", regex_pars = "period") + plot_title
+plot(fit, "dens_overlay", pars = "(Intercept)",
+     regex_pars = "period") + plot_title
+
+####################
+### Scatterplots ###
+####################
+bayesplot::color_scheme_set("teal")
+plot(fit, "scatter", pars = paste0("period", 2:3))
+plot(fit, "scatter", pars = c("(Intercept)", "size"),
+     size = 3, alpha = 0.5) +
+     ggplot2::stat_ellipse(level = 0.9)
+
+
+####################################################
+### Rhat, effective sample size, autocorrelation ###
+####################################################
+bayesplot::color_scheme_set("red")
+
+# rhat
+plot(fit, "rhat")
+plot(fit, "rhat_hist")
+
+# ratio of effective sample size to total posterior sample size
+plot(fit, "neff")
+plot(fit, "neff_hist")
+
+# autocorrelation by chain
+plot(fit, "acf", pars = "(Intercept)", regex_pars = "period")
+plot(fit, "acf_bar", pars = "(Intercept)", regex_pars = "period")
+
+
+##################
+### Traceplots ###
+##################
+# NOTE: rstanarm doesn't store the warmup draws (to save space because they
+# are not so essential for diagnosing the particular models implemented in
+# rstanarm) so the iterations in the traceplot are post-warmup iterations
+
+bayesplot::color_scheme_set("pink")
 (trace <- plot(fit, "trace", pars = "(Intercept)"))
+
+# change traceplot colors to ggplot defaults or custom values
 trace + ggplot2::scale_color_discrete()
 trace + ggplot2::scale_color_manual(values = c("maroon", "skyblue2"))
 
-# Distributions 
-plot_title <- ggplot2::ggtitle("Posterior Distributions")
-plot(fit, "hist", fill = "skyblue", regex_pars = "period") + plot_title
-plot(fit, "dens", pars = "(Intercept)", regex_pars = "period", 
-     separate_chains = TRUE, alpha = 1/3) + plot_title
+# changing facet layout 
+plot(fit, "trace", pars = c("(Intercept)", "period2"),
+     facet_args = list(nrow = 2))
+# same plot by calling bayesplot::mcmc_trace directly
+x <- as.array(fit, pars = c("(Intercept)", "period2"))
+bayesplot::mcmc_trace(x, facet_args = list(nrow = 2))
 
-# Scatterplot
-plot(fit, plotfun = "scat", pars = paste0("period", 2:3))
-plot(fit, plotfun = "scat", pars = c("(Intercept)", "size"), 
-     color = "black", size = 5, alpha = 0.2)
 
-# Some diagnostics
-plot(fit, "rhat")
-plot(fit, "ess")
+############
+### More ###
+############
 
-# Using regex_pars
+# regex_pars examples
 plot(fit, regex_pars = "herd:1\\\\]")
 plot(fit, regex_pars = "herd:[279]")
 plot(fit, regex_pars = "herd:[279]|period2")
 plot(fit, regex_pars = c("herd:[279]", "period2"))
+}
 
-# For graphical posterior predictive checks see 
-# help("pp_check", package = "rstanarm")
+# For graphical posterior predictive checks see
+# help("pp_check.stanreg")
 
 }
 \seealso{
-\code{\link{rstanarm-plots}} for details on the individual plotting
-  functions.
+The vignettes in the \pkg{bayesplot} package for many examples.
+  
+  \code{\link[bayesplot]{MCMC-overview}} (\pkg{bayesplot}) for links to the 
+  documentation for all the available plotting functions.
+  
+  \code{\link[bayesplot]{color_scheme_set}} (\pkg{bayesplot}) to change the
+  color scheme used for plotting.
+  
+  \code{\link{pp_check}} for graphical posterior predictive checks.
 }
 

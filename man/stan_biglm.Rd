@@ -56,7 +56,7 @@ estimated.}
 whether to draw from the prior predictive distribution instead of
 conditioning on the outcome.}
 
-\item{algorithm}{Character string (possibly abbreviated) indicating the 
+\item{algorithm}{A string (possibly abbreviated) indicating the 
 estimation approach to use. Can be \code{"sampling"} for MCMC (the
 default), \code{"optimizing"} for optimization, \code{"meanfield"} for
 variational inference with independent normal distributions, or

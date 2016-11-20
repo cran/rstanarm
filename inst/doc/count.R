@@ -19,7 +19,7 @@ theme_set(theme_classic() %+replace% thm_els)
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
 CHAINS <- 2L
-CORES <- 1L
+CORES <- 2L
 SEED <- 12345
 
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------
@@ -51,14 +51,14 @@ yrep <- posterior_predict(stan_glm1)
 
 ## ---- count-roaches-plot-pp_check1, fig.height=3, fig.width=4------------
 prop_zero <- function(y) mean(y == 0)
-(prop_zero_test1 <- pp_check(stan_glm1, check = "test", test = "prop_zero"))
+(prop_zero_test1 <- pp_check(stan_glm1, plotfun = "stat", stat = "prop_zero"))
 
 ## ---- count-roaches-negbin, results="hide"-------------------------------
 stan_glm2 <- update(stan_glm1, family = neg_binomial_2) 
 
 ## ---- count-roaches-plot-pp_check2, fig.height=3, fig.width=8------------
 library(gridExtra)
-prop_zero_test2 <- pp_check(stan_glm2, check = "test", test = "prop_zero")
+prop_zero_test2 <- pp_check(stan_glm2, plotfun = "stat", stat = "prop_zero")
 # Show graphs for Poisson and negative binomial side by side
 grid.arrange(prop_zero_test1 + ggtitle("Poisson"), 
              prop_zero_test2 + ggtitle("Negative Binomial"), 

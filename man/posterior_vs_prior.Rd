@@ -2,15 +2,23 @@
 % Please edit documentation in R/posterior_vs_prior.R
 \name{posterior_vs_prior}
 \alias{posterior_vs_prior}
+\alias{posterior_vs_prior.stanreg}
 \title{Juxtapose prior and posterior}
 \usage{
-posterior_vs_prior(object, pars = NULL, regex_pars = NULL, prob = 0.9,
-  color_by = c("parameter", "vs", "none"), group_by_parameter = FALSE,
-  facet_args = list(), ...)
+posterior_vs_prior(object, ...)
+
+\method{posterior_vs_prior}{stanreg}(object, pars = NULL, regex_pars = NULL,
+  prob = 0.9, color_by = c("parameter", "vs", "none"),
+  group_by_parameter = FALSE, facet_args = list(), ...)
 }
 \arguments{
-\item{object}{A fitted model object returned by one of the
+\item{object}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
+
+\item{...}{The S3 generic uses \code{...} to pass arguments to any defined 
+methods. For the method for stanreg objects, \code{...} is for arguments
+(other than \code{color}) passed to \code{\link[ggplot2]{geom_pointrange}}
+to control the appearance of the plotted intervals.}
 
 \item{pars}{An optional character vector specifying a subset of parameters to
 display. Parameters can be specified by name or several shortcuts can be 
@@ -48,10 +56,6 @@ scales available in \code{ggplot2}
 \code{\link[ggplot2]{facet_wrap}} (other than the \code{facets} argument),
 e.g., \code{nrow} or \code{ncol} to change the layout, \code{scales} to 
 allow axis scales to vary across facets, etc. See Examples.}
-
-\item{...}{Arguments (other than \code{color}) passed to 
-\code{\link[ggplot2]{geom_pointrange}} to control the appearance of the 
-plotted intervals.}
 }
 \value{
 A ggplot object that can be further customized using the 
@@ -84,10 +88,6 @@ gg +
  ggplot2::coord_flip() + 
  ggplot2::ggtitle("Comparing the prior and posterior")
  
-gg + 
- ggplot2::scale_color_brewer() + 
- ggplot2::theme(panel.background = ggplot2::element_rect(fill = "gray30"))
-                
 # compare very wide and very narrow priors using roaches example
 # (see help(roaches, "rstanarm") for info on the dataset)
 roaches$roach100 <- roaches$roach1 / 100

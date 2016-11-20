@@ -19,7 +19,7 @@ theme_set(theme_classic() %+replace% thm_els)
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
 CHAINS <- 2L
-CORES <- 1L
+CORES <- 2L
 SEED <- 12345
 
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------
@@ -29,7 +29,8 @@ options(loo.cores = loo.cores)
 ## ---- continuous-kidiq-mcmc,results="hide"-------------------------------
 library(rstanarm)
 data(kidiq)
-post1 <- stan_glm(kid_score ~ mom_hs, data = kidiq, family = gaussian(link = "identity"), 
+post1 <- stan_glm(kid_score ~ mom_hs, data = kidiq, 
+                  family = gaussian(link = "identity"), 
                   chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
 post2 <- update(post1, formula = . ~ mom_iq)
 post3 <- update(post1, formula = . ~ mom_hs + mom_iq)
@@ -105,13 +106,13 @@ compare(loo3, loo4)
 compare(loo2, loo4)
 
 ## ---- continuous-kidiq-pp_check1, fig.width=5----------------------------
-pp_check(post4, check = "distributions", overlay = FALSE, nreps = 5)
+pp_check(post4, plotfun = "hist", nreps = 5)
 
 ## ---- continuous-kidiq-pp_check2, fig.height = 3-------------------------
-pp_check(post4, check = "test", test = "mean")
+pp_check(post4, plotfun = "stat", stat = "mean")
 
 ## ---- continuous-kidiq-pp_check3, fig.height=3---------------------------
-pp_check(post4, check = "test", test = c("mean", "sd"))
+pp_check(post4, plotfun = "stat_2d", stat = c("mean", "sd"))
 
 ## ---- continuous-kidiq-posterior_predict---------------------------------
 IQ_SEQ <- seq(from = 75, to = 135, by = 5)

@@ -7,7 +7,7 @@
 \method{print}{stanreg}(x, digits = 1, ...)
 }
 \arguments{
-\item{x}{A fitted model object returned by one of the
+\item{x}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{digits}{Number of digits to use for formatting numbers.}

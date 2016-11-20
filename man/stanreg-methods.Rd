@@ -8,7 +8,6 @@
 \alias{fitted.stanreg}
 \alias{fixef}
 \alias{fixef.stanreg}
-\alias{log_lik.stanreg}
 \alias{ngrps}
 \alias{ngrps.stanreg}
 \alias{nobs.stanreg}
@@ -28,8 +27,6 @@
 \method{confint}{stanreg}(object, parm, level = 0.95, ...)
 
 \method{fitted}{stanreg}(object, ...)
-
-\method{log_lik}{stanreg}(object, newdata = NULL, offset = NULL, ...)
 
 \method{nobs}{stanreg}(object, ...)
 
@@ -52,7 +49,7 @@
 \method{VarCorr}{stanreg}(x, sigma = 1, ...)
 }
 \arguments{
-\item{object, x}{A fitted model object returned by one of the
+\item{object, x}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{...}{Ignored, except by the \code{update} method. See
@@ -64,14 +61,6 @@ names.}
 \item{level}{For \code{confint}, a scalar between \eqn{0} and \eqn{1}
 indicating the confidence level to use.}
 
-\item{newdata}{For \code{log_lik}, an optional data frame of new data (e.g. 
-holdout data) to use when evaluating the log-likelihood. See the 
-description of \code{newdata} for \code{\link{posterior_predict}}.}
-
-\item{offset}{For \code{log_lik}, a vector of offsets. Only required if
-\code{newdata} is specified and an \code{offset} was specified when fitting
-the model.}
-
 \item{formula., evaluate}{See \code{\link[stats]{update}}.}
 
 \item{correlation}{For \code{vcov}, if \code{FALSE} (the default) the
@@ -82,33 +71,17 @@ returned instead.}
 \code{\link[nlme]{VarCorr}}).}
 }
 \description{
-S3 methods for \link[=stanreg-objects]{stanreg} objects. There are also 
-several methods (listed in See Also, below) with their own individual help
-pages.
+The methods documented on this page are actually some of the least important 
+methods defined for \link[=stanreg-objects]{stanreg} objects. The most 
+important methods are documented separately, each with its own page. Links to
+those pages are provided in the \strong{See Also} section, below.
 }
 \details{
-Most of these methods are similar to the methods defined for objects
-  of class 'lm', 'glm', 'glmer', etc. However there are a few exceptions:
+The methods documented on this page are similar to the methods 
+  defined for objects of class 'lm', 'glm', 'glmer', etc. However there are a
+  few key differences:
   
 \describe{
-\item{\code{confint}}{
-For models fit using optimization, confidence intervals are returned via a
-call to \code{\link[stats]{confint.default}}. If \code{algorithm} is
-\code{"sampling"}, \code{"meanfield"}, or \code{"fullrank"}, the
-\code{\link{posterior_interval}} function should be used to compute Bayesian
-uncertainty intervals.
-}
-
-\item{\code{log_lik}}{
-For models fit using MCMC only, the \code{log_lik}
-function returns the \eqn{S} by \eqn{N} pointwise log-likelihood matrix,
-where \eqn{S} is the size of the posterior sample and \eqn{N} is the number
-of data points. Note: we use \code{log_lik} rather than defining a
-\code{\link[stats]{logLik}} method because (in addition to the conceptual
-difference) the documentation for \code{logLik} states that the return value
-will be a single number, whereas we return a matrix.
-}
-
 \item{\code{residuals}}{
 Residuals are \emph{always} of type \code{"response"} (not \code{"deviance"}
 residuals or any other type). However, in the case of \code{\link{stan_polr}}
@@ -124,16 +97,36 @@ The \code{se} function returns standard errors based on
 \code{\link{mad}}. See the \emph{Uncertainty estimates} section in
 \code{\link{print.stanreg}} for more details.
 }
+\item{\code{confint}}{
+For models fit using optimization, confidence intervals are returned via a 
+call to \code{\link[stats]{confint.default}}. If \code{algorithm} is 
+\code{"sampling"}, \code{"meanfield"}, or \code{"fullrank"}, the
+\code{confint} will throw an error because the
+\code{\link{posterior_interval}} function should be used to compute Bayesian 
+uncertainty intervals.
+}
 }
 }
 \seealso{
-Other S3 methods for stanreg objects, which have separate documentation, 
-including \code{\link{as.matrix.stanreg}}, \code{\link{plot.stanreg}}, 
-\code{\link{predict.stanreg}}, \code{\link{print.stanreg}}, and
-\code{\link{summary.stanreg}}.
-
-\code{\link{posterior_interval}} and \code{\link{posterior_predict}} for 
-alternatives to \code{confint} and \code{predict} for models fit using MCMC 
-or variational approximation.
+\itemize{
+ \item The \code{\link[=print.stanreg]{print}},
+   \code{\link[=summary.stanreg]{summary}}, and \code{\link{prior_summary}} 
+   methods for stanreg objects for information on the fitted model.
+ \item \code{\link{launch_shinystan}} to use the ShinyStan GUI to explore a
+   fitted \pkg{rstanarm} model.
+ \item The \code{\link[=plot.stanreg]{plot}} method to plot estimates and
+   diagnostics.
+ \item The \code{\link{pp_check}} method for graphical posterior predictive
+   checking.
+ \item The \code{\link{posterior_predict}} and \code{\link{predictive_error}}
+   methods for predictions and predictive errors.
+ \item The \code{\link{posterior_interval}} and \code{\link{predictive_interval}}
+   methods for uncertainty intervals for model parameters and predictions.
+ \item The \code{\link[=loo.stanreg]{loo}}, \code{\link{kfold}}, and
+ \code{\link{log_lik}} methods for leave-one-out or K-fold cross-validation, 
+   model comparison, and computing the log-likelihood of (possibly new) data.
+ \item The \code{\link[=as.matrix.stanreg]{as.matrix}}, \code{as.data.frame}, 
+   and \code{as.array} methods to access posterior draws.
+}
 }
 

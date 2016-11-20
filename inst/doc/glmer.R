@@ -19,10 +19,22 @@ theme_set(theme_classic() %+replace% thm_els)
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
 CHAINS <- 2L
-CORES <- 1L
+CORES <- 2L
 SEED <- 12345
 
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------
 loo.cores <- if (exists("CORES")) CORES else 1L
 options(loo.cores = loo.cores)
+
+## ---- results = "hide"---------------------------------------------------
+library(rstanarm)
+data(roaches)
+roaches$roach1 <- roaches$roach1 / 100
+post <- stan_gamm4(y ~ s(roach1) + treatment + log(roaches$exposure2), 
+                   random = ~(1 | senior),
+                   data = roaches, family = neg_binomial_2, QR = TRUE,
+                   chains = CHAINS, cores = CORES, seed = SEED)
+
+## ------------------------------------------------------------------------
+plot_nonlinear(post)
 

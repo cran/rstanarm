@@ -13,7 +13,7 @@
 \method{as.data.frame}{stanreg}(x, ..., pars = NULL, regex_pars = NULL)
 }
 \arguments{
-\item{x}{A fitted model object returned by one of the
+\item{x}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{...}{Ignored.}
