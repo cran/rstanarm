@@ -63,7 +63,11 @@ A ggplot object that can be further customized using the
 }
 \description{
 Plot medians and central intervals comparing parameter draws from the prior 
-and posterior distributions.
+and posterior distributions. If the plotted priors look different than the 
+priors you think you specified it is likely either because of internal 
+rescaling or the use of the \code{QR} argument (see the documentation for the
+\code{\link[=prior_summary.stanreg]{prior_summary}} method for details on 
+these special cases).
 }
 \examples{
 if (!exists("example_model")) example(example_model)

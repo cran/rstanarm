@@ -9,12 +9,12 @@ Stan}
 stan_gamm4(formula, random = NULL, family = gaussian(), data = list(),
   weights = NULL, subset = NULL, na.action, knots = NULL,
   drop.unused.levels = TRUE, ..., prior = normal(),
-  prior_intercept = normal(), prior_ops = prior_options(),
+  prior_intercept = normal(), prior_aux = cauchy(0, 5),
   prior_covariance = decov(), prior_PD = FALSE, algorithm = c("sampling",
   "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE,
   sparse = FALSE)
 
-plot_nonlinear(x, smooths, prob = 0.9, facet_args = list(), ...,
+plot_nonlinear(x, smooths, ..., prob = 0.9, facet_args = list(),
   alpha = 1, size = 0.75)
 }
 \arguments{
@@ -30,31 +30,67 @@ but rarely specified.}
 \code{"fullrank"}).}
 
 \item{prior}{The prior distribution for the regression coefficients. 
-\code{prior} can be a call to \code{normal}, \code{student_t}, 
-\code{cauchy}, \code{hs} or \code{hs_plus}. See \code{\link{priors}} for 
-details. To omit a prior ---i.e., to use a flat (improper) uniform prior---
-\code{prior} can be set to \code{NULL}, although this is rarely a good 
-idea. (\strong{Note:} unless \code{QR=TRUE}, if the \code{scaled} argument
-to \code{\link{prior_options}} is left at its default and recommended value
-of \code{TRUE}, then the scale(s) of \code{prior} may be modified
-internally based on the scales of the predictors, as in the \pkg{arm}
-package. See \code{\link{priors}} for details on the rescaling and 
-\code{\link{prior_summary}} for a summary of the priors used for a
-particular model.)}
+\code{prior} should be a call to one of the various functions provided by 
+\pkg{rstanarm} for specifying priors. The subset of these functions that 
+can be used for the prior on the coefficients can be grouped into several 
+"families":
+
+\tabular{ll}{
+  \strong{Family} \tab \strong{Functions} \cr 
+  \emph{Student t family} \tab \code{normal}, \code{student_t}, \code{cauchy} \cr 
+  \emph{Hierarchical shrinkage family} \tab \code{hs}, \code{hs_plus} \cr 
+  \emph{Laplace family} \tab \code{laplace}, \code{lasso} \cr
+  \emph{Product normal family} \tab \code{product_normal} \cr
+}
+
+See the \link[=priors]{priors help page} for details on the families and 
+how to specify the arguments for all of the functions in the table above.
+To omit a prior ---i.e., to use a flat (improper) uniform prior---
+\code{prior} can be set to \code{NULL}, although this is rarely a good
+idea.
+
+\strong{Note:} Unless \code{QR=TRUE}, if \code{prior} is from the Student t
+family or Laplace family, and if the \code{autoscale} argument to the 
+function used to specify the prior (e.g. \code{\link{normal}}) is left at 
+its default and recommended value of \code{TRUE}, then the default or 
+user-specified prior scale(s) may be adjusted internally based on the scales
+of the predictors. See the \link[=priors]{priors help page} for details on
+the rescaling and the \code{\link{prior_summary}} function for a summary of
+the priors used for a particular model.}
 
 \item{prior_intercept}{The prior distribution for the intercept. 
 \code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
-\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior 
----i.e., to use a flat (improper) uniform prior--- set 
-\code{prior_intercept} to \code{NULL}. (\strong{Note:} if a dense 
-representation of the design matrix is utilized ---i.e., if the
-\code{sparse} argument is left at its default value of \code{FALSE}--- then
-the prior distribution for the intercept is set so it applies to the value
-when all predictors are centered.)}
+\code{cauchy}. See the \link[=priors]{priors help page} for details on 
+these functions. To omit a prior on the intercept ---i.e., to use a flat
+(improper) uniform prior--- \code{prior_intercept} can be set to
+\code{NULL}.
 
-\item{prior_ops}{Additional options related to prior distributions. Can 
-be \code{NULL} to omit a prior on the dispersion and see 
-\code{\link{prior_options}} otherwise.}
+\strong{Note:} If using a dense representation of the design matrix 
+---i.e., if the \code{sparse} argument is left at its default value of
+\code{FALSE}--- then the prior distribution for the intercept is set so it
+applies to the value when all predictors are centered.}
+
+\item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
+applicable). The "auxiliary" parameter refers to a different parameter 
+depending on the \code{family}. For Gaussian models \code{prior_aux} 
+controls \code{"sigma"}, the error 
+standard deviation. For negative binomial models \code{prior_aux} controls 
+\code{"reciprocal_dispersion"}, which is similar to the 
+\code{"size"} parameter of \code{\link[stats]{rnbinom}}:
+smaller values of \code{"reciprocal_dispersion"} correspond to 
+greater dispersion. For gamma models \code{prior_aux} sets the prior on 
+to the \code{"shape"} parameter (see e.g., 
+\code{\link[stats]{rgamma}}), and for inverse-Gaussian models it is the 
+so-called \code{"lambda"} parameter (which is essentially the reciprocal of
+a scale parameter). Binomial and Poisson models do not have auxiliary 
+parameters. 
+
+\code{prior_aux} can be a call to \code{exponential} to 
+use an exponential distribution, or \code{normal}, \code{student_t} or 
+\code{cauchy}, which results in a half-normal, half-t, or half-Cauchy 
+prior. See \code{\link{priors}} for details on these functions. To omit a 
+prior ---i.e., to use a flat (improper) uniform prior--- set 
+\code{prior_aux} to \code{NULL}.}
 
 \item{prior_covariance}{Cannot be \code{NULL}; see \code{\link{decov}} for
 more information about the default arguments.}
@@ -75,19 +111,20 @@ algorithms.}
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
 \code{\link{adapt_delta}} for details.}
 
-\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE}
+\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE} 
 applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where 
-\eqn{Q^\ast = Q \sqrt{n-1}}{Q* = Q (n-1)^0.5} and
-\eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) R}. The coefficients
-relative to \eqn{Q^\ast}{Q*} are obtained and then premultiplied by the
-inverse of \eqn{R^{\ast}}{R*} to obtain coefficients relative to the
-original predictors, \eqn{X}. These transformations do not change the 
-likelihood of the data but are recommended for computational reasons when 
-there are multiple predictors. However, because the coefficients relative
-to \eqn{Q^\ast}{Q*} are not very interpretable it is hard to specify an 
-informative prior. Setting \code{QR=TRUE} is therefore only recommended 
-if you do not have an informative prior for the regression coefficients.}
+\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* =
+Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5)
+R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then
+premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients
+relative to the original predictors, \eqn{X}. These transformations do not
+change the likelihood of the data but are recommended for computational
+reasons when there are multiple predictors. However, because when \code{QR}
+is \code{TRUE} the \code{prior} argument applies to the coefficients
+relative to \eqn{Q^\ast}{Q*} (and those are not very interpretable) it is
+hard to specify an informative prior. Setting \code{QR=TRUE} is therefore
+only recommended if you do not have an informative prior for the regression
+coefficients.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
@@ -104,13 +141,15 @@ not possible to specify both \code{QR = TRUE} and \code{sparse = TRUE}.}
 functions specified in the call to \code{stan_gamm4}. The default is
 include all smooth terms.}
 
-\item{prob}{A scalar between 0 and 1 governing the width of the uncertainty
-interval.}
+\item{prob}{For univarite smooths, a scalar between 0 and 1 governing the
+width of the uncertainty interval.}
 
 \item{facet_args}{An optional named list of arguments passed to 
 \code{\link[ggplot2]{facet_wrap}} (other than the \code{facets} argument).}
 
-\item{alpha, size}{Passed to \code{\link[ggplot2]{geom_ribbon}}.}
+\item{alpha, size}{For univariate smooths, passed to 
+\code{\link[ggplot2]{geom_ribbon}}. For bivariate smooths, \code{size/2} is
+passed to \code{\link[ggplot2]{geom_contour}}.}
 }
 \value{
 A \link[=stanreg-objects]{stanreg} object is returned 
@@ -129,7 +168,7 @@ The \code{stan_gamm4} function is similar in syntax to
   it internally into the syntax accepted by \code{\link[lme4]{glmer}} in the
   \pkg{lme4} package. But rather than performing (restricted) maximum likelihood 
   estimation, the \code{stan_gamm4} function utilizes MCMC to perform Bayesian 
-  estimation. The Bayesian model adds independent priors on the common regression 
+  estimation. The Bayesian model adds priors on the common regression 
   coefficients (in the same way as \code{\link{stan_glm}}) and priors on the 
   terms of a decomposition of the covariance matrices of the group-specific 
   parameters, including the smooths. Estimating these models via MCMC avoids
@@ -138,11 +177,26 @@ The \code{stan_gamm4} function is similar in syntax to
   
   See \code{\link[gamm4]{gamm4}} for more information about the model
   specicification and \code{\link{priors}} for more information about the
-  priors.
+  priors. If \code{random = NULL}, the output is a subset of that produced by
+  \code{\link[mgcv]{gam}} in the sense that there are several estimated components
+  for each smooth term. However, the parameterization used to estimate the model
+  is different and corresponds to the parameterization in 
+  \code{\link[gamm4]{gamm4}} where is smooth term is decomposed into a linear
+  and a non-linear part. If \code{prior} is not \code{NULL}, then the number 
+  of parameters to place priors on is equal to the number of linear terms in
+  the \code{formula}. The prior on the non-linear part of each smooth term is
+  handled by the \code{\link{decov}} function. If \code{random} is not \code{NULL},
+  then there are additional group-specific terms whose priors are also handled
+  by the \code{\link{decov}} function and whose posterior medians can be extracted
+  by calling \code{\link[lme4]{ranef}}.
   
   The \code{plot_nonlinear} function creates a ggplot object with one facet for
-  each smooth function specified in the call to \code{stan_gamm4}. A subset of the
-  smooth functions can be specified using the \code{smooths} argument. The 
+  each smooth function specified in the call to \code{stan_gamm4} in the case
+  where all smooths are univariate. A subset of the smooth functions can be 
+  specified using the \code{smooths} argument, which is necessary to plot a
+  bivariate smooth or to exclude the bivariate smooth and plot the univariate
+  ones. In the bivariate case, a plot is produced using 
+  \code{\link[ggplot2]{geom_contour}}. In the univariate case, the resulting
   plot is conceptually similar to \code{\link[mgcv]{plot.gam}} except the 
   outer lines here demark the edges of posterior uncertainty intervals 
   (credible intervals) rather than confidence intervals and the inner line
@@ -159,16 +213,17 @@ dat$fac <- fac <- as.factor(sample(1:20, 400, replace = TRUE))
 dat$y <- dat$y + model.matrix(~ fac - 1) \%*\% rnorm(20) * .5
 
 br <- stan_gamm4(y ~ s(x0) + x1 + s(x2), data = dat, random = ~ (1 | fac), 
-                 QR = TRUE, chains = 1)
+                 QR = TRUE, chains = 1, iter = 200) # for example speed
 print(br)
 plot_nonlinear(br)
 plot_nonlinear(br, smooths = "s(x0)", alpha = 2/3)
 }
+
 }
 \references{
-Crainiceanu, C., Ruppert D., and Wand, M. (2005). Bayesian Analysis for 
-Penalized Spline Regression Using WinBUGS. 
-\emph{Journal of Statistical Software}. \strong{14}(14), 1--22.
+Crainiceanu, C., Ruppert D., and Wand, M. (2005). Bayesian analysis for 
+penalized spline regression using WinBUGS. \emph{Journal of Statistical
+Software}. \strong{14}(14), 1--22. 
 \url{https://www.jstatsoft.org/article/view/v014i14}
 }
 \seealso{

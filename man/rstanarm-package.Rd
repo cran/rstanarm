@@ -104,14 +104,14 @@ overview:
   beliefs about \eqn{R^2}, the proportion of variance in the outcome 
   attributable to the predictors in a linear model.
  }
- \item{\code{\link{stan_glm}}, \code{stan_glm.nb}}{
-  Similar to \code{\link[stats]{glm}} but with Gaussian, Student t, Cauchy 
-  or hierarhical shrinkage prior distributions for the coefficients and,
-  if applicable, a half-Cauchy prior for any nuisance parameter in a 
-  Generalized Linear Model (GLM) that is characterized by a 
-  \code{\link[stats]{family}} object. It is also possible to estimate a 
-  negative bionomial model in a similar way to the \code{\link[MASS]{glm.nb}} 
-  function in the \pkg{MASS} package.
+ \item{\code{\link{stan_glm}}, \code{stan_glm.nb}}{ 
+ Similar to \code{\link[stats]{glm}} but with various possible prior 
+ distributions for the coefficients and, if applicable, a prior distribution
+ for any auxiliary parameter in a Generalized Linear Model (GLM) that is
+ characterized by a \code{\link[stats]{family}} object (e.g. the shape
+ parameter in Gamma models). It is also possible to estimate a negative
+ binomial model in a similar way to the \code{\link[MASS]{glm.nb}} function
+ in the \pkg{MASS} package.
  }
  \item{\code{\link{stan_glmer}}, \code{stan_glmer.nb}, \code{stan_lmer}}{
   Similar to the \code{\link[lme4]{glmer}}, \code{\link[lme4]{glmer.nb}} and 
@@ -134,18 +134,25 @@ overview:
   parameter estimates.
  }
  \item{\code{\link{stan_polr}}}{
-  Similar to \code{\link[MASS]{polr}} in the \pkg{MASS} package in that it
-  models an ordinal response but also implies a prior distribution on the 
-  unknown cutpoints. Can also be used to model binary outcomes, possibly
-  while estimating an unknown exponent governing the probability of success.
+  Similar to \code{\link[MASS]{polr}} in the \pkg{MASS} package in that it 
+  models an ordinal response, but the Bayesian model also implies a prior 
+  distribution on the unknown cutpoints. Can also be used to model binary 
+  outcomes, possibly while estimating an unknown exponent governing the 
+  probability of success.
+ }
+ \item{\code{\link{stan_betareg}}}{
+  Similar to \code{\link[betareg]{betareg}} in that it models an outcome that
+  is a rate (proportion) but, rather than performing maximum likelihood 
+  estimation, full Bayesian estimation is performed by default, with 
+  customizable prior distributions for all parameters.
  }
 }
 }
 
 \section{Prior distributions}{
 
-See \code{\link{priors}} for an overview of the various choices the user can 
-make for prior distributions. The package vignettes also provide 
+See \link[=priors]{priors help page} for an overview of the various choices
+the user can make for prior distributions. The package vignettes also provide
 examples of using many of the available priors as well as more detailed 
 descriptions of some of the novel priors used by \pkg{rstanarm}.
 }
@@ -172,20 +179,18 @@ Vehtari, A., Gelman, A., and Gabry, J. (2016a). Practical
   \url{http://arxiv.org/abs/1507.04544/}
 }
 \seealso{
-\code{\link{stanreg-objects}} and \code{\link{stanreg-methods}} for 
+\itemize{
+  \item \code{\link{stanreg-objects}} and \code{\link{stanreg-methods}} for 
   details on the fitted model objects returned by the modeling functions.
-  
-  The custom \code{\link[=plot.stanreg]{plot}} and \code{\link{pp_check}}
-  methods for the various plots that can be used to explore and check fitted
-  models.
-  
-  \url{http://mc-stan.org/} for more information on the Stan C++ package used
-  by \pkg{rstanarm} for model fitting.
-  
-  \url{https://github.com/stan-dev/rstanarm/issues/} to submit a bug
+  \item The custom \code{\link[=plot.stanreg]{plot}} and 
+  \code{\link{pp_check}} methods for the various plots that can be used to 
+  explore and check fitted models.
+  \item \url{http://mc-stan.org/} for more information on the Stan C++ 
+  package used by \pkg{rstanarm} for model fitting.
+  \item \url{https://github.com/stan-dev/rstanarm/issues/} to submit a bug
   report or feature request.
-  
-  \url{https://groups.google.com/forum/#!forum/stan-users/} to ask a question 
-  about \pkg{rstanarm} on the Stan-users forum.
+  \item \url{https://groups.google.com/forum/#!forum/stan-users/} to ask a 
+  question about \pkg{rstanarm} on the Stan-users forum.
+}
 }
 

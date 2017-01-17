@@ -4,17 +4,21 @@ structure(list(EVAL = TRUE), .Names = "EVAL")
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
-  fig.align='center', fig.width = 7, fig.height = 3
+  comment=NA, 
+  message = FALSE, 
+  warning = FALSE, 
+  eval = params$EVAL,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.618,
+  fig.width = 5,
+  out.width = "60%",
+  fig.align = "center"
 )
 
 ## ---- SETTINGS-gg, include=FALSE-----------------------------------------
 library(ggplot2)
-thm_els <- theme(axis.text.y = element_blank(), 
-                 legend.position = "none",
-                 legend.background = element_rect(fill = "gray"),
-                 legend.text = element_text(size = 7))
-theme_set(theme_classic() %+replace% thm_els)
+theme_set(bayesplot::theme_default())
 
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
@@ -62,7 +66,7 @@ cov2cor(vcov(womensrole_bglm_1))
 y_rep <- posterior_predict(womensrole_bglm_1)
 dim(y_rep)
 
-## ----rstanarm-criticism-plot, fig.width=10, fig.cap="Posterior predictive boxplots vs. observed datapoints"----
+## ----rstanarm-criticism-plot, fig.width=8, out.width="90%", fig.cap="Posterior predictive boxplots vs. observed datapoints"----
 par(mfrow = 1:2, mar = c(5,3.7,1,0) + 0.1, las = 3)
 boxplot(sweep(y_rep[,womensrole$gender == "Male"], 2, STATS = 
                womensrole$total[womensrole$gender == "Male"], FUN = "/"), 
@@ -94,13 +98,13 @@ print(womensrole_bglm_2)
 loo_bglm_1 <- loo(womensrole_bglm_1)
 loo_bglm_2 <- loo(womensrole_bglm_2)
 
-## ----rstanarm-loo-plot, fig.width=7, fig.height=4------------------------
+## ----rstanarm-loo-plot, fig.width=7, out.width="70%"---------------------
 par(mfrow = 1:2, mar = c(5,3.8,1,0) + 0.1, las = 3)
 plot(loo_bglm_1, label_points = TRUE)
 plot(loo_bglm_2, label_points = TRUE)
 
 ## ---- rstanarm-loo-compare-----------------------------------------------
-compare(loo_bglm_1, loo_bglm_2)
+compare_models(loo_bglm_1, loo_bglm_2)
 
 ## ---- rstanarm-loo-print-------------------------------------------------
 loo_bglm_1

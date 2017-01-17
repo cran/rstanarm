@@ -1,6 +1,25 @@
 params <-
 structure(list(EVAL = TRUE), .Names = "EVAL")
 
+## ---- knitr-settings-----------------------------------------------------
+stopifnot(require(knitr))
+opts_chunk$set(
+  comment=NA, 
+  message = FALSE, 
+  warning = FALSE, 
+  eval = params$EVAL,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.618,
+  fig.width = 7,
+  out.width = "70%",
+  fig.align = "center"
+)
+
+## ---- SETTINGS-gg, include=FALSE-----------------------------------------
+library(ggplot2)
+theme_set(bayesplot::theme_default())
+
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
 CHAINS <- 2L
@@ -10,13 +29,6 @@ SEED <- 12345
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------
 loo.cores <- if (exists("CORES")) CORES else 1L
 options(loo.cores = loo.cores)
-
-## ---- SETTINGS-knitr, include=FALSE--------------------------------------
-library(knitr)
-opts_chunk$set(
-  comment = NA, message = FALSE, warning = FALSE, 
-  fig.align = 'center', fig.width = 7,fig.height = 5
-)
 
 ## ---- load-data----------------------------------------------------------
 library(rstanarm)
@@ -42,7 +54,7 @@ batting_avg(player_avgs)
 cat("Overall average through 45 at-bats:\n")
 batting_avg(tot_avg)
 
-## ---- fig.width=7, fig.height=3, echo=FALSE------------------------------
+## ---- echo=FALSE---------------------------------------------------------
 par(mfrow = c(1,3), las = 1)
 p_alpha <- function(alpha) {
   dnorm(alpha, -1, 1)
@@ -177,7 +189,7 @@ new_lps_sums <- sapply(new_lps, sum)
 round(sort(new_lps_sums, decreasing = TRUE), digits = 1)
 
 ## ---- loo----------------------------------------------------------------
-compare(loo(fit_partialpool), loo(fit_pool), loo(fit_nopool))
+compare_models(loo(fit_partialpool), loo(fit_pool), loo(fit_nopool))
 
 ## ---- ppd----------------------------------------------------------------
 newdata <- data.frame(Hits = y_new, AB = K_new, Player = bball$Player)
@@ -206,7 +218,7 @@ df_ppd <- data.frame(player = rep(1:length(y_new), 3),
 ## ---- plot-ppd-----------------------------------------------------------
 ggplot(df_ppd, aes(x=player, y=y, ymin=lb, ymax=ub)) + 
   geom_linerange(color = "gray60", size = 2) + 
-  geom_point(size = 2.5, fill = "skyblue2") +
+  geom_point(size = 2.5, color = "skyblue4") +
   facet_grid(. ~ model) +
   labs(x = NULL, y = "batting average") + 
   scale_x_continuous(breaks = NULL) +
@@ -246,8 +258,8 @@ df_rank <- data.frame(name = rep(bball$Player, each = M),
 ggplot(df_rank, aes(rank)) +
   stat_count(width = 0.8) +
   facet_wrap(~ name) +
-  scale_x_discrete(limits = c(1, 5, 10, 15)) +
-  scale_y_discrete(name = "posterior probability", breaks = c(0, 0.1 * M, 0.2 * M),
+  scale_x_discrete("Rank", limits = c(1, 5, 10, 15)) +
+  scale_y_discrete("Probability", limits = c(0, 0.1 * M, 0.2 * M),
                    labels = c("0.0", "0.1", "0.2")) + 
   ggtitle("Rankings for Partial Pooling Model")
 
@@ -269,7 +281,7 @@ ggplot(df_is_best, aes(x=unit, y=is_best)) +
   ggtitle("Who is the Best Player?") + 
   theme(axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0))
 
-## ---- plot-ppc-stats-mean, fig.width=3, fig.height=2.5-------------------
+## ---- plot-ppc-stats-mean------------------------------------------------
 pp_check(fit_nopool, plotfun = "stat", stat = "mean")
 
 ## ---- plot-ppc-stats-----------------------------------------------------
@@ -302,6 +314,6 @@ p <- 1 - mean(Tyrep > Ty)
 print(p)
 
 ## ---- plot-ppc-y-vs-yrep-------------------------------------------------
-pp_check(fit_partialpool, plotfun = "hist", nreps = 15, binwidth = 0.05) +
+pp_check(fit_partialpool, plotfun = "hist", nreps = 15, binwidth = 0.025) +
   ggtitle("Model: Partial Pooling")
 

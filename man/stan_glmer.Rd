@@ -8,24 +8,24 @@
 \usage{
 stan_glmer(formula, data = NULL, family = gaussian, subset, weights,
   na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
-  ..., prior = normal(), prior_intercept = normal(),
-  prior_ops = prior_options(), prior_covariance = decov(),
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+  ..., prior = normal(), prior_intercept = normal(), prior_aux = cauchy(0,
+  5), prior_covariance = decov(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
+  QR = FALSE, sparse = FALSE)
 
 stan_lmer(formula, data = NULL, subset, weights,
   na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
-  ..., prior = normal(), prior_intercept = normal(),
-  prior_ops = prior_options(), prior_covariance = decov(),
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE)
+  ..., prior = normal(), prior_intercept = normal(), prior_aux = cauchy(0,
+  5), prior_covariance = decov(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
+  QR = FALSE)
 
 stan_glmer.nb(formula, data = NULL, subset, weights,
   na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
   link = "log", ..., prior = normal(), prior_intercept = normal(),
-  prior_ops = prior_options(), prior_covariance = decov(),
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE)
+  prior_aux = cauchy(0, 5), prior_covariance = decov(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
+  QR = FALSE)
 }
 \arguments{
 \item{formula, data, family}{Same as for \code{\link[lme4]{glmer}}.}
@@ -43,31 +43,67 @@ specified.}
 to pass to \code{stan_glmer} (except \code{family}).}
 
 \item{prior}{The prior distribution for the regression coefficients. 
-\code{prior} can be a call to \code{normal}, \code{student_t}, 
-\code{cauchy}, \code{hs} or \code{hs_plus}. See \code{\link{priors}} for 
-details. To omit a prior ---i.e., to use a flat (improper) uniform prior---
-\code{prior} can be set to \code{NULL}, although this is rarely a good 
-idea. (\strong{Note:} unless \code{QR=TRUE}, if the \code{scaled} argument
-to \code{\link{prior_options}} is left at its default and recommended value
-of \code{TRUE}, then the scale(s) of \code{prior} may be modified
-internally based on the scales of the predictors, as in the \pkg{arm}
-package. See \code{\link{priors}} for details on the rescaling and 
-\code{\link{prior_summary}} for a summary of the priors used for a
-particular model.)}
+\code{prior} should be a call to one of the various functions provided by 
+\pkg{rstanarm} for specifying priors. The subset of these functions that 
+can be used for the prior on the coefficients can be grouped into several 
+"families":
+
+\tabular{ll}{
+  \strong{Family} \tab \strong{Functions} \cr 
+  \emph{Student t family} \tab \code{normal}, \code{student_t}, \code{cauchy} \cr 
+  \emph{Hierarchical shrinkage family} \tab \code{hs}, \code{hs_plus} \cr 
+  \emph{Laplace family} \tab \code{laplace}, \code{lasso} \cr
+  \emph{Product normal family} \tab \code{product_normal} \cr
+}
+
+See the \link[=priors]{priors help page} for details on the families and 
+how to specify the arguments for all of the functions in the table above.
+To omit a prior ---i.e., to use a flat (improper) uniform prior---
+\code{prior} can be set to \code{NULL}, although this is rarely a good
+idea.
+
+\strong{Note:} Unless \code{QR=TRUE}, if \code{prior} is from the Student t
+family or Laplace family, and if the \code{autoscale} argument to the 
+function used to specify the prior (e.g. \code{\link{normal}}) is left at 
+its default and recommended value of \code{TRUE}, then the default or 
+user-specified prior scale(s) may be adjusted internally based on the scales
+of the predictors. See the \link[=priors]{priors help page} for details on
+the rescaling and the \code{\link{prior_summary}} function for a summary of
+the priors used for a particular model.}
 
 \item{prior_intercept}{The prior distribution for the intercept. 
 \code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
-\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior 
----i.e., to use a flat (improper) uniform prior--- set 
-\code{prior_intercept} to \code{NULL}. (\strong{Note:} if a dense 
-representation of the design matrix is utilized ---i.e., if the
-\code{sparse} argument is left at its default value of \code{FALSE}--- then
-the prior distribution for the intercept is set so it applies to the value
-when all predictors are centered.)}
+\code{cauchy}. See the \link[=priors]{priors help page} for details on 
+these functions. To omit a prior on the intercept ---i.e., to use a flat
+(improper) uniform prior--- \code{prior_intercept} can be set to
+\code{NULL}.
 
-\item{prior_ops}{Additional options related to prior distributions. Can 
-be \code{NULL} to omit a prior on the dispersion and see 
-\code{\link{prior_options}} otherwise.}
+\strong{Note:} If using a dense representation of the design matrix 
+---i.e., if the \code{sparse} argument is left at its default value of
+\code{FALSE}--- then the prior distribution for the intercept is set so it
+applies to the value when all predictors are centered.}
+
+\item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
+applicable). The "auxiliary" parameter refers to a different parameter 
+depending on the \code{family}. For Gaussian models \code{prior_aux} 
+controls \code{"sigma"}, the error 
+standard deviation. For negative binomial models \code{prior_aux} controls 
+\code{"reciprocal_dispersion"}, which is similar to the 
+\code{"size"} parameter of \code{\link[stats]{rnbinom}}:
+smaller values of \code{"reciprocal_dispersion"} correspond to 
+greater dispersion. For gamma models \code{prior_aux} sets the prior on 
+to the \code{"shape"} parameter (see e.g., 
+\code{\link[stats]{rgamma}}), and for inverse-Gaussian models it is the 
+so-called \code{"lambda"} parameter (which is essentially the reciprocal of
+a scale parameter). Binomial and Poisson models do not have auxiliary 
+parameters. 
+
+\code{prior_aux} can be a call to \code{exponential} to 
+use an exponential distribution, or \code{normal}, \code{student_t} or 
+\code{cauchy}, which results in a half-normal, half-t, or half-Cauchy 
+prior. See \code{\link{priors}} for details on these functions. To omit a 
+prior ---i.e., to use a flat (improper) uniform prior--- set 
+\code{prior_aux} to \code{NULL}.}
 
 \item{prior_covariance}{Cannot be \code{NULL}; see \code{\link{decov}} for
 more information about the default arguments.}
@@ -88,19 +124,20 @@ algorithms.}
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
 \code{\link{adapt_delta}} for details.}
 
-\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE}
+\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE} 
 applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where 
-\eqn{Q^\ast = Q \sqrt{n-1}}{Q* = Q (n-1)^0.5} and
-\eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) R}. The coefficients
-relative to \eqn{Q^\ast}{Q*} are obtained and then premultiplied by the
-inverse of \eqn{R^{\ast}}{R*} to obtain coefficients relative to the
-original predictors, \eqn{X}. These transformations do not change the 
-likelihood of the data but are recommended for computational reasons when 
-there are multiple predictors. However, because the coefficients relative
-to \eqn{Q^\ast}{Q*} are not very interpretable it is hard to specify an 
-informative prior. Setting \code{QR=TRUE} is therefore only recommended 
-if you do not have an informative prior for the regression coefficients.}
+\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* =
+Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5)
+R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then
+premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients
+relative to the original predictors, \eqn{X}. These transformations do not
+change the likelihood of the data but are recommended for computational
+reasons when there are multiple predictors. However, because when \code{QR}
+is \code{TRUE} the \code{prior} argument applies to the coefficients
+relative to \eqn{Q^\ast}{Q*} (and those are not very interpretable) it is
+hard to specify an informative prior. Setting \code{QR=TRUE} is therefore
+only recommended if you do not have an informative prior for the regression
+coefficients.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
@@ -126,7 +163,7 @@ unknown covariance matrices with flexible priors.
 The \code{stan_glmer} function is similar in syntax to 
   \code{\link[lme4]{glmer}} but rather than performing (restricted) maximum 
   likelihood estimation of generalized linear models, Bayesian estimation is 
-  performed via MCMC. The Bayesian model adds independent priors on the 
+  performed via MCMC. The Bayesian model adds priors on the 
   regression coefficients (in the same way as \code{\link{stan_glm}}) and
   priors on the terms of a decomposition of the covariance matrices of the
   group-specific parameters. See \code{\link{priors}} for more information
@@ -135,9 +172,9 @@ The \code{stan_glmer} function is similar in syntax to
   The \code{stan_lmer} function is equivalent to \code{stan_glmer} with 
   \code{family = gaussian(link = "identity")}. 
   
-  The \code{stan_glmer.nb} function, which takes the extra argument
-  \code{link}, is a simple wrapper for \code{stan_glmer} with 
-  \code{family = \link{neg_binomial_2}(link)}.
+  The \code{stan_glmer.nb} function, which takes the extra argument 
+  \code{link}, is a wrapper for \code{stan_glmer} with \code{family = 
+  \link{neg_binomial_2}(link)}.
 }
 \examples{
 # see help(example_model) for details on the model below

@@ -31,7 +31,7 @@ probability mass to include in the intervals. The default is to report
 }
 \value{
 A matrix with two columns and as many rows as are in \code{newdata}. 
-  If \code{newdata} is not provided then the matrix will as many rows as in
+  If \code{newdata} is not provided then the matrix will have as many rows as
   the data used to fit the model. For a given value of \code{prob}, \eqn{p},
   the columns correspond to the lower and upper \eqn{100p}\% central interval
   limits and have the names \eqn{100\alpha/2}\% and \eqn{100(1 -
@@ -43,9 +43,9 @@ A matrix with two columns and as many rows as are in \code{newdata}.
 For models fit using MCMC (\code{algorithm="sampling"}) or one of the 
 variational approximations (\code{"meanfield"} or \code{"fullrank"}), the 
 \code{predictive_interval} function computes Bayesian predictive intervals. 
-The method for stanreg objects calls \code{posterior_predict} internally, 
-whereas the method for objects of class \code{"ppd"} accepts the matrix 
-returned by \code{posterior_predict} as input and can be used to avoid
+The method for stanreg objects calls \code{\link{posterior_predict}}
+internally, whereas the method for objects of class \code{"ppd"} accepts the
+matrix returned by \code{posterior_predict} as input and can be used to avoid
 multiple calls to \code{posterior_predict}.
 }
 \examples{

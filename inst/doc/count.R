@@ -4,17 +4,21 @@ structure(list(EVAL = TRUE), .Names = "EVAL")
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
-  fig.align='center', fig.width = 7, fig.height = 3
+  comment=NA, 
+  message = FALSE, 
+  warning = FALSE, 
+  eval = params$EVAL,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.618,
+  fig.width = 5,
+  out.width = "60%",
+  fig.align = "center"
 )
 
 ## ---- SETTINGS-gg, include=FALSE-----------------------------------------
 library(ggplot2)
-thm_els <- theme(axis.text.y = element_blank(), 
-                 legend.position = "none",
-                 legend.background = element_rect(fill = "gray"),
-                 legend.text = element_text(size = 7))
-theme_set(theme_classic() %+replace% thm_els)
+theme_set(bayesplot::theme_default())
 
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
@@ -49,14 +53,14 @@ round(rbind(glm = summary(glm1)$coefficients[, "Std. Error"],
 ## ---- count-roaches-posterior_predict------------------------------------
 yrep <- posterior_predict(stan_glm1)
 
-## ---- count-roaches-plot-pp_check1, fig.height=3, fig.width=4------------
+## ---- count-roaches-plot-pp_check1---------------------------------------
 prop_zero <- function(y) mean(y == 0)
 (prop_zero_test1 <- pp_check(stan_glm1, plotfun = "stat", stat = "prop_zero"))
 
 ## ---- count-roaches-negbin, results="hide"-------------------------------
 stan_glm2 <- update(stan_glm1, family = neg_binomial_2) 
 
-## ---- count-roaches-plot-pp_check2, fig.height=3, fig.width=8------------
+## ---- count-roaches-plot-pp_check2, fig.width=7, out.width="80%"---------
 library(gridExtra)
 prop_zero_test2 <- pp_check(stan_glm2, plotfun = "stat", stat = "prop_zero")
 # Show graphs for Poisson and negative binomial side by side
@@ -67,5 +71,5 @@ grid.arrange(prop_zero_test1 + ggtitle("Poisson"),
 ## ---- count-roaches-loo--------------------------------------------------
 loo1 <- loo(stan_glm1)
 loo2 <- loo(stan_glm2)
-compare(loo1, loo2)
+compare_models(loo1, loo2)
 

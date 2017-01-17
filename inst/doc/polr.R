@@ -4,17 +4,21 @@ structure(list(EVAL = TRUE), .Names = "EVAL")
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
-  fig.align='center', fig.width = 7, fig.height = 3
+  comment=NA, 
+  message = FALSE, 
+  warning = FALSE, 
+  eval = params$EVAL,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.618,
+  fig.width = 5,
+  out.width = "60%",
+  fig.align = "center"
 )
 
 ## ---- SETTINGS-gg, include=FALSE-----------------------------------------
 library(ggplot2)
-thm_els <- theme(axis.text.y = element_blank(), 
-                 legend.position = "none",
-                 legend.background = element_rect(fill = "gray"),
-                 legend.text = element_text(size = 7))
-theme_set(theme_classic() %+replace% thm_els)
+theme_set(bayesplot::theme_default())
 
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L

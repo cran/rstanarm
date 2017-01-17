@@ -146,14 +146,15 @@ plot(fit, regex_pars = c("herd:[279]", "period2"))
 
 }
 \seealso{
-The vignettes in the \pkg{bayesplot} package for many examples.
-  
-  \code{\link[bayesplot]{MCMC-overview}} (\pkg{bayesplot}) for links to the 
-  documentation for all the available plotting functions.
-  
-  \code{\link[bayesplot]{color_scheme_set}} (\pkg{bayesplot}) to change the
-  color scheme used for plotting.
-  
-  \code{\link{pp_check}} for graphical posterior predictive checks.
+\itemize{ 
+  \item The vignettes in the \pkg{bayesplot} package for many examples.
+  \item \code{\link[bayesplot]{MCMC-overview}} (\pkg{bayesplot}) for links to
+  the documentation for all the available plotting functions.
+  \item \code{\link[bayesplot]{color_scheme_set}} (\pkg{bayesplot}) to change
+  the color scheme used for plotting.
+  \item \code{\link{pp_check}} for graphical posterior predictive checks.
+  \item \code{\link{plot_nonlinear}} for models with nonlinear smooth 
+  functions fit using \code{\link{stan_gamm4}}.
+}
 }
 

@@ -4,17 +4,21 @@ structure(list(EVAL = TRUE), .Names = "EVAL")
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
-  fig.align='center', fig.width = 7, fig.height = 3
+  comment=NA, 
+  message = FALSE, 
+  warning = FALSE, 
+  eval = params$EVAL,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.618,
+  fig.width = 5,
+  out.width = "60%",
+  fig.align = "center"
 )
 
 ## ---- SETTINGS-gg, include=FALSE-----------------------------------------
 library(ggplot2)
-thm_els <- theme(axis.text.y = element_blank(), 
-                 legend.position = "none",
-                 legend.background = element_rect(fill = "gray"),
-                 legend.text = element_text(size = 7))
-theme_set(theme_classic() %+replace% thm_els)
+theme_set(bayesplot::theme_default())
 
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
@@ -39,7 +43,7 @@ post3 <- update(post1, formula = . ~ mom_hs + mom_iq)
 ## ---- continuous-kidiq-print, echo=FALSE---------------------------------
 print(post4)
 
-## ---- continuous-kidiq-plot1a, fig.width = 5-----------------------------
+## ---- continuous-kidiq-plot1a--------------------------------------------
 base <- ggplot(kidiq, aes(x = mom_hs, y = kid_score)) + 
   geom_point(size = 1, position = position_jitter(height = 0.05, width = 0.1)) + 
   scale_x_continuous(breaks = c(0,1), labels = c("No HS", "HS"))
@@ -47,7 +51,7 @@ base <- ggplot(kidiq, aes(x = mom_hs, y = kid_score)) +
 base + geom_abline(intercept = coef(post1)[1], slope = coef(post1)[2], 
                    color = "skyblue4", size = 1)
 
-## ---- continuous-kidiq-plot1b, fig.width = 5-----------------------------
+## ---- continuous-kidiq-plot1b--------------------------------------------
 draws <- as.data.frame(post1)
 colnames(draws)[1:2] <- c("a", "b")
 
@@ -57,7 +61,7 @@ base +
   geom_abline(intercept = coef(post1)[1], slope = coef(post1)[2], 
               color = "skyblue4", size = 1)
 
-## ---- continuous-kidiq-plot2, fig.width = 5------------------------------
+## ---- continuous-kidiq-plot2---------------------------------------------
 draws <- as.data.frame(as.matrix(post2))
 colnames(draws)[1:2] <- c("a", "b")
 ggplot(kidiq, aes(x = mom_iq, y = kid_score)) + 
@@ -67,7 +71,7 @@ ggplot(kidiq, aes(x = mom_iq, y = kid_score)) +
   geom_abline(intercept = coef(post2)[1], slope = coef(post2)[2], 
               color = "skyblue4", size = 1)
 
-## ---- continuous-kidiq-plot3, fig.width = 5------------------------------
+## ---- continuous-kidiq-plot3---------------------------------------------
 reg0 <- function(x, ests) cbind(1, 0, x) %*% ests 
 reg1 <- function(x, ests) cbind(1, 1, x) %*% ests
 
@@ -82,7 +86,7 @@ base2 +
   stat_function(fun = reg0, args = args, aes(color = "No HS"), size = 1.5) +
   stat_function(fun = reg1, args = args, aes(color = "HS"), size = 1.5)
 
-## ---- continuous-kidiq-plot4, fig.width = 5------------------------------
+## ---- continuous-kidiq-plot4---------------------------------------------
 reg0 <- function(x, ests) cbind(1, 0, x, 0 * x) %*% ests 
 reg1 <- function(x, ests) cbind(1, 1, x, 1 * x) %*% ests
 args <- list(ests = coef(post4))
@@ -96,22 +100,22 @@ loo1 <- loo(post1)
 loo2 <- loo(post2)
 loo3 <- loo(post3)
 loo4 <- loo(post4)
-compare(loo1, loo2, loo3, loo4)
+(comp <- compare_models(loo1, loo2, loo3, loo4))
 
 ## ---- continuous-kidiq-loo-2---------------------------------------------
-compare(loo1, loo4)
+compare_models(loo1, loo4)
 
 ## ---- continuous-kidiq-loo-3---------------------------------------------
-compare(loo3, loo4)
-compare(loo2, loo4)
+compare_models(loo3, loo4)
+compare_models(loo2, loo4)
 
-## ---- continuous-kidiq-pp_check1, fig.width=5----------------------------
+## ---- continuous-kidiq-pp_check1-----------------------------------------
 pp_check(post4, plotfun = "hist", nreps = 5)
 
-## ---- continuous-kidiq-pp_check2, fig.height = 3-------------------------
+## ---- continuous-kidiq-pp_check2-----------------------------------------
 pp_check(post4, plotfun = "stat", stat = "mean")
 
-## ---- continuous-kidiq-pp_check3, fig.height=3---------------------------
+## ---- continuous-kidiq-pp_check3-----------------------------------------
 pp_check(post4, plotfun = "stat_2d", stat = c("mean", "sd"))
 
 ## ---- continuous-kidiq-posterior_predict---------------------------------
@@ -120,7 +124,7 @@ y_nohs <- posterior_predict(post4, newdata = data.frame(mom_hs = 0, mom_iq = IQ_
 y_hs <- posterior_predict(post4, newdata = data.frame(mom_hs = 1, mom_iq = IQ_SEQ))
 dim(y_hs)
 
-## ---- continuous-kidiq-plot-predict, fig.width=9-------------------------
+## ---- continuous-kidiq-plot-predict, fig.width=7-------------------------
 par(mfrow = c(1:2), mar = c(5,4,2,1))
 boxplot(y_hs, axes = FALSE, outline = FALSE, ylim = c(10,170),
         xlab = "Mom IQ", ylab = "Predicted Kid IQ", main = "Mom HS")

@@ -73,17 +73,17 @@
 #'   plots.
 #' 
 #' @seealso 
-#'   The vignettes in the \pkg{bayesplot} package for many examples.
-#'   
-#'   \code{\link[bayesplot]{PPC-overview}} (\pkg{bayesplot}) for links to the 
-#'   documentation for all the available plotting functions.
-#'   
-#'   \code{\link{posterior_predict}} for drawing from the posterior 
-#'   predictive distribution. Examples of posterior predictive checks can also 
-#'   be found in the \pkg{rstanarm} vignettes and demos.
-#'   
-#'   \code{\link[bayesplot]{color_scheme_set}} to change the color scheme of the
-#'   plots.
+#' \itemize{
+#'   \item The vignettes in the \pkg{bayesplot} package for many examples.
+#'     Examples of posterior predictive checks can also be found in the
+#'     \pkg{rstanarm} vignettes and demos.
+#'   \item \code{\link[bayesplot]{PPC-overview}} (\pkg{bayesplot}) for links to 
+#'     the documentation for all the available plotting functions.
+#'   \item \code{\link{posterior_predict}} for drawing from the posterior 
+#'     predictive distribution. 
+#'   \item \code{\link[bayesplot]{color_scheme_set}} to change the color scheme 
+#'     of the plots.
+#' }
 #' 
 #' @examples 
 #' fit <- stan_glmer(mpg ~ wt + am + (1|cyl), data = mtcars, 
@@ -327,6 +327,7 @@ is_binomial_ppc <- function(object) {
     # PREDICTIVE ERRORS
     "error_binned" = nreps %ORifNULL% 3,
     "error_hist" = nreps %ORifNULL% 3,
+    "error_hist_grouped" = nreps %ORifNULL% 3,
     "error_scatter" = nreps %ORifNULL% 3,
     "error_scatter_avg" = nreps, # NULL ok
     "error_scatter_avg_vs_x" = nreps, # NULL ok
@@ -346,7 +347,15 @@ is_binomial_ppc <- function(object) {
     "intervals" = .ignore_nreps(nreps),
     "intervals_grouped" = .ignore_nreps(nreps),
     "ribbon" = .ignore_nreps(nreps),
-    "ribbon_grouped" = .ignore_nreps(nreps)
+    "ribbon_grouped" = .ignore_nreps(nreps), 
+    
+    # otherwise function not found
+    stop(
+      "Plotting function not supported. ",
+      "(If the plotting function is included in the output from ", 
+      "bayesplot::available_ppc() then it should be available via pp_check ",
+      "and this error is probably a bug.)"
+    )
   )
 }
 .ignore_nreps <- function(nreps) {

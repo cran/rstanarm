@@ -126,16 +126,16 @@ Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari,
   Press, London, third edition. (Ch. 6)
 }
 \seealso{
-The vignettes in the \pkg{bayesplot} package for many examples.
-  
-  \code{\link[bayesplot]{PPC-overview}} (\pkg{bayesplot}) for links to the 
-  documentation for all the available plotting functions.
-  
-  \code{\link{posterior_predict}} for drawing from the posterior 
-  predictive distribution. Examples of posterior predictive checks can also 
-  be found in the \pkg{rstanarm} vignettes and demos.
-  
-  \code{\link[bayesplot]{color_scheme_set}} to change the color scheme of the
-  plots.
+\itemize{
+  \item The vignettes in the \pkg{bayesplot} package for many examples.
+    Examples of posterior predictive checks can also be found in the
+    \pkg{rstanarm} vignettes and demos.
+  \item \code{\link[bayesplot]{PPC-overview}} (\pkg{bayesplot}) for links to 
+    the documentation for all the available plotting functions.
+  \item \code{\link{posterior_predict}} for drawing from the posterior 
+    predictive distribution. 
+  \item \code{\link[bayesplot]{color_scheme_set}} to change the color scheme 
+    of the plots.
+}
 }
 

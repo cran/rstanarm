@@ -24,8 +24,10 @@ posterior predictive distribution returned by
 
 \item{...}{Currently ignored.}
 
-\item{y}{For the matrix method only, a vector of \eqn{y} values the same
-length as the number of columns in the matrix used as \code{object}.}
+\item{y}{For the \code{"ppd"} method only, a vector of \eqn{y} values the 
+same length as the number of columns in the matrix used as \code{object}. 
+The method for stanreg objects takes \code{y} directly from the fitted 
+model object.}
 }
 \value{
 A \code{draws} by \code{nrow(newdata)} matrix. If \code{newdata} is 
@@ -34,10 +36,10 @@ A \code{draws} by \code{nrow(newdata)} matrix. If \code{newdata} is
 \description{
 This is a convenience function for computing \eqn{y - y^{rep}}{y - yrep} 
 (in-sample, for observed \eqn{y}) or \eqn{y - \tilde{y}}{y - ytilde} 
-(out-of-sample, for new or held-out \eqn{y}). 
-The method for stanreg objects calls \code{posterior_predict} internally, 
-whereas the method for matrices accepts the output from
-\code{posterior_predict} as input and can be used to avoid multiple calls to
+(out-of-sample, for new or held-out \eqn{y}). The method for stanreg objects 
+calls \code{\link{posterior_predict}} internally, whereas the method for
+objects with class \code{"ppd"} accepts the matrix returned by 
+\code{posterior_predict} as input and can be used to avoid multiple calls to 
 \code{posterior_predict}.
 }
 \note{

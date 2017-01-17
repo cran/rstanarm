@@ -4,17 +4,21 @@ structure(list(EVAL = TRUE), .Names = "EVAL")
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
-  fig.align='center', fig.width = 7, fig.height = 3
+  comment=NA, 
+  message = FALSE, 
+  warning = FALSE, 
+  eval = params$EVAL,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.618,
+  fig.width = 5,
+  out.width = "60%",
+  fig.align = "center"
 )
 
 ## ---- SETTINGS-gg, include=FALSE-----------------------------------------
 library(ggplot2)
-thm_els <- theme(axis.text.y = element_blank(), 
-                 legend.position = "none",
-                 legend.background = element_rect(fill = "gray"),
-                 legend.text = element_text(size = 7))
-theme_set(theme_classic() %+replace% thm_els)
+theme_set(bayesplot::theme_default())
 
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
@@ -43,14 +47,13 @@ post
 ## ---- echo=FALSE---------------------------------------------------------
 print(post)
 
-## ----lm-clouds-ate-plot, fig.height=3------------------------------------
+## ----lm-clouds-ate-plot--------------------------------------------------
 clouds_cf <- clouds
 clouds_cf$seeding[] <- "yes"
 y1_rep <- posterior_predict(post, newdata = clouds_cf)
 clouds_cf$seeding[] <- "no"
 y0_rep <- posterior_predict(post, newdata = clouds_cf)
-qplot(x = c(y1_rep - y0_rep), geom = "histogram", 
-      ylab = NULL, xlab = "Estimated ATE")
+qplot(x = c(y1_rep - y0_rep), geom = "histogram", xlab = "Estimated ATE")
 
 ## ----lm-clouds-simple, results="hide"------------------------------------
 simple <- stan_glm(rainfall ~ seeding * (sne + cloudcover + prewetness + 
@@ -61,7 +64,7 @@ simple <- stan_glm(rainfall ~ seeding * (sne + cloudcover + prewetness +
 
 ## ----lm-clouds-loo, warning=TRUE-----------------------------------------
 (loo_post <- loo(post))
-(loo(simple))
+compare_models(loo_post, loo(simple))
 
 ## ----lm-clouds-plot-loo--------------------------------------------------
 plot(loo_post, label_points = TRUE)

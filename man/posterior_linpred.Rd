@@ -34,14 +34,15 @@ The default is to return a \code{draws} by \code{nrow(newdata)}
   is set to \code{TRUE} (see the \code{XZ} argument description above).
 }
 \description{
-Extract the posterior draws of the linear predictor, possibly transformed by
-the inverse-link function. This function is occasionally convenient, but it
-should be used sparingly. Inference and model checking should generally be
-carried out using the posterior predictive distribution (see
+Extract the posterior draws of the linear predictor, possibly transformed by 
+the inverse-link function. This function is occasionally useful, but it 
+should be used sparingly. Inference and model checking should generally be 
+carried out using the posterior predictive distribution (i.e., using 
 \code{\link{posterior_predict}}).
 }
 \examples{
 if (!exists("example_model")) example(example_model)
+print(family(example_model))
 
 # linear predictor on log-odds scale
 linpred <- posterior_linpred(example_model)
@@ -54,7 +55,7 @@ probs2 <- posterior_linpred(example_model, transform = TRUE, re.form = NA)
 }
 \seealso{
 \code{\link{posterior_predict}} to draw from the posterior 
-  predictive distribution of the outcome, which is almost always preferable.
+  predictive distribution of the outcome, which is typically preferable.
 }
 \keyword{internal}
 

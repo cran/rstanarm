@@ -4,10 +4,10 @@
 \alias{stanreg-objects}
 \title{Fitted model objects}
 \description{
-The model-fitting functions in \pkg{rstanarm} return an object 
-  of class 'stanreg', which is a list containing at a minimum the components 
+The \pkg{rstanarm} model-fitting functions return an object of
+  class 'stanreg', which is a list containing at a minimum the components 
   listed below. Each stanreg object will also have additional classes (e.g. 
-  'aov', 'glm', 'polr', etc.) and several additional components depending on
+  'aov', 'glm', 'polr', etc.) and several additional components depending on 
   the model and estimation algorithm.
 }
 \section{stanreg objects}{

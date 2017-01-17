@@ -4,22 +4,100 @@
 \alias{pairs.stanreg}
 \title{Pairs method for stanreg objects}
 \usage{
-\method{pairs}{stanreg}(x, ...)
+\method{pairs}{stanreg}(x, pars = NULL, regex_pars = NULL,
+  condition = "accept_stat__", ..., labels = NULL, panel = NULL,
+  lower.panel = NULL, upper.panel = NULL, diag.panel = NULL,
+  text.panel = NULL, label.pos = 0.5 + 1/3, cex.labels = NULL,
+  font.labels = 1, row1attop = TRUE, gap = 1, log = "")
 }
 \arguments{
-\item{x}{A stanreg object returned by one of the rstanarm modeling functions.}
+\item{x}{A fitted model object returned by one of the 
+\pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
-\item{...}{Arguments to pass to \code{\link[rstan]{pairs.stanfit}}.}
+\item{pars}{An optional character vetor of parameter names. All parameters 
+are included by default, but for models with more than just a few 
+parameters it may be far too many to visualize on a small computer screen 
+and also may require substantial computing time.}
+
+\item{regex_pars}{An optional character vector of \link[=grep]{regular 
+expressions} to use for parameter selection. \code{regex_pars} can be used
+in place of \code{pars} or in addition to \code{pars}. Currently, all
+functions that accept a \code{regex_pars} argument ignore it for models fit
+using optimization.}
+
+\item{condition}{If \code{NULL}, it will plot roughly half of the
+    chains in the lower panel and the rest in the upper panel. An
+    integer vector can be passed to select some subset of the chains, of which
+    roughly half will be plotted in the lower panel and the rest in the upper
+    panel. A list of two integer vectors can be passed, each specifying a subset
+    of the chains to be plotted in the lower and upper panels respectively.
+    
+    A single number between zero and one exclusive can be passed, which is 
+    interpreted as the proportion of realizations (among all chains) to plot
+    in the lower panel starting with the first realization in each chain, 
+    with the complement (from the end of each chain) plotted in the upper panel.
+    
+    A (possibly abbreviated) character vector of length one can be passed among 
+    \code{"accept_stat__", "stepsize__"}, \code{"treedepth__", "n_leapfrog__"},
+    \code{"divergent__"},, \code{"energy__"}, or \code{"lp__"}, which are the 
+    variables produced by \code{\link{get_sampler_params}} and 
+    \code{\link{get_logposterior}}. In that case the lower panel will plot 
+    realizations that are below the median of the indicated variable (or are zero 
+    in the case of \code{"divergent__"}) and the upper panel will plot realizations 
+    that are greater than or equal to the median of the indicated variable (or are 
+    one in the case of \code{"divergent__"}). 
+    Finally, any logical vector whose length is equal to the product of the number 
+    of iterations and the number of chains can be passed, in which case realizations
+    corresponding to \code{FALSE} and \code{TRUE} will be plotted in the lower 
+    and upper panel respectively. The default is \code{"accept_stat__"}.}
+
+\item{..., labels, panel, lower.panel, upper.panel, diag.panel}{Same as in 
+\code{\link[graphics]{pairs}} syntactically but see the \strong{Details}
+section for different default arguments.}
+
+\item{text.panel, label.pos, cex.labels, font.labels, row1attop, gap}{Same as in 
+\code{\link[graphics]{pairs.default}}.}
+
+\item{log}{Same as in \code{\link[graphics]{pairs.default}} (but additionally
+accepts \code{log=TRUE}), which makes it possible to utilize logarithmic
+axes. See the \strong{Details} section.}
 }
 \description{
-See \code{\link[rstan]{pairs.stanfit}} for details.
+This is essentially the same as \code{\link[rstan]{pairs.stanfit}} but with a
+few tweaks for compatibility with \pkg{rstanarm} models. \strong{Be careful
+not to specify too many parameters to include or the plot will be both hard
+to read and slow to render.}
 }
 \details{
-See the Details section in \code{\link[rstan]{pairs.stanfit}}.
+This method differs from the default \code{\link{pairs}} method in 
+  the following ways. If unspecified, the \code{\link{smoothScatter}} 
+  function is used for the off-diagonal plots, rather than 
+  \code{\link{points}}, since the former is more appropriate for visualizing 
+  thousands of draws from a posterior distribution. Also, if unspecified, 
+  histograms of the marginal distribution of each quantity are placed on the 
+  diagonal of the plot, after pooling the chains.
+  
+  The draws from the warmup phase are always discarded before plotting.
+  
+  By default, the lower (upper) triangle of the plot contains draws with 
+  below (above) median acceptance probability. Also, if \code{condition} is 
+  not \code{"divergent__"}, red points will be superimposed onto the smoothed
+  density plots indicating which (if any) iterations encountered a divergent 
+  transition. Otherwise, yellow points indicate a transition that hit the 
+  maximum treedepth rather than terminated its evolution normally.
+  
+  You may very well want to specify the \code{log} argument for non-negative 
+  parameters. Of the various allowed specifications of \code{log}, it is 
+  probably easiest to specify \code{log = TRUE}, which will utilize 
+  logarithmic axes for all non-negative quantities.
 }
 \examples{
 if (!exists("example_model")) example(example_model)
 pairs(example_model, pars = c("(Intercept)", "log-posterior"))
+
+\donttest{
+pairs(example_model, regex_pars = "herd:[279]")
+}
 
 }
 

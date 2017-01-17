@@ -9,21 +9,21 @@
 stan_glm(formula, family = gaussian(), data, weights, subset,
   na.action = NULL, offset = NULL, model = TRUE, x = FALSE, y = TRUE,
   contrasts = NULL, ..., prior = normal(), prior_intercept = normal(),
-  prior_ops = prior_options(), prior_PD = FALSE, algorithm = c("sampling",
+  prior_aux = cauchy(0, 5), prior_PD = FALSE, algorithm = c("sampling",
   "optimizing", "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE,
   sparse = FALSE)
 
 stan_glm.nb(formula, data, weights, subset, na.action = NULL, offset = NULL,
   model = TRUE, x = FALSE, y = TRUE, contrasts = NULL, link = "log",
-  ..., prior = normal(), prior_intercept = normal(),
-  prior_ops = prior_options(), prior_PD = FALSE, algorithm = c("sampling",
-  "optimizing", "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
+  ..., prior = normal(), prior_intercept = normal(), prior_aux = cauchy(0,
+  5), prior_PD = FALSE, algorithm = c("sampling", "optimizing", "meanfield",
+  "fullrank"), adapt_delta = NULL, QR = FALSE)
 
 stan_glm.fit(x, y, weights = rep(1, NROW(x)), offset = rep(0, NROW(x)),
   family = gaussian(), ..., prior = normal(), prior_intercept = normal(),
-  prior_ops = prior_options(), group = list(), prior_PD = FALSE,
-  algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+  prior_aux = cauchy(0, 5), prior_ops = NULL, group = list(),
+  prior_PD = FALSE, algorithm = c("sampling", "optimizing", "meanfield",
+  "fullrank"), adapt_delta = NULL, QR = FALSE, sparse = FALSE)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[stats]{glm}}.}
@@ -48,31 +48,67 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 \code{cores}, \code{refresh}, etc.}
 
 \item{prior}{The prior distribution for the regression coefficients. 
-\code{prior} can be a call to \code{normal}, \code{student_t}, 
-\code{cauchy}, \code{hs} or \code{hs_plus}. See \code{\link{priors}} for 
-details. To omit a prior ---i.e., to use a flat (improper) uniform prior---
-\code{prior} can be set to \code{NULL}, although this is rarely a good 
-idea. (\strong{Note:} unless \code{QR=TRUE}, if the \code{scaled} argument
-to \code{\link{prior_options}} is left at its default and recommended value
-of \code{TRUE}, then the scale(s) of \code{prior} may be modified
-internally based on the scales of the predictors, as in the \pkg{arm}
-package. See \code{\link{priors}} for details on the rescaling and 
-\code{\link{prior_summary}} for a summary of the priors used for a
-particular model.)}
+\code{prior} should be a call to one of the various functions provided by 
+\pkg{rstanarm} for specifying priors. The subset of these functions that 
+can be used for the prior on the coefficients can be grouped into several 
+"families":
+
+\tabular{ll}{
+  \strong{Family} \tab \strong{Functions} \cr 
+  \emph{Student t family} \tab \code{normal}, \code{student_t}, \code{cauchy} \cr 
+  \emph{Hierarchical shrinkage family} \tab \code{hs}, \code{hs_plus} \cr 
+  \emph{Laplace family} \tab \code{laplace}, \code{lasso} \cr
+  \emph{Product normal family} \tab \code{product_normal} \cr
+}
+
+See the \link[=priors]{priors help page} for details on the families and 
+how to specify the arguments for all of the functions in the table above.
+To omit a prior ---i.e., to use a flat (improper) uniform prior---
+\code{prior} can be set to \code{NULL}, although this is rarely a good
+idea.
+
+\strong{Note:} Unless \code{QR=TRUE}, if \code{prior} is from the Student t
+family or Laplace family, and if the \code{autoscale} argument to the 
+function used to specify the prior (e.g. \code{\link{normal}}) is left at 
+its default and recommended value of \code{TRUE}, then the default or 
+user-specified prior scale(s) may be adjusted internally based on the scales
+of the predictors. See the \link[=priors]{priors help page} for details on
+the rescaling and the \code{\link{prior_summary}} function for a summary of
+the priors used for a particular model.}
 
 \item{prior_intercept}{The prior distribution for the intercept. 
 \code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
-\code{cauchy}. See \code{\link{priors}} for details. To to omit a prior 
----i.e., to use a flat (improper) uniform prior--- set 
-\code{prior_intercept} to \code{NULL}. (\strong{Note:} if a dense 
-representation of the design matrix is utilized ---i.e., if the
-\code{sparse} argument is left at its default value of \code{FALSE}--- then
-the prior distribution for the intercept is set so it applies to the value
-when all predictors are centered.)}
+\code{cauchy}. See the \link[=priors]{priors help page} for details on 
+these functions. To omit a prior on the intercept ---i.e., to use a flat
+(improper) uniform prior--- \code{prior_intercept} can be set to
+\code{NULL}.
 
-\item{prior_ops}{Additional options related to prior distributions. Can 
-be \code{NULL} to omit a prior on the dispersion and see 
-\code{\link{prior_options}} otherwise.}
+\strong{Note:} If using a dense representation of the design matrix 
+---i.e., if the \code{sparse} argument is left at its default value of
+\code{FALSE}--- then the prior distribution for the intercept is set so it
+applies to the value when all predictors are centered.}
+
+\item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
+applicable). The "auxiliary" parameter refers to a different parameter 
+depending on the \code{family}. For Gaussian models \code{prior_aux} 
+controls \code{"sigma"}, the error 
+standard deviation. For negative binomial models \code{prior_aux} controls 
+\code{"reciprocal_dispersion"}, which is similar to the 
+\code{"size"} parameter of \code{\link[stats]{rnbinom}}:
+smaller values of \code{"reciprocal_dispersion"} correspond to 
+greater dispersion. For gamma models \code{prior_aux} sets the prior on 
+to the \code{"shape"} parameter (see e.g., 
+\code{\link[stats]{rgamma}}), and for inverse-Gaussian models it is the 
+so-called \code{"lambda"} parameter (which is essentially the reciprocal of
+a scale parameter). Binomial and Poisson models do not have auxiliary 
+parameters. 
+
+\code{prior_aux} can be a call to \code{exponential} to 
+use an exponential distribution, or \code{normal}, \code{student_t} or 
+\code{cauchy}, which results in a half-normal, half-t, or half-Cauchy 
+prior. See \code{\link{priors}} for details on these functions. To omit a 
+prior ---i.e., to use a flat (improper) uniform prior--- set 
+\code{prior_aux} to \code{NULL}.}
 
 \item{prior_PD}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to draw from the prior predictive distribution instead of
@@ -90,19 +126,20 @@ algorithms.}
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
 \code{\link{adapt_delta}} for details.}
 
-\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE}
+\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE} 
 applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where 
-\eqn{Q^\ast = Q \sqrt{n-1}}{Q* = Q (n-1)^0.5} and
-\eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) R}. The coefficients
-relative to \eqn{Q^\ast}{Q*} are obtained and then premultiplied by the
-inverse of \eqn{R^{\ast}}{R*} to obtain coefficients relative to the
-original predictors, \eqn{X}. These transformations do not change the 
-likelihood of the data but are recommended for computational reasons when 
-there are multiple predictors. However, because the coefficients relative
-to \eqn{Q^\ast}{Q*} are not very interpretable it is hard to specify an 
-informative prior. Setting \code{QR=TRUE} is therefore only recommended 
-if you do not have an informative prior for the regression coefficients.}
+\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* =
+Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5)
+R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then
+premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients
+relative to the original predictors, \eqn{X}. These transformations do not
+change the likelihood of the data but are recommended for computational
+reasons when there are multiple predictors. However, because when \code{QR}
+is \code{TRUE} the \code{prior} argument applies to the coefficients
+relative to \eqn{Q^\ast}{Q*} (and those are not very interpretable) it is
+hard to specify an informative prior. Setting \code{QR=TRUE} is therefore
+only recommended if you do not have an informative prior for the regression
+coefficients.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
@@ -115,6 +152,8 @@ not possible to specify both \code{QR = TRUE} and \code{sparse = TRUE}.}
 
 \item{link}{For \code{stan_glm.nb} only, the link function to use. See 
 \code{\link{neg_binomial_2}}.}
+
+\item{prior_ops}{Deprecated. See \link{rstanarm-deprecated} for details.}
 
 \item{group}{A list, possibly of length zero (the default), but otherwise
 having the structure of that produced by \code{\link[lme4]{mkReTrms}} to
@@ -131,27 +170,27 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
   stanfit object) is returned if \code{stan_glm.fit} is called directly.
 }
 \description{
-Generalized linear modeling with optional prior distributions for 
-the coefficients, intercept, and nuisance parameter.
+Generalized linear modeling with optional prior distributions for the
+coefficients, intercept, and auxiliary parameters.
 }
 \details{
 The \code{stan_glm} function is similar in syntax to 
   \code{\link[stats]{glm}} but rather than performing maximum likelihood 
   estimation of generalized linear models, full Bayesian estimation is 
   performed (if \code{algorithm} is \code{"sampling"}) via MCMC. The Bayesian
-  model adds independent priors on the coefficients of the GLM. The 
-  \code{stan_glm} function calls the workhorse \code{stan_glm.fit} function, 
-  but it is also possible to call the latter directly.
+  model adds priors (independent by default) on the coefficients of the GLM.
+  The \code{stan_glm} function calls the workhorse \code{stan_glm.fit}
+  function, but it is also possible to call the latter directly.
   
-  The \code{stan_glm.nb} function, which takes the extra argument
-  \code{link}, is a simple wrapper for \code{stan_glm} with \code{family =
+  The \code{stan_glm.nb} function, which takes the extra argument 
+  \code{link}, is a wrapper for \code{stan_glm} with \code{family = 
   \link{neg_binomial_2}(link)}.
 }
 \examples{
 if (!grepl("^sparc",  R.version$platform)) {
 ### Linear regression
 fit <- stan_glm(mpg / 10 ~ ., data = mtcars, QR = TRUE,
-                algorithm = "fullrank") # only to make example fast enoug
+                algorithm = "fullrank") # only to make example fast enough
 plot(fit, prob = 0.5)
 plot(fit, prob = 0.5, pars = "beta")
 }
@@ -164,7 +203,8 @@ fit2 <- stan_glm(
   data = wells, 
   family = binomial(link = "logit"), 
   prior = student_t(df = 7, location = 0, scale = 2.5), 
-  prior_intercept = normal(0, 10)
+  prior_intercept = normal(0, 10),
+  chains = 1, iter = 250 # for speed
 )
 print(fit2)
 prior_summary(fit2)
@@ -179,7 +219,8 @@ counts <- c(18,17,15,20,10,20,25,13,12)
 outcome <- gl(3,1,9)
 treatment <- gl(3,3)
 fit3 <- stan_glm(counts ~ outcome + treatment, family = poisson(link="log"),
-                 prior = normal(0, 1), prior_intercept = normal(0, 5))
+                 prior = normal(0, 1), prior_intercept = normal(0, 5),
+                 chains = 1, iter = 250) # for speed
 print(fit3)
 
 bayesplot::color_scheme_set("green")
@@ -191,9 +232,23 @@ plot(fit3, plotfun = "combo", regex_pars = "treatment") # ?bayesplot::mcmc_combo
 clotting <- data.frame(log_u = log(c(5,10,15,20,30,40,60,80,100)),
                        lot1 = c(118,58,42,35,27,25,21,19,18),
                        lot2 = c(69,35,26,21,18,16,13,12,12))
-fit4 <- stan_glm(lot1 ~ log_u, data = clotting, family = Gamma) 
-print(fit4, digits = 2)                 
+fit4 <- stan_glm(lot1 ~ log_u, data = clotting, family = Gamma,
+                 chains = 1, iter = 250) # for speed 
+print(fit4, digits = 2)
 fit5 <- update(fit4, formula = lot2 ~ log_u)
+
+### Negative binomial regression
+fit6 <- stan_glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine, 
+                    link = "log", prior_aux = exponential(1/2),
+                    QR = TRUE, chains = 1, iter = 250) # for speed
+
+bayesplot::color_scheme_set("brightblue")
+plot(fit6)
+pp_check(fit6, plotfun = "hist", nreps = 5)
+
+# 80\% interval of estimated reciprocal_dispersion parameter
+posterior_interval(fit6, pars = "reciprocal_dispersion", prob = 0.8)
+plot(fit6, "areas", pars = "reciprocal_dispersion", prob = 0.8)
 }
 
 }

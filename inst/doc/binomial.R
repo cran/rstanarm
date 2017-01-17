@@ -4,17 +4,21 @@ structure(list(EVAL = TRUE), .Names = "EVAL")
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
-  comment=NA, message = FALSE, warning = FALSE, eval = params$EVAL,
-  fig.align='center', fig.width = 7, fig.height = 3
+  comment=NA, 
+  message = FALSE, 
+  warning = FALSE, 
+  eval = params$EVAL,
+  dev = "png",
+  dpi = 150,
+  fig.asp = 0.618,
+  fig.width = 5,
+  out.width = "60%",
+  fig.align = "center"
 )
 
 ## ---- SETTINGS-gg, include=FALSE-----------------------------------------
 library(ggplot2)
-thm_els <- theme(axis.text.y = element_blank(), 
-                 legend.position = "none",
-                 legend.background = element_rect(fill = "gray"),
-                 legend.text = element_text(size = 7))
-theme_set(theme_classic() %+replace% thm_els)
+theme_set(bayesplot::theme_default())
 
 ## ---- SETTINGS-rstan, include=FALSE--------------------------------------
 ITER <- 500L
@@ -32,9 +36,9 @@ data(wells)
 wells$dist100 <- wells$dist / 100
 
 ## ---- binom-arsenic-plot-dist100, fig.height=3---------------------------
-ggplot(wells, aes(x = dist100, y = ..density..)) + 
-  geom_histogram(data = subset(wells, switch == 0)) +
-  geom_histogram(data = subset(wells, switch == 1), fill = "skyblue", alpha = 0.3) 
+ggplot(wells, aes(x = dist100, y = ..density.., fill = switch == 1)) +
+  geom_histogram() + 
+  scale_fill_manual(values = c("gray30", "skyblue"))
 
 ## ---- binom-arsenic-mcmc, results="hide"---------------------------------
 t_prior <- student_t(df = 7, location = 0, scale = 2.5)
@@ -108,5 +112,5 @@ grid.arrange(vary_dist, vary_arsenic, ncol = 2)
 ## ---- binom-arsenic-loo--------------------------------------------------
 (loo1 <- loo(fit1))
 (loo2 <- loo(fit2))
-compare(loo1, loo2)
+compare_models(loo1, loo2)
 

@@ -141,10 +141,13 @@ The \code{stan_polr} function is similar in syntax to
   property.
 }
 \examples{
-if (!grepl("^sparc",  R.version$platform))
-stan_polr(tobgp ~ agegp, data = esoph, method = "probit",
+if (!grepl("^sparc",  R.version$platform)) {
+ fit <- stan_polr(tobgp ~ agegp, data = esoph, method = "probit",
           prior = R2(0.2, "mean"), init_r = 0.1, seed = 12345,
           algorithm = "fullrank") # for speed only
+ print(fit)
+ plot(fit)
+}
 
 }
 \references{
