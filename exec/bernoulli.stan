@@ -55,8 +55,8 @@ data {
 transformed data {
   int NN = N[1] + N[2];
   real aux = not_a_number();
-  int<lower=1> V0[t,N[1]] = make_V(N[1], t, v0);
-  int<lower=1> V1[t,N[2]] = make_V(N[2], t, v1);
+  int<lower=1> V0[special_case ? t : 0,N[1]] = make_V(N[1], special_case ? t : 0, v0);
+  int<lower=1> V1[special_case ? t : 0,N[2]] = make_V(N[2], special_case ? t : 0, v1);
   #include "tdata_glm.stan"// defines hs, len_z_T, len_var_group, delta, pos
 }
 parameters {
@@ -68,11 +68,11 @@ transformed parameters {
   if (t > 0) {
     if (special_case) {
       int start = 1;
-      theta_L = tau;
-      if (t == 1) b = tau[1] * z_b;
+      theta_L = scale .* tau;
+      if (t == 1) b = theta_L[1] * z_b;
       else for (i in 1:t) {
         int end = start + l[i] - 1;
-        b[start:end] = tau[i] * z_b[start:end];
+        b[start:end] = theta_L[i] * z_b[start:end];
         start = end + 1;
       }
     }

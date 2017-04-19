@@ -2,13 +2,11 @@
 % Please edit documentation in R/plots.R
 \name{pairs.stanreg}
 \alias{pairs.stanreg}
+\alias{pairs_condition}
+\alias{pairs_style_np}
 \title{Pairs method for stanreg objects}
 \usage{
-\method{pairs}{stanreg}(x, pars = NULL, regex_pars = NULL,
-  condition = "accept_stat__", ..., labels = NULL, panel = NULL,
-  lower.panel = NULL, upper.panel = NULL, diag.panel = NULL,
-  text.panel = NULL, label.pos = 0.5 + 1/3, cex.labels = NULL,
-  font.labels = 1, row1attop = TRUE, gap = 1, log = "")
+\method{pairs}{stanreg}(x, pars = NULL, regex_pars = NULL, ...)
 }
 \arguments{
 \item{x}{A fitted model object returned by one of the 
@@ -25,78 +23,94 @@ in place of \code{pars} or in addition to \code{pars}. Currently, all
 functions that accept a \code{regex_pars} argument ignore it for models fit
 using optimization.}
 
-\item{condition}{If \code{NULL}, it will plot roughly half of the
-    chains in the lower panel and the rest in the upper panel. An
-    integer vector can be passed to select some subset of the chains, of which
-    roughly half will be plotted in the lower panel and the rest in the upper
-    panel. A list of two integer vectors can be passed, each specifying a subset
-    of the chains to be plotted in the lower and upper panels respectively.
-    
-    A single number between zero and one exclusive can be passed, which is 
-    interpreted as the proportion of realizations (among all chains) to plot
-    in the lower panel starting with the first realization in each chain, 
-    with the complement (from the end of each chain) plotted in the upper panel.
-    
-    A (possibly abbreviated) character vector of length one can be passed among 
-    \code{"accept_stat__", "stepsize__"}, \code{"treedepth__", "n_leapfrog__"},
-    \code{"divergent__"},, \code{"energy__"}, or \code{"lp__"}, which are the 
-    variables produced by \code{\link{get_sampler_params}} and 
-    \code{\link{get_logposterior}}. In that case the lower panel will plot 
-    realizations that are below the median of the indicated variable (or are zero 
-    in the case of \code{"divergent__"}) and the upper panel will plot realizations 
-    that are greater than or equal to the median of the indicated variable (or are 
-    one in the case of \code{"divergent__"}). 
-    Finally, any logical vector whose length is equal to the product of the number 
-    of iterations and the number of chains can be passed, in which case realizations
-    corresponding to \code{FALSE} and \code{TRUE} will be plotted in the lower 
-    and upper panel respectively. The default is \code{"accept_stat__"}.}
-
-\item{..., labels, panel, lower.panel, upper.panel, diag.panel}{Same as in 
-\code{\link[graphics]{pairs}} syntactically but see the \strong{Details}
-section for different default arguments.}
-
-\item{text.panel, label.pos, cex.labels, font.labels, row1attop, gap}{Same as in 
-\code{\link[graphics]{pairs.default}}.}
-
-\item{log}{Same as in \code{\link[graphics]{pairs.default}} (but additionally
-accepts \code{log=TRUE}), which makes it possible to utilize logarithmic
-axes. See the \strong{Details} section.}
+\item{...}{Optional arguments passed to \code{\link[bayesplot]{mcmc_pairs}}. 
+The \code{np}, \code{lp}, and \code{max_treedepth} arguments to 
+\code{mcmc_pairs} are handled automatically by \pkg{rstanarm} and do not 
+need to be specified by the user in \code{...}. The arguments that can be 
+specified in \code{...} include \code{transformations}, \code{diag_fun},
+\code{off_diag_fun}, \code{diag_args}, \code{off_diag_args},
+\code{condition}, and \code{np_style}. These arguments are
+documented thoroughly on the help page for
+\code{\link[bayesplot]{mcmc_pairs}}.}
 }
 \description{
-This is essentially the same as \code{\link[rstan]{pairs.stanfit}} but with a
-few tweaks for compatibility with \pkg{rstanarm} models. \strong{Be careful
-not to specify too many parameters to include or the plot will be both hard
-to read and slow to render.}
+Interface to \pkg{bayesplot}'s \code{\link[bayesplot]{mcmc_pairs}} function 
+for use with \pkg{rstanarm} models. Be careful not to specify too
+many parameters to include or the plot will be both hard to read and slow to
+render.
 }
 \details{
-This method differs from the default \code{\link{pairs}} method in 
-  the following ways. If unspecified, the \code{\link{smoothScatter}} 
-  function is used for the off-diagonal plots, rather than 
-  \code{\link{points}}, since the former is more appropriate for visualizing 
-  thousands of draws from a posterior distribution. Also, if unspecified, 
-  histograms of the marginal distribution of each quantity are placed on the 
-  diagonal of the plot, after pooling the chains.
-  
-  The draws from the warmup phase are always discarded before plotting.
-  
-  By default, the lower (upper) triangle of the plot contains draws with 
-  below (above) median acceptance probability. Also, if \code{condition} is 
-  not \code{"divergent__"}, red points will be superimposed onto the smoothed
-  density plots indicating which (if any) iterations encountered a divergent 
-  transition. Otherwise, yellow points indicate a transition that hit the 
-  maximum treedepth rather than terminated its evolution normally.
-  
-  You may very well want to specify the \code{log} argument for non-negative 
-  parameters. Of the various allowed specifications of \code{log}, it is 
-  probably easiest to specify \code{log = TRUE}, which will utilize 
-  logarithmic axes for all non-negative quantities.
+By default, the \code{mcmc_pairs} function in the \pkg{bayesplot} package 
+plots some of the Markov chains (half, in the case of an even number of
+chains) in the panels above the diagonal and the other half in the panels
+below the diagonal. This can be changed using the \code{condition} argument
+along with the \code{pairs_condition} helper function. 
+We provide an example in the \pkg{Examples} section, below, but 
+for full details see the \code{\link[bayesplot]{mcmc_pairs}} help page. 
+In particular, if when you fit your model \pkg{rstanarm} issues warnings 
+about convergence, divergent transitions, or transitions hitting the maximum 
+treedepth, then it can sometimes be useful to use one of the NUTS sampler 
+parameters/diagnostics for \code{condition}. The last few examples below
+demonstrate this feature.
 }
 \examples{
 if (!exists("example_model")) example(example_model)
+
+bayesplot::color_scheme_set("purple")
 pairs(example_model, pars = c("(Intercept)", "log-posterior"))
+\donttest{
+pairs(
+  example_model, 
+  regex_pars = "herd:[2,7,9]", 
+  diag_fun = "dens",
+  off_diag_fun = "hex"
+)
+}
 
 \donttest{
-pairs(example_model, regex_pars = "herd:[279]")
+# for demonstration purposes, intentionally fit a model that
+# will (almost certainly) have some divergences
+fit <- stan_glm(
+  mpg ~ ., data = mtcars,
+  iter = 1000,
+  # this combo of prior and adapt_delta should lead to some divergences
+  prior = hs(),
+  adapt_delta = 0.9
+)
+
+pairs(
+  fit, 
+  pars = c("wt", "sigma", "log-posterior"), 
+  transformations = list(sigma = "log"), # show log(sigma) instead of sigma
+  off_diag_fun = "hex" # use hexagonal heatmaps instead of scatterplots
+)
+
+
+bayesplot::color_scheme_set("brightblue")
+pairs(
+  fit, 
+  pars = c("(Intercept)", "wt", "sigma", "log-posterior"), 
+  transformations = list(sigma = "log"), 
+  off_diag_args = list(size = 3/4, alpha = 1/3), # size and transparency of scatterplot points
+  np_style = pairs_style_np(div_color = "black", div_shape = 2) # color and shape of the divergences
+)
+
+# Using the condition argument to show divergences above the diagonal 
+pairs(
+  fit, 
+  pars = c("(Intercept)", "wt", "log-posterior"), 
+  condition = pairs_condition(nuts = "divergent__")
+)
+
+# Using the condition argument to divide iterations by whether NUTS
+# accept_stat__ is at least the median accept_stat__ (above diagonal) or less
+# than the median accept_stat__ (below diagonal). divergences are still
+# marked in red.
+pairs(
+  fit, 
+  pars = c("(Intercept)", "wt", "log-posterior"), 
+  condition = pairs_condition(nuts = "accept_stat__")
+)
 }
 
 }

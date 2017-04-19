@@ -26,7 +26,11 @@ stan_glm.fit(x, y, weights = rep(1, NROW(x)), offset = rep(0, NROW(x)),
   "fullrank"), adapt_delta = NULL, QR = FALSE, sparse = FALSE)
 }
 \arguments{
-\item{formula, data, subset}{Same as \code{\link[stats]{glm}}.}
+\item{formula, data, subset}{Same as \code{\link[stats]{glm}}, 
+but \emph{we strongly advise against omitting the \code{data}
+argument}. Unless \code{data} is specified (and is a data frame) many
+post-estimation functions (including \code{update}, \code{loo},
+\code{kfold}) are not guaranteed to work properly.}
 
 \item{family}{Same as \code{\link[stats]{glm}}, except negative binomial GLMs
 are also possible using the \code{\link{neg_binomial_2}} family object.}
@@ -86,7 +90,11 @@ these functions. To omit a prior on the intercept ---i.e., to use a flat
 \strong{Note:} If using a dense representation of the design matrix 
 ---i.e., if the \code{sparse} argument is left at its default value of
 \code{FALSE}--- then the prior distribution for the intercept is set so it
-applies to the value when all predictors are centered.}
+applies to the value when all predictors are centered. If you prefer to
+specify a prior on the intercept without the predictors being auto-centered,
+then you have to omit the intercept from the \code{\link[stats]{formula}}
+and include a column of ones as a predictor, in which case some element
+of \code{prior} specifies the prior on it, rather than \code{prior_intercept}.}
 
 \item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
 applicable). The "auxiliary" parameter refers to a different parameter 
@@ -126,19 +134,21 @@ algorithms.}
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
 \code{\link{adapt_delta}} for details.}
 
-\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE} 
+\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE} 
 applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* =
-Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5)
-R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then
-premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients
-relative to the original predictors, \eqn{X}. These transformations do not
-change the likelihood of the data but are recommended for computational
-reasons when there are multiple predictors. However, because when \code{QR}
-is \code{TRUE} the \code{prior} argument applies to the coefficients
-relative to \eqn{Q^\ast}{Q*} (and those are not very interpretable) it is
-hard to specify an informative prior. Setting \code{QR=TRUE} is therefore
-only recommended if you do not have an informative prior for the regression
+\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* = 
+Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) 
+R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then 
+premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients 
+relative to the original predictors, \eqn{X}. These transformations do not 
+change the likelihood of the data but are recommended for computational 
+reasons when there are multiple predictors. Importantly, while the columns
+of \eqn{X} are almost always correlated, the columns of \eqn{Q^\ast}{Q*}
+are uncorrelated by design, which often makes sampling from the posterior
+easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
+argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
+those are not very interpretable), setting \code{QR=TRUE} is only
+recommended if you do not have an informative prior for the regression
 coefficients.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
@@ -190,7 +200,7 @@ The \code{stan_glm} function is similar in syntax to
 if (!grepl("^sparc",  R.version$platform)) {
 ### Linear regression
 fit <- stan_glm(mpg / 10 ~ ., data = mtcars, QR = TRUE,
-                algorithm = "fullrank") # only to make example fast enough
+                algorithm = "fullrank") # for speed of example only
 plot(fit, prob = 0.5)
 plot(fit, prob = 0.5, pars = "beta")
 }
@@ -202,9 +212,9 @@ fit2 <- stan_glm(
   switch ~ dist100 + arsenic, 
   data = wells, 
   family = binomial(link = "logit"), 
-  prior = student_t(df = 7, location = 0, scale = 2.5), 
   prior_intercept = normal(0, 10),
-  chains = 1, iter = 250 # for speed
+  QR = TRUE,
+  chains = 2, iter = 200 # for speed of example only
 )
 print(fit2)
 prior_summary(fit2)
@@ -220,7 +230,7 @@ outcome <- gl(3,1,9)
 treatment <- gl(3,3)
 fit3 <- stan_glm(counts ~ outcome + treatment, family = poisson(link="log"),
                  prior = normal(0, 1), prior_intercept = normal(0, 5),
-                 chains = 1, iter = 250) # for speed
+                 chains = 2, iter = 250) # for speed of example only
 print(fit3)
 
 bayesplot::color_scheme_set("green")
@@ -232,16 +242,17 @@ plot(fit3, plotfun = "combo", regex_pars = "treatment") # ?bayesplot::mcmc_combo
 clotting <- data.frame(log_u = log(c(5,10,15,20,30,40,60,80,100)),
                        lot1 = c(118,58,42,35,27,25,21,19,18),
                        lot2 = c(69,35,26,21,18,16,13,12,12))
-fit4 <- stan_glm(lot1 ~ log_u, data = clotting, family = Gamma,
-                 chains = 1, iter = 250) # for speed 
+fit4 <- stan_glm(lot1 ~ log_u, data = clotting, family = Gamma(link="log"),
+                 chains = 2, iter = 300) # for speed of example only 
 print(fit4, digits = 2)
 fit5 <- update(fit4, formula = lot2 ~ log_u)
 
 ### Negative binomial regression
 fit6 <- stan_glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine, 
-                    link = "log", prior_aux = exponential(1/2),
-                    QR = TRUE, chains = 1, iter = 250) # for speed
+                    link = "log", prior_aux = exponential(1),
+                    chains = 2, iter = 200) # for speed of example only
 
+prior_summary(fit6)
 bayesplot::color_scheme_set("brightblue")
 plot(fit6)
 pp_check(fit6, plotfun = "hist", nreps = 5)

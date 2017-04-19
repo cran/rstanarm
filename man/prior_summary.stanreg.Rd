@@ -21,15 +21,15 @@ A list of class "prior_summary.stanreg", which has its own print
   method.
 }
 \description{
-The \code{prior_summary} method provides a numerical summary of the prior 
-distributions used for the parameters in a given model. In some cases the 
-user-specified prior does not correspond exactly to the prior used internally
-by \pkg{rstanarm} (see the sections below). Especially in these cases, but 
-also in general, it can be much more useful to visualize the priors. 
-Visualizing the priors can be done using the \code{\link{posterior_vs_prior}}
-function, or alternatively by fitting the model with the \code{prior_PD}
-argument set to \code{TRUE} (to draw from the prior predictive distribution
-instead of conditioning on the outcome) and then plotting the parameters.
+The \code{prior_summary} method provides a summary of the prior distributions
+used for the parameters in a given model. In some cases the user-specified
+prior does not correspond exactly to the prior used internally by
+\pkg{rstanarm} (see the sections below). Especially in these cases, but also
+in general, it can be much more useful to visualize the priors. Visualizing
+the priors can be done using the \code{\link{posterior_vs_prior}} function,
+or alternatively by fitting the model with the \code{prior_PD} argument set
+to \code{TRUE} (to draw from the prior predictive distribution instead of
+conditioning on the outcome) and then plotting the parameters.
 }
 \section{Intercept (after predictors centered)}{
  
@@ -53,10 +53,9 @@ instead of conditioning on the outcome) and then plotting the parameters.
   scales specified by the user to account for the scales of the predictors 
   (as described in the documentation for the \code{\link[=priors]{autoscale}}
   argument). To disable internal prior scale adjustments set the 
-  \code{autoscale} argument to \code{FALSE} when setting a prior using the 
-  \code{\link{normal}}, \code{\link{student_t}}, or \code{\link{cauchy}} 
-  functions. For example, \code{normal(0, 5, autoscale=FALSE)} instead of 
-  just \code{normal(0, 5)}.
+  \code{autoscale} argument to \code{FALSE} when setting a prior using one of
+  the distributions that accepts an \code{autoscale} argument. For example,
+  \code{normal(0, 5, autoscale=FALSE)} instead of just \code{normal(0, 5)}.
 }
 
 \section{Coefficients in Q-space}{

@@ -11,17 +11,21 @@ stan_polr(formula, data, weights, ..., subset,
   "cauchit"), prior = R2(stop("'location' must be specified")),
   prior_counts = dirichlet(1), shape = NULL, rate = NULL,
   prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL)
+  adapt_delta = NULL, do_residuals = NULL)
 
 stan_polr.fit(x, y, wt = NULL, offset = NULL, method = c("logistic",
   "probit", "loglog", "cloglog", "cauchit"), ...,
   prior = R2(stop("'location' must be specified")),
   prior_counts = dirichlet(1), shape = NULL, rate = NULL,
   prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL)
+  adapt_delta = NULL, do_residuals = algorithm == "sampling")
 }
 \arguments{
-\item{formula, data, subset}{Same as \code{\link[MASS]{polr}}.}
+\item{formula, data, subset}{Same as \code{\link[MASS]{polr}}, 
+but \emph{we strongly advise against omitting the \code{data}
+argument}. Unless \code{data} is specified (and is a data frame) many
+post-estimation functions (including \code{update}, \code{loo},
+\code{kfold}) are not guaranteed to work properly.}
 
 \item{weights, na.action, contrasts, model}{Same as \code{\link[MASS]{polr}}, but
 rarely specified.}
@@ -71,6 +75,13 @@ algorithms.}
 
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
 \code{\link{adapt_delta}} for details.}
+
+\item{do_residuals}{A logical scalar indicating whether or not to 
+automatically calculate fit residuals after sampling completes. Defaults to
+\code{TRUE} if and only if \code{algorithm="sampling"}. Setting
+\code{do_residuals=FALSE} is only useful in the somewhat rare case that
+\code{stan_polr} appears to finish sampling but hangs instead of returning
+the fitted model object.}
 
 \item{x}{A design matrix.}
 

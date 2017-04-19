@@ -7,7 +7,7 @@
 \alias{stan_lm.wfit}
 \title{Bayesian regularized linear models via Stan}
 \usage{
-stan_aov(formula, data = NULL, projections = FALSE, contrasts = NULL, ...,
+stan_aov(formula, data, projections = FALSE, contrasts = NULL, ...,
   prior = R2(stop("'location' must be specified")), prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL)
 
@@ -28,7 +28,11 @@ stan_lm.fit(x, y, offset = NULL, singular.ok = TRUE, ...,
   adapt_delta = NULL)
 }
 \arguments{
-\item{formula, data, subset}{Same as \code{\link[stats]{lm}}.}
+\item{formula, data, subset}{Same as \code{\link[stats]{lm}}, 
+but \emph{we strongly advise against omitting the \code{data}
+argument}. Unless \code{data} is specified (and is a data frame) many
+post-estimation functions (including \code{update}, \code{loo},
+\code{kfold}) are not guaranteed to work properly.}
 
 \item{projections}{For \code{stan_aov}, a logical scalar (defaulting to
 \code{FALSE}) indicating whether \code{\link[stats]{proj}} should be called

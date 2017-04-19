@@ -61,12 +61,13 @@ prop_zero <- function(y) mean(y == 0)
 stan_glm2 <- update(stan_glm1, family = neg_binomial_2) 
 
 ## ---- count-roaches-plot-pp_check2, fig.width=7, out.width="80%"---------
-library(gridExtra)
-prop_zero_test2 <- pp_check(stan_glm2, plotfun = "stat", stat = "prop_zero")
-# Show graphs for Poisson and negative binomial side by side
-grid.arrange(prop_zero_test1 + ggtitle("Poisson"), 
-             prop_zero_test2 + ggtitle("Negative Binomial"), 
-             ncol = 2)
+if (require(gridExtra)) {
+  prop_zero_test2 <- pp_check(stan_glm2, plotfun = "stat", stat = "prop_zero")
+  # Show graphs for Poisson and negative binomial side by side
+  grid.arrange(prop_zero_test1 + ggtitle("Poisson"), 
+               prop_zero_test2 + ggtitle("Negative Binomial"), 
+               ncol = 2)
+}
 
 ## ---- count-roaches-loo--------------------------------------------------
 loo1 <- loo(stan_glm1)

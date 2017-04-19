@@ -17,9 +17,7 @@ stan_biglm.fit(b, R, SSR, N, xbar, ybar, s_y, has_intercept = TRUE, ...,
 }
 \arguments{
 \item{biglm}{The list output by \code{\link[biglm]{biglm}} in the \pkg{biglm}
-package. The original call to \code{\link[biglm]{biglm}} must not have an 
-intercept and must utilize \emph{centered} but not \emph{standardized} 
-predictors. See the \strong{Details} and \strong{Examples} sections.}
+package.}
 
 \item{xbar}{A numeric vector of column means in the implicit design matrix 
 excluding the intercept for the observations included in the model.}

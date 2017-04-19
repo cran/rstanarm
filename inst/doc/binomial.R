@@ -91,23 +91,24 @@ ggplot(grid, aes(x = dist100, y = arsenic)) +
 theme_update(legend.position = "none")
 
 ## ---- binom-arsenic-plot-model2-alt--------------------------------------
-library(gridExtra)
-# Quantiles
-q_ars <- quantile(wells$dist100, seq(0, 1, 0.25))
-q_dist <- quantile(wells$arsenic, seq(0, 1, 0.25))  
-base <- ggplot(wells) + xlim(c(0, NA)) +
-  scale_y_continuous(breaks = c(0, 0.5, 1))
-vary_arsenic <- base + jitt(x="arsenic", y="switch", color="switch")
-vary_dist <- base + jitt(x="dist100", y="switch", color="switch")
-for (i in 1:5) {
-  vary_dist <- 
-    vary_dist + stat_function(fun = pr_switch2, color = "gray35", 
-                              args = list(ests = coef(fit2), y = q_dist[i]))
-  vary_arsenic <-
-    vary_arsenic + stat_function(fun = pr_switch2, color = "gray35", 
-                                 args = list(ests = coef(fit2), x = q_ars[i]))
+if (require(gridExtra)) {
+  # Quantiles
+  q_ars <- quantile(wells$dist100, seq(0, 1, 0.25))
+  q_dist <- quantile(wells$arsenic, seq(0, 1, 0.25))  
+  base <- ggplot(wells) + xlim(c(0, NA)) +
+    scale_y_continuous(breaks = c(0, 0.5, 1))
+  vary_arsenic <- base + jitt(x="arsenic", y="switch", color="switch")
+  vary_dist <- base + jitt(x="dist100", y="switch", color="switch")
+  for (i in 1:5) {
+    vary_dist <- 
+      vary_dist + stat_function(fun = pr_switch2, color = "gray35", 
+                                args = list(ests = coef(fit2), y = q_dist[i]))
+    vary_arsenic <-
+      vary_arsenic + stat_function(fun = pr_switch2, color = "gray35", 
+                                   args = list(ests = coef(fit2), x = q_ars[i]))
+  }
+  grid.arrange(vary_dist, vary_arsenic, ncol = 2)
 }
-grid.arrange(vary_dist, vary_arsenic, ncol = 2)
 
 ## ---- binom-arsenic-loo--------------------------------------------------
 (loo1 <- loo(fit1))

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2017-01-16" />
+<meta name="date" content="2017-04-19" />
 
 <title>Estimating ANOVA Models with rstanarm</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating ANOVA Models with rstanarm</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2017-01-16</em></h4>
+<h4 class="date"><em>2017-04-19</em></h4>
 
 
 <div id="TOC">
@@ -126,30 +126,34 @@ post1 &lt;-<span class="st"> </span><span class="kw">stan_aov</span>(weightgain 
                   <span class="dt">prior =</span> <span class="kw">R2</span>(<span class="dt">location =</span> <span class="fl">0.5</span>), <span class="dt">adapt_delta =</span> <span class="fl">0.999</span>,
                   <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)
 post1</code></pre></div>
-<pre><code>stan_aov(formula = weightgain ~ source * type, data = weightgain, 
-    chains = CHAINS, cores = CORES, seed = SEED, prior = R2(location = 0.5), 
-    adapt_delta = 0.999)
+<pre><code>stan_aov
+ family:  gaussian [identity]
+ formula: weightgain ~ source * type
+------
 
 Estimates:
                      Median MAD_SD
-(Intercept)           98.8    4.4 
-sourceCereal         -12.5    6.2 
-typeLow              -18.7    6.3 
-sourceCereal:typeLow  16.8    8.9 
-sigma                 14.6    1.8 
+(Intercept)           98.7    4.5 
+sourceCereal         -12.9    6.4 
+typeLow              -18.7    6.1 
+sourceCereal:typeLow  16.8    8.7 
+sigma                 14.6    1.7 
 log-fit_ratio          0.0    0.1 
 R2                     0.2    0.1 
 
 Sample avg. posterior predictive 
 distribution of y (X = xbar):
          Median MAD_SD
-mean_PPD 87.4    3.3  
+mean_PPD 87.2    3.2  
 
 ANOVA-like table:
                     Median MAD_SD
-Mean Sq source      538.6  420.9 
-Mean Sq type        974.9  596.9 
-Mean Sq source:type 703.7  696.0 </code></pre>
+Mean Sq source      570.7  426.2 
+Mean Sq type        970.8  581.4 
+Mean Sq source:type 709.6  691.8 
+
+------
+For info on the priors used see help('prior_summary.stanreg').</code></pre>
 <p>Here we have specified <code>adapt_delta = 0.999</code> to decrease the stepsize and largely prevent divergent transitions. See the Troubleshooting section in the main rstanarm <a href="rstanarm.html">vignette</a> for more details about <code>adapt_delta</code>. Also, our prior guess that <span class="math inline">\(R^2 = 0.5\)</span> was overly optimistic. However, the frequentist estimates presumably overfit the data even more.</p>
 <p>Alternatively, we could prepend <code>stan_</code> to <code>lmer</code> and specify the corresponding priors</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post2 &lt;-<span class="st"> </span><span class="kw">stan_lmer</span>(weightgain ~<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span>(<span class="dv">1</span>|source) +<span class="st"> </span>(<span class="dv">1</span>|type) +<span class="st"> </span>(<span class="dv">1</span>|source:type),

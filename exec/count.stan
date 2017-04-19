@@ -19,7 +19,7 @@ data {
 }
 transformed data{
   real poisson_max = pow(2.0, 30.0);
-  int<lower=1> V[t, N] = make_V(N, t, v);
+  int<lower=1> V[special_case ? t : 0, N] = make_V(N, special_case ? t : 0, v);
   #include "tdata_glm.stan"// defines hs, len_z_T, len_var_group, delta, pos
 }
 parameters {
@@ -43,7 +43,7 @@ transformed parameters {
   if (t > 0) {
     if (special_case == 1) {
       int start = 1;
-      theta_L = family == 1 ? tau : tau * aux;
+      theta_L = scale .* (family == 1 ? tau : tau * aux);
       if (t == 1) b = theta_L[1] * z_b;
       else for (i in 1:t) {
         int end = start + l[i] - 1;

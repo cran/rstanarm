@@ -22,7 +22,11 @@ stan_betareg.fit(x, y, z = NULL, weights = rep(1, NROW(x)),
   "fullrank"), adapt_delta = NULL, QR = FALSE)
 }
 \arguments{
-\item{formula, data, subset}{Same as \code{\link[betareg]{betareg}}.}
+\item{formula, data, subset}{Same as \code{\link[betareg]{betareg}}, 
+but \emph{we strongly advise against omitting the \code{data}
+argument}. Unless \code{data} is specified (and is a data frame) many
+post-estimation functions (including \code{update}, \code{loo},
+\code{kfold}) are not guaranteed to work properly.}
 
 \item{na.action}{Same as \code{\link[betareg]{betareg}}, but
 rarely specified.}
@@ -91,7 +95,11 @@ these functions. To omit a prior on the intercept ---i.e., to use a flat
 \strong{Note:} If using a dense representation of the design matrix 
 ---i.e., if the \code{sparse} argument is left at its default value of
 \code{FALSE}--- then the prior distribution for the intercept is set so it
-applies to the value when all predictors are centered.}
+applies to the value when all predictors are centered. If you prefer to
+specify a prior on the intercept without the predictors being auto-centered,
+then you have to omit the intercept from the \code{\link[stats]{formula}}
+and include a column of ones as a predictor, in which case some element
+of \code{prior} specifies the prior on it, rather than \code{prior_intercept}.}
 
 \item{prior_z}{Prior distribution for the coefficients in the model for 
 \code{phi} (if applicable). Same options as for \code{prior}.}
@@ -126,19 +134,21 @@ algorithms.}
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
 \code{\link{adapt_delta}} for details.}
 
-\item{QR}{A logical scalar (defaulting to \code{FALSE}) but if \code{TRUE} 
+\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE} 
 applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* =
-Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5)
-R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then
-premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients
-relative to the original predictors, \eqn{X}. These transformations do not
-change the likelihood of the data but are recommended for computational
-reasons when there are multiple predictors. However, because when \code{QR}
-is \code{TRUE} the \code{prior} argument applies to the coefficients
-relative to \eqn{Q^\ast}{Q*} (and those are not very interpretable) it is
-hard to specify an informative prior. Setting \code{QR=TRUE} is therefore
-only recommended if you do not have an informative prior for the regression
+\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* = 
+Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) 
+R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then 
+premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients 
+relative to the original predictors, \eqn{X}. These transformations do not 
+change the likelihood of the data but are recommended for computational 
+reasons when there are multiple predictors. Importantly, while the columns
+of \eqn{X} are almost always correlated, the columns of \eqn{Q^\ast}{Q*}
+are uncorrelated by design, which often makes sampling from the posterior
+easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
+argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
+those are not very interpretable), setting \code{QR=TRUE} is only
+recommended if you do not have an informative prior for the regression
 coefficients.}
 
 \item{z}{For \code{stan_betareg.fit}, a regressor matrix for \code{phi}.
@@ -178,7 +188,7 @@ fake_dat <- data.frame(y, x, z)
 
 fit <- stan_betareg(y ~ x | z, data = fake_dat, 
                     link = "logit", link.phi = "log", 
-                    chains = 1, iter = 250) # for speed
+                    chains = 1, iter = 250) # for speed of example only
 print(fit, digits = 2)
 plot(fit)
 pp_check(fit)

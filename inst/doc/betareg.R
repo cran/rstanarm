@@ -102,7 +102,6 @@ bayesplot_grid(
 )
 
 ## ---- gas-loo------------------------------------------------------------
-library(loo)
 gas_loo1 <- loo(gas_fit1)
 gas_loo2 <- loo(gas_fit2)
 compare_models(gas_loo1, gas_loo2)

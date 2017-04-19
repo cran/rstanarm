@@ -1,7 +1,7 @@
 params <-
 structure(list(EVAL = TRUE), .Names = "EVAL")
 
-## ---- knitr-settings-----------------------------------------------------
+## ---- knitr-settings, include=FALSE--------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -297,12 +297,13 @@ ppcs_pool <- tstat_plots(fit_pool, Tstats)
 ppcs_nopool <- tstat_plots(fit_nopool, Tstats)
 ppcs_partialpool <- tstat_plots(fit_partialpool, Tstats)
 
-library(gridExtra)
-grid.arrange(
-  arrangeGrob(grobs = ppcs_pool, nrow = 1, left = "Pooling"), 
-  arrangeGrob(grobs = ppcs_nopool, nrow = 1, left = "No Pooling"),
-  arrangeGrob(grobs = ppcs_partialpool, nrow = 1, left = "Partial Pooling")
-)
+if (require(gridExtra)) {
+  grid.arrange(
+    arrangeGrob(grobs = ppcs_pool, nrow = 1, left = "Pooling"), 
+    arrangeGrob(grobs = ppcs_nopool, nrow = 1, left = "No Pooling"),
+    arrangeGrob(grobs = ppcs_partialpool, nrow = 1, left = "Partial Pooling")
+  )
+}
 
 ## ---- p-value------------------------------------------------------------
 yrep <- posterior_predict(fit_nopool, seed = SEED) # seed is optional

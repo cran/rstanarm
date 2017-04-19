@@ -1,5 +1,5 @@
 # Part of the rstanarm package for estimating model parameters
-# Copyright (C) 2015, 2016 Trustees of Columbia University
+# Copyright (C) 2015, 2016, 2017 Trustees of Columbia University
 #  Copyright (C) 1995-2015 The R Core Team
 #  Copyright (C) 1998 B. D. Ripley
 # 
@@ -28,14 +28,15 @@
 #'          prior = R2(0.5), seed = 12345) 
 #' }
 #'             
-stan_aov <- function(formula, data = NULL, projections = FALSE,
+stan_aov <- function(formula, data, projections = FALSE,
                      contrasts = NULL, ...,
                      prior = R2(stop("'location' must be specified")), 
                      prior_PD = FALSE, 
                      algorithm = c("sampling", "meanfield", "fullrank"), 
                      adapt_delta = NULL) {
+
     # parse like aov() does
-    Terms <- if(missing(data)) 
+    Terms <- if (missing(data)) 
       terms(formula, "Error") else terms(formula, "Error", data = data)
     indError <- attr(Terms, "specials")$Error
     ## NB: this is only used for n > 1, so singular form makes no sense
@@ -69,8 +70,10 @@ stan_aov <- function(formula, data = NULL, projections = FALSE,
         if (projections) 
           fit$projections <- proj(fit)
         fit$call <- Call
+        fit$modeling_function <- "stan_aov"
         return(fit)
     } else { # nocov start
+      
         stop("Error terms not supported yet")
         if(pmatch("weights", names(match.call()), 0L))
             stop("weights are not supported in a multistratum aov() fit")

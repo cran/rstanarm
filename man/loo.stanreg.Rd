@@ -7,13 +7,13 @@
 \alias{loo.stanreg}
 \alias{waic}
 \alias{waic.stanreg}
-\title{Leave-one-out (LOO) and K-fold cross-validation}
+\title{Information criteria and cross-validation}
 \usage{
 \method{loo}{stanreg}(x, ..., k_threshold = NULL)
 
 \method{waic}{stanreg}(x, ...)
 
-kfold(x, K = 10)
+kfold(x, K = 10, save_fits = FALSE)
 
 compare_models(..., loos = list())
 }
@@ -38,6 +38,11 @@ leaving out one of the \code{K} subsets. If \code{K} is equal to the total
 number of observations in the data then \eqn{K}-fold cross-validation is
 equivalent to exact leave-one-out cross-validation.}
 
+\item{save_fits}{If \code{TRUE}, a component 'fits' is added to the returned
+object to store the cross-validated \link[=stanreg-objects]{stanreg}
+objects and the indices of the omitted observations for each fold. Defaults
+to \code{FALSE}.}
+
 \item{loos}{For \code{compare_models}, a list of two or more objects returned
 by the \code{loo}, \code{kfold}, or \code{waic} method. This argument can 
 be used as an alternative to passing these objects via \code{...}.}
@@ -58,10 +63,12 @@ The \code{loo} and \code{waic} methods return an object of class
 }
 \description{
 For models fit using MCMC, compute approximate leave-one-out cross-validation
-(LOO) or, less preferably, the Widely Applicable Information Criterion (WAIC)
-using the \pkg{\link[=loo-package]{loo}} package. Exact \eqn{K}-fold
+(LOO, LOOIC) or, less preferably, the Widely Applicable Information Criterion
+(WAIC) using the \pkg{\link[=loo-package]{loo}} package. Exact \eqn{K}-fold 
 cross-validation is also available. Compare two or more models using the 
-\code{compare_models} function.
+\code{compare_models} function. \strong{Note:} these functions are not 
+guaranteed to work properly unless the \code{data} argument was specified 
+when the model was fit.
 }
 \section{Approximate LOO CV}{
  The \code{loo} method for stanreg objects
@@ -159,7 +166,7 @@ compare_models(loo1, loo2) # or compare_models(loos = list(loo1, loo2))
 # when comparing three or more models they are ordered by expected
 # predictive accuracy
 fit3 <- stan_glm(mpg ~ ., data = mtcars)
-loo3 <- loo(fit3, cores = 2)
+loo3 <- loo(fit3, k_threshold = 0.7, cores = 2)
 compare_models(loo1, loo2, loo3)
 
 # 10-fold cross-validation
