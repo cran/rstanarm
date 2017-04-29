@@ -188,11 +188,8 @@ fake_dat <- data.frame(y, x, z)
 
 fit <- stan_betareg(y ~ x | z, data = fake_dat, 
                     link = "logit", link.phi = "log", 
-                    chains = 1, iter = 250) # for speed of example only
+                    algorithm = "optimizing")
 print(fit, digits = 2)
-plot(fit)
-pp_check(fit)
-prior_summary(fit)
 
 }
 \references{

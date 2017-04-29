@@ -2190,8 +2190,8 @@ public:
                 if (as_bool(special_case)) {
                     for (int i = 1; i <= t; ++i) {
 
-                        stan::math::assign(eta0, add(eta0,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V0,t,"V0",1)), stan::model::nil_index_list()), "b")));
-                        stan::math::assign(eta1, add(eta1,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V1,t,"V1",1)), stan::model::nil_index_list()), "b")));
+                        stan::math::assign(eta0, add(eta0,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V0,i,"V0",1)), stan::model::nil_index_list()), "b")));
+                        stan::math::assign(eta1, add(eta1,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V1,i,"V1",1)), stan::model::nil_index_list()), "b")));
                     }
                 } else if (as_bool(logical_gt(t,0))) {
 
@@ -2685,8 +2685,8 @@ public:
                 if (as_bool(special_case)) {
                     for (int i = 1; i <= t; ++i) {
 
-                        stan::math::assign(eta0, add(eta0,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V0,t,"V0",1)), stan::model::nil_index_list()), "b")));
-                        stan::math::assign(eta1, add(eta1,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V1,t,"V1",1)), stan::model::nil_index_list()), "b")));
+                        stan::math::assign(eta0, add(eta0,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V0,i,"V0",1)), stan::model::nil_index_list()), "b")));
+                        stan::math::assign(eta1, add(eta1,stan::model::rvalue(b, stan::model::cons_list(stan::model::index_multi(get_base1(V1,i,"V1",1)), stan::model::nil_index_list()), "b")));
                     }
                 } else if (as_bool(logical_gt(t,0))) {
 
@@ -3731,17 +3731,17 @@ ll_binom_lp(const std::vector<int>& y,
                 lp_accum__.add(((get_base1(trials,n,"trials",1) - get_base1(y,n,"y",1)) * log1m_exp(get_base1(eta,n,"eta",1))));
             }
         } else if (as_bool(logical_eq(link,5))) {
-            {
-                fun_scalar_t__ neg_exp_eta;
-                (void) neg_exp_eta;  // dummy to suppress unused var warning
 
-                stan::math::initialize(neg_exp_eta, std::numeric_limits<double>::quiet_NaN());
-                stan::math::fill(neg_exp_eta,DUMMY_VAR__);
+            for (int n = 1; n <= num_elements(y); ++n) {
+                {
+                    fun_scalar_t__ neg_exp_eta;
+                    (void) neg_exp_eta;  // dummy to suppress unused var warning
+
+                    stan::math::initialize(neg_exp_eta, std::numeric_limits<double>::quiet_NaN());
+                    stan::math::fill(neg_exp_eta,DUMMY_VAR__);
+                    stan::math::assign(neg_exp_eta,-(exp(get_base1(eta,n,"eta",1))));
 
 
-                for (int n = 1; n <= num_elements(y); ++n) {
-
-                    stan::math::assign(neg_exp_eta, -(exp(get_base1(eta,n,"eta",1))));
                     lp_accum__.add((get_base1(y,n,"y",1) * log1m_exp(neg_exp_eta)));
                     lp_accum__.add(((get_base1(trials,n,"trials",1) - get_base1(y,n,"y",1)) * neg_exp_eta));
                 }
@@ -6752,9 +6752,9 @@ pw_inv_gaussian(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
 
             stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(mu,DUMMY_VAR__);
+            stan::math::assign(mu,linkinv_inv_gaussian(eta,link, pstream__));
 
 
-            stan::math::assign(mu, linkinv_inv_gaussian(eta,link, pstream__));
             return stan::math::promote_scalar<fun_return_scalar_t__>(subtract(add(multiply((-(0.5) * lambda),square(elt_divide(subtract(y,mu),elt_multiply(mu,sqrt_y)))),(0.5 * log((lambda / 6.2831853071795862)))),multiply(1.5,log_y)));
         }
     } catch (const std::exception& e) {
@@ -6863,41 +6863,30 @@ linkinv_beta(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
             stan::math::fill(mu,DUMMY_VAR__);
 
 
-            if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,6))))) {
-                std::stringstream errmsg_stream__;
-                errmsg_stream__ << "Invalid link";
-                throw std::domain_error(errmsg_stream__.str());
-            }
             if (as_bool(logical_eq(link,1))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), inv_logit(get_base1(eta,n,"eta",1)));
-                }
+                stan::math::assign(mu, inv_logit(eta));
             } else if (as_bool(logical_eq(link,2))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), Phi(get_base1(eta,n,"eta",1)));
-                }
+                stan::math::assign(mu, Phi(eta));
             } else if (as_bool(logical_eq(link,3))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), inv_cloglog(get_base1(eta,n,"eta",1)));
-                }
+                stan::math::assign(mu, inv_cloglog(eta));
             } else if (as_bool(logical_eq(link,4))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), cauchy_cdf(get_base1(eta,n,"eta",1),0.0,1.0));
-                }
+                stan::math::assign(mu, add(0.5,divide(atan(eta),stan::math::pi())));
             } else if (as_bool(logical_eq(link,5))) {
                 for (int n = 1; n <= rows(eta); ++n) {
 
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(get_base1(eta,n,"eta",1)));
-                    if (as_bool((primitive_value(logical_lt(get_base1(mu,n,"mu",1),0)) || primitive_value(logical_gt(get_base1(mu,n,"mu",1),1))))) {
+                    if (as_bool(logical_gt(get_base1(eta,n,"eta",1),0))) {
                         std::stringstream errmsg_stream__;
-                        errmsg_stream__ << "mu needs to be between 0 and 1";
+                        errmsg_stream__ << "mu must be between 0 and 1";
                         throw std::domain_error(errmsg_stream__.str());
                     }
+                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(get_base1(eta,n,"eta",1)));
                 }
             } else if (as_bool(logical_eq(link,6))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), (1 - inv_cloglog(-(get_base1(eta,n,"eta",1)))));
-                }
+                stan::math::assign(mu, subtract(1,inv_cloglog(minus(eta))));
+            } else {
+                std::stringstream errmsg_stream__;
+                errmsg_stream__ << "invalid link";
+                throw std::domain_error(errmsg_stream__.str());
             }
             return stan::math::promote_scalar<fun_return_scalar_t__>(mu);
         }
@@ -6931,33 +6920,19 @@ linkinv_beta_z(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& eta,
 
     int current_statement_begin__ = -1;
     try {
-        {
-            validate_non_negative_index("mu", "rows(eta)", rows(eta));
-            Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu(static_cast<Eigen::VectorXd::Index>(rows(eta)));
-            (void) mu;  // dummy to suppress unused var warning
 
-            stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
-            stan::math::fill(mu,DUMMY_VAR__);
-
-
-            if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,3))))) {
-                std::stringstream errmsg_stream__;
-                errmsg_stream__ << "Invalid link";
-                throw std::domain_error(errmsg_stream__.str());
-            }
-            if (as_bool(logical_eq(link,1))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), exp(get_base1(eta,n,"eta",1)));
-                }
-            } else if (as_bool(logical_eq(link,2))) {
-                return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
-            } else if (as_bool(logical_eq(link,3))) {
-                for (int n = 1; n <= rows(eta); ++n) {
-                    stan::math::assign(get_base1_lhs(mu,n,"mu",1), square(get_base1(eta,n,"eta",1)));
-                }
-            }
-            return stan::math::promote_scalar<fun_return_scalar_t__>(mu);
+        if (as_bool(logical_eq(link,1))) {
+            return stan::math::promote_scalar<fun_return_scalar_t__>(exp(eta));
+        } else if (as_bool(logical_eq(link,2))) {
+            return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
+        } else if (as_bool(logical_eq(link,3))) {
+            return stan::math::promote_scalar<fun_return_scalar_t__>(square(eta));
+        } else {
+            std::stringstream errmsg_stream__;
+            errmsg_stream__ << "Invalid link";
+            throw std::domain_error(errmsg_stream__.str());
         }
+        return stan::math::promote_scalar<fun_return_scalar_t__>(eta);
     } catch (const std::exception& e) {
         stan::lang::rethrow_located(e,current_statement_begin__);
         // Next line prevents compiler griping about no return
@@ -7003,31 +6978,12 @@ pw_beta(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
 
             stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(mu,DUMMY_VAR__);
-            validate_non_negative_index("shape1", "rows(y)", rows(y));
-            Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  shape1(static_cast<Eigen::VectorXd::Index>(rows(y)));
-            (void) shape1;  // dummy to suppress unused var warning
-
-            stan::math::initialize(shape1, std::numeric_limits<double>::quiet_NaN());
-            stan::math::fill(shape1,DUMMY_VAR__);
-            validate_non_negative_index("shape2", "rows(y)", rows(y));
-            Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  shape2(static_cast<Eigen::VectorXd::Index>(rows(y)));
-            (void) shape2;  // dummy to suppress unused var warning
-
-            stan::math::initialize(shape2, std::numeric_limits<double>::quiet_NaN());
-            stan::math::fill(shape2,DUMMY_VAR__);
+            stan::math::assign(mu,linkinv_beta(eta,link, pstream__));
 
 
-            if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,6))))) {
-                std::stringstream errmsg_stream__;
-                errmsg_stream__ << "Invalid link";
-                throw std::domain_error(errmsg_stream__.str());
-            }
-            stan::math::assign(mu, linkinv_beta(eta,link, pstream__));
-            stan::math::assign(shape1, multiply(mu,dispersion));
-            stan::math::assign(shape2, multiply(subtract(1,mu),dispersion));
             for (int n = 1; n <= rows(y); ++n) {
 
-                stan::math::assign(get_base1_lhs(ll,n,"ll",1), beta_log(get_base1(y,n,"y",1),get_base1(shape1,n,"shape1",1),get_base1(shape2,n,"shape2",1)));
+                stan::math::assign(get_base1_lhs(ll,n,"ll",1), beta_log(get_base1(y,n,"y",1),(get_base1(mu,n,"mu",1) * dispersion),((1 - get_base1(mu,n,"mu",1)) * dispersion)));
             }
             return stan::math::promote_scalar<fun_return_scalar_t__>(ll);
         }
@@ -7079,26 +7035,16 @@ pw_beta_z(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& y,
 
             stan::math::initialize(mu, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(mu,DUMMY_VAR__);
+            stan::math::assign(mu,linkinv_beta(eta,link, pstream__));
             validate_non_negative_index("mu_z", "rows(y)", rows(y));
             Eigen::Matrix<fun_scalar_t__,Eigen::Dynamic,1>  mu_z(static_cast<Eigen::VectorXd::Index>(rows(y)));
             (void) mu_z;  // dummy to suppress unused var warning
 
             stan::math::initialize(mu_z, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(mu_z,DUMMY_VAR__);
+            stan::math::assign(mu_z,linkinv_beta_z(eta_z,link_phi, pstream__));
 
 
-            if (as_bool((primitive_value(logical_lt(link,1)) || primitive_value(logical_gt(link,6))))) {
-                std::stringstream errmsg_stream__;
-                errmsg_stream__ << "Invalid link";
-                throw std::domain_error(errmsg_stream__.str());
-            }
-            if (as_bool((primitive_value(logical_lt(link_phi,1)) || primitive_value(logical_gt(link_phi,3))))) {
-                std::stringstream errmsg_stream__;
-                errmsg_stream__ << "Invalid link";
-                throw std::domain_error(errmsg_stream__.str());
-            }
-            stan::math::assign(mu, linkinv_beta(eta,link, pstream__));
-            stan::math::assign(mu_z, linkinv_beta_z(eta_z,link_phi, pstream__));
             for (int n = 1; n <= rows(y); ++n) {
 
                 stan::math::assign(get_base1_lhs(ll,n,"ll",1), beta_log(get_base1(y,n,"y",1),(get_base1(mu,n,"mu",1) * get_base1(mu_z,n,"mu_z",1)),((1 - get_base1(mu,n,"mu",1)) * get_base1(mu_z,n,"mu_z",1))));
@@ -10722,9 +10668,9 @@ pw_pois(const std::vector<int>& y,
 
                     stan::math::initialize(phi, std::numeric_limits<double>::quiet_NaN());
                     stan::math::fill(phi,DUMMY_VAR__);
+                    stan::math::assign(phi,linkinv_count(eta,link, pstream__));
 
 
-                    stan::math::assign(phi, linkinv_count(eta,link, pstream__));
                     for (int n = 1; n <= N; ++n) {
                         stan::math::assign(get_base1_lhs(ll,n,"ll",1), poisson_log(get_base1(y,n,"y",1),get_base1(phi,n,"phi",1)));
                     }

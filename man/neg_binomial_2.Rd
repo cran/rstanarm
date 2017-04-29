@@ -29,7 +29,7 @@ Negative Binomial model. Alternatively, the \code{\link{stan_glm.nb}} and
 \examples{
 if (!grepl("^sparc",  R.version$platform))
 stan_glm(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine, seed = 123,
-         family = neg_binomial_2, QR = TRUE, algorithm = "fullrank") 
+         family = neg_binomial_2, QR = TRUE, algorithm = "optimizing") 
                 
 # or, equivalently, call stan_glm.nb() without specifying the family
 
