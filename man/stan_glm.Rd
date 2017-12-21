@@ -9,21 +9,22 @@
 stan_glm(formula, family = gaussian(), data, weights, subset,
   na.action = NULL, offset = NULL, model = TRUE, x = FALSE, y = TRUE,
   contrasts = NULL, ..., prior = normal(), prior_intercept = normal(),
-  prior_aux = cauchy(0, 5), prior_PD = FALSE, algorithm = c("sampling",
+  prior_aux = exponential(), prior_PD = FALSE, algorithm = c("sampling",
   "optimizing", "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE,
   sparse = FALSE)
 
 stan_glm.nb(formula, data, weights, subset, na.action = NULL, offset = NULL,
   model = TRUE, x = FALSE, y = TRUE, contrasts = NULL, link = "log",
-  ..., prior = normal(), prior_intercept = normal(), prior_aux = cauchy(0,
-  5), prior_PD = FALSE, algorithm = c("sampling", "optimizing", "meanfield",
-  "fullrank"), adapt_delta = NULL, QR = FALSE)
+  ..., prior = normal(), prior_intercept = normal(),
+  prior_aux = exponential(), prior_PD = FALSE, algorithm = c("sampling",
+  "optimizing", "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
 
-stan_glm.fit(x, y, weights = rep(1, NROW(x)), offset = rep(0, NROW(x)),
+stan_glm.fit(x, y, weights = rep(1, NROW(y)), offset = rep(0, NROW(y)),
   family = gaussian(), ..., prior = normal(), prior_intercept = normal(),
-  prior_aux = cauchy(0, 5), prior_ops = NULL, group = list(),
-  prior_PD = FALSE, algorithm = c("sampling", "optimizing", "meanfield",
-  "fullrank"), adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+  prior_aux = exponential(), prior_smooth = exponential(autoscale = FALSE),
+  prior_ops = NULL, group = list(), prior_PD = FALSE,
+  algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
+  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[stats]{glm}}, 
@@ -40,9 +41,16 @@ rarely specified.}
 
 \item{model, offset, weights}{Same as \code{\link[stats]{glm}}.}
 
-\item{x, y}{In \code{stan_glm, stan_glm.nb}, logical scalars indicating whether to
-return the design matrix and response vector. In \code{stan_glm.fit},
-a design matrix and response vector.}
+\item{x}{In \code{stan_glm}, logical scalar indicating whether to
+return the design matrix. In \code{stan_glm.fit}, usually a design matrix
+but can also be a list of design matrices with the same number of rows, in
+which case the first element of the list is interpreted as the primary design
+matrix and the remaining list elements collectively constitute a basis for a
+smooth nonlinear function of the predictors indicated by the \code{formula}
+argument to \code{\link{stan_gamm4}}.}
+
+\item{y}{In \code{stan_glm}, logical scalar indicating whether to
+return the response vector. In \code{stan_glm.fit}, a response vector.}
 
 \item{...}{Further arguments passed to the function in the \pkg{rstan} 
 package (\code{\link[rstan]{sampling}}, \code{\link[rstan]{vb}}, or 
@@ -75,10 +83,11 @@ idea.
 family or Laplace family, and if the \code{autoscale} argument to the 
 function used to specify the prior (e.g. \code{\link{normal}}) is left at 
 its default and recommended value of \code{TRUE}, then the default or 
-user-specified prior scale(s) may be adjusted internally based on the scales
-of the predictors. See the \link[=priors]{priors help page} for details on
-the rescaling and the \code{\link{prior_summary}} function for a summary of
-the priors used for a particular model.}
+user-specified prior scale(s) may be adjusted internally based on the
+scales of the predictors. See the \link[=priors]{priors help page} and the
+\emph{Prior Distributions} vignette for details on the rescaling and the
+\code{\link{prior_summary}} function for a summary of the priors used for a
+particular model.}
 
 \item{prior_intercept}{The prior distribution for the intercept. 
 \code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
@@ -88,13 +97,14 @@ these functions. To omit a prior on the intercept ---i.e., to use a flat
 \code{NULL}.
 
 \strong{Note:} If using a dense representation of the design matrix 
----i.e., if the \code{sparse} argument is left at its default value of
-\code{FALSE}--- then the prior distribution for the intercept is set so it
-applies to the value when all predictors are centered. If you prefer to
-specify a prior on the intercept without the predictors being auto-centered,
-then you have to omit the intercept from the \code{\link[stats]{formula}}
-and include a column of ones as a predictor, in which case some element
-of \code{prior} specifies the prior on it, rather than \code{prior_intercept}.}
+---i.e., if the \code{sparse} argument is left at its default value of 
+\code{FALSE}--- then the prior distribution for the intercept is set so it 
+applies to the value \emph{when all predictors are centered}. If you prefer
+to specify a prior on the intercept without the predictors being
+auto-centered, then you have to omit the intercept from the
+\code{\link[stats]{formula}} and include a column of ones as a predictor,
+in which case some element of \code{prior} specifies the prior on it,
+rather than \code{prior_intercept}.}
 
 \item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
 applicable). The "auxiliary" parameter refers to a different parameter 
@@ -149,19 +159,34 @@ easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
 argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
 those are not very interpretable), setting \code{QR=TRUE} is only
 recommended if you do not have an informative prior for the regression
-coefficients.}
+coefficients. 
+
+For more details see the Stan case study 
+\emph{The QR Decomposition For Regression Models} at 
+\url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
-Setting this to \code{TRUE} will likely be twice as slow, even if the
-design matrix has a considerable number of zeros, but it may allow the
-model to be estimated when the computer has too little RAM to
-utilize a dense design matrix. If \code{TRUE}, the the design matrix
-is not centered (since that would destroy the sparsity) and it is
-not possible to specify both \code{QR = TRUE} and \code{sparse = TRUE}.}
+If \code{TRUE}, the the design matrix is not centered (since that would 
+destroy the sparsity) and likewise it is not possible to specify both 
+\code{QR = TRUE} and \code{sparse = TRUE}. Depending on how many zeros
+there are in the design matrix, setting \code{sparse = TRUE} may make
+the code run faster and can consume much less RAM.}
 
 \item{link}{For \code{stan_glm.nb} only, the link function to use. See 
 \code{\link{neg_binomial_2}}.}
+
+\item{prior_smooth}{The prior distribution for the hyperparameters in GAMs,
+with lower values yielding less flexible smooth functions.
+ 
+\code{prior_smooth} can be a call to \code{exponential} to 
+use an exponential distribution, or \code{normal}, \code{student_t} or 
+\code{cauchy}, which results in a half-normal, half-t, or half-Cauchy 
+prior. See \code{\link{priors}} for details on these functions. To omit a 
+prior ---i.e., to use a flat (improper) uniform prior--- set 
+\code{prior_smooth} to \code{NULL}. The number of hyperparameters depends
+on the model specification but a scalar prior will be recylced as necessary
+to the appropriate length.}
 
 \item{prior_ops}{Deprecated. See \link{rstanarm-deprecated} for details.}
 

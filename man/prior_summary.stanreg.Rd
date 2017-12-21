@@ -13,8 +13,7 @@
 
 \item{digits}{Number of digits to use for rounding.}
 
-\item{...}{Currently ignored by the method for stanreg objects. The S3
-generic uses \code{...} to pass arguments to any defined methods.}
+\item{...}{Currently ignored by the method for stanreg objects.}
 }
 \value{
 A list of class "prior_summary.stanreg", which has its own print
@@ -111,6 +110,7 @@ prior_summary(fit2)
 
 }
 \seealso{
-\code{\link{posterior_vs_prior}}, \code{\link{priors}}
+The \link[=priors]{priors help page} and the \emph{Prior
+  Distributions} vignette.
 }
 

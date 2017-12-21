@@ -3,16 +3,16 @@
 \name{stan_gamm4}
 \alias{plot_nonlinear}
 \alias{stan_gamm4}
-\title{Bayesian generalized linear additive models with group-specific terms via
-Stan}
+\title{Bayesian generalized linear additive models with optional group-specific
+terms via Stan}
 \usage{
 stan_gamm4(formula, random = NULL, family = gaussian(), data,
   weights = NULL, subset = NULL, na.action, knots = NULL,
   drop.unused.levels = TRUE, ..., prior = normal(),
-  prior_intercept = normal(), prior_aux = cauchy(0, 5),
-  prior_covariance = decov(), prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE,
-  sparse = FALSE)
+  prior_intercept = normal(), prior_smooth = exponential(autoscale = FALSE),
+  prior_aux = exponential(), prior_covariance = decov(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
+  QR = FALSE, sparse = FALSE)
 
 plot_nonlinear(x, smooths, ..., prob = 0.9, facet_args = list(),
   alpha = 1, size = 0.75)
@@ -56,10 +56,11 @@ idea.
 family or Laplace family, and if the \code{autoscale} argument to the 
 function used to specify the prior (e.g. \code{\link{normal}}) is left at 
 its default and recommended value of \code{TRUE}, then the default or 
-user-specified prior scale(s) may be adjusted internally based on the scales
-of the predictors. See the \link[=priors]{priors help page} for details on
-the rescaling and the \code{\link{prior_summary}} function for a summary of
-the priors used for a particular model.}
+user-specified prior scale(s) may be adjusted internally based on the
+scales of the predictors. See the \link[=priors]{priors help page} and the
+\emph{Prior Distributions} vignette for details on the rescaling and the
+\code{\link{prior_summary}} function for a summary of the priors used for a
+particular model.}
 
 \item{prior_intercept}{The prior distribution for the intercept. 
 \code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
@@ -69,13 +70,26 @@ these functions. To omit a prior on the intercept ---i.e., to use a flat
 \code{NULL}.
 
 \strong{Note:} If using a dense representation of the design matrix 
----i.e., if the \code{sparse} argument is left at its default value of
-\code{FALSE}--- then the prior distribution for the intercept is set so it
-applies to the value when all predictors are centered. If you prefer to
-specify a prior on the intercept without the predictors being auto-centered,
-then you have to omit the intercept from the \code{\link[stats]{formula}}
-and include a column of ones as a predictor, in which case some element
-of \code{prior} specifies the prior on it, rather than \code{prior_intercept}.}
+---i.e., if the \code{sparse} argument is left at its default value of 
+\code{FALSE}--- then the prior distribution for the intercept is set so it 
+applies to the value \emph{when all predictors are centered}. If you prefer
+to specify a prior on the intercept without the predictors being
+auto-centered, then you have to omit the intercept from the
+\code{\link[stats]{formula}} and include a column of ones as a predictor,
+in which case some element of \code{prior} specifies the prior on it,
+rather than \code{prior_intercept}.}
+
+\item{prior_smooth}{The prior distribution for the hyperparameters in GAMs,
+with lower values yielding less flexible smooth functions.
+ 
+\code{prior_smooth} can be a call to \code{exponential} to 
+use an exponential distribution, or \code{normal}, \code{student_t} or 
+\code{cauchy}, which results in a half-normal, half-t, or half-Cauchy 
+prior. See \code{\link{priors}} for details on these functions. To omit a 
+prior ---i.e., to use a flat (improper) uniform prior--- set 
+\code{prior_smooth} to \code{NULL}. The number of hyperparameters depends
+on the model specification but a scalar prior will be recylced as necessary
+to the appropriate length.}
 
 \item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
 applicable). The "auxiliary" parameter refers to a different parameter 
@@ -133,16 +147,19 @@ easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
 argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
 those are not very interpretable), setting \code{QR=TRUE} is only
 recommended if you do not have an informative prior for the regression
-coefficients.}
+coefficients. 
+
+For more details see the Stan case study 
+\emph{The QR Decomposition For Regression Models} at 
+\url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
-Setting this to \code{TRUE} will likely be twice as slow, even if the
-design matrix has a considerable number of zeros, but it may allow the
-model to be estimated when the computer has too little RAM to
-utilize a dense design matrix. If \code{TRUE}, the the design matrix
-is not centered (since that would destroy the sparsity) and it is
-not possible to specify both \code{QR = TRUE} and \code{sparse = TRUE}.}
+If \code{TRUE}, the the design matrix is not centered (since that would 
+destroy the sparsity) and likewise it is not possible to specify both 
+\code{QR = TRUE} and \code{sparse = TRUE}. Depending on how many zeros
+there are in the design matrix, setting \code{sparse = TRUE} may make
+the code run faster and can consume much less RAM.}
 
 \item{x}{An object produced by \code{stan_gamm4}.}
 
@@ -171,33 +188,30 @@ Bayesian inference for GAMMs with flexible priors.
 }
 \details{
 The \code{stan_gamm4} function is similar in syntax to 
-  \code{\link[gamm4]{gamm4}} in the \pkg{gamm4} package, which accepts a syntax 
-  that is similar to (but not quite as extensive as) that for 
-  \code{\link[mgcv]{gamm}} in the \pkg{mgcv} package and converts 
-  it internally into the syntax accepted by \code{\link[lme4]{glmer}} in the
-  \pkg{lme4} package. But rather than performing (restricted) maximum likelihood 
-  estimation, the \code{stan_gamm4} function utilizes MCMC to perform Bayesian 
+  \code{\link[gamm4]{gamm4}} in the \pkg{gamm4} package. But rather than performing 
+  (restricted) maximum likelihood estimation with the \pkg{lme4} package,
+  the \code{stan_gamm4} function utilizes MCMC to perform Bayesian 
   estimation. The Bayesian model adds priors on the common regression 
-  coefficients (in the same way as \code{\link{stan_glm}}) and priors on the 
-  terms of a decomposition of the covariance matrices of the group-specific 
-  parameters, including the smooths. Estimating these models via MCMC avoids
+  coefficients (in the same way as \code{\link{stan_glm}}), priors on the 
+  standard deviations of the smooth terms, and a prior on the decomposition
+  of the covariance matrices of any group-specific parameters (as in 
+  \code{\link{stan_glmer}}). Estimating these models via MCMC avoids
   the optimization issues that often crop up with GAMMs and provides better
   estimates for the uncertainty in the parameter estimates. 
   
   See \code{\link[gamm4]{gamm4}} for more information about the model
   specicification and \code{\link{priors}} for more information about the
-  priors. If \code{random = NULL}, the output is a subset of that produced by
-  \code{\link[mgcv]{gam}} in the sense that there are several estimated components
-  for each smooth term. However, the parameterization used to estimate the model
-  is different and corresponds to the parameterization in 
-  \code{\link[gamm4]{gamm4}} where is smooth term is decomposed into a linear
-  and a non-linear part. If \code{prior} is not \code{NULL}, then the number 
-  of parameters to place priors on is equal to the number of linear terms in
-  the \code{formula}. The prior on the non-linear part of each smooth term is
-  handled by the \code{\link{decov}} function. If \code{random} is not \code{NULL},
-  then there are additional group-specific terms whose priors are also handled
-  by the \code{\link{decov}} function and whose posterior medians can be extracted
-  by calling \code{\link[lme4]{ranef}}.
+  priors on the main coefficients. The \code{formula} should include at least
+  one smooth term, which can be specified in any way that is supported by the
+  \code{\link[mgcv]{jagam}} function in the \pkg{mgcv} package. The 
+  \code{prior_smooth} argument should be used to specify a prior on the unknown
+  standard deviations that govern how smooth the smooth function is. The
+  \code{prior_covariance} argument can be used to specify the prior on the
+  components of the covariance matrix for any (optional) group-specific terms.
+  The \code{\link[gamm4]{gamm4}} function in the \pkg{gamm4} package uses
+  group-specific terms to implement the departure from linearity in the smooth
+  terms, but that is not the case for \code{stan_gamm4} where the group-specific
+  terms are exactly the same as in \code{\link{stan_glmer}}.
   
   The \code{plot_nonlinear} function creates a ggplot object with one facet for
   each smooth function specified in the call to \code{stan_gamm4} in the case
@@ -222,7 +236,7 @@ dat$fac <- fac <- as.factor(sample(1:20, 400, replace = TRUE))
 dat$y <- dat$y + model.matrix(~ fac - 1) \%*\% rnorm(20) * .5
 
 br <- stan_gamm4(y ~ s(x0) + x1 + s(x2), data = dat, random = ~ (1 | fac), 
-                 QR = TRUE, chains = 1, iter = 200) # for example speed
+                 chains = 1, iter = 200) # for example speed
 print(br)
 plot_nonlinear(br)
 plot_nonlinear(br, smooths = "s(x0)", alpha = 2/3)
@@ -238,5 +252,8 @@ Software}. \strong{14}(14), 1--22.
 \seealso{
 \code{\link{stanreg-methods}} and 
 \code{\link[gamm4]{gamm4}}.
+
+The vignette for \code{stan_glmer}, which also discusses
+  \code{stan_gamm4}.
 }
 

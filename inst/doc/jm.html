@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Sam Brilleman" />
+
+<meta name="date" content="2017-12-20" />
+
+<title>Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</h1>
+<h4 class="author"><em>Sam Brilleman</em></h4>
+<h4 class="date"><em>2017-12-20</em></h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#model-formulation">Model formulation</a><ul>
+<li><a href="#longitudinal-submodels">Longitudinal submodel(s)</a></li>
+<li><a href="#event-submodel">Event submodel</a></li>
+<li><a href="#association-structures">Association structures</a></li>
+<li><a href="#conditional-independence-assumption">Conditional independence assumption</a></li>
+<li><a href="#log-posterior-distribution">Log posterior distribution</a></li>
+</ul></li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#data">Data</a></li>
+<li><a href="#univariate-joint-models">Univariate joint models</a></li>
+<li><a href="#multivariate-joint-models">Multivariate joint models</a></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{stan_jm: Joint Models for Longitudinal and Time-to-Event Data}
+-->
+<p>This vignette provides an introduction to the <code>stan_jm</code> modelling function in the <strong>rstanarm</strong> package. The <code>stan_jm</code> function allows the user to estimate a shared parameter joint model for longitudinal and time-to-event data under a Bayesian framework.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Joint modelling can be broadly defined as the simultaneous estimation of two or more statistical models which traditionally would have been separately estimated. When we refer to a shared parameter joint model for longitudinal and time-to-event data, we generally mean the joint estimation of: 1) a longitudinal mixed effects model which analyses patterns of change in an outcome variable that has been measured repeatedly over time (for example, a clinical biomarker) and 2) a survival or time-to-event model which analyses the time until an event of interest occurs (for example, death or disease progression). Joint estimation of these so-called “submodels” is achieved by assuming they are correlated via individual-specific parameters (i.e. individual-level random effects).</p>
+<p>Over the last two decades the joint modelling of longitudinal and time-to-event data has received a significant amount of attention [1-5]. Methodological developments in the area have been motivated by a growing awareness of the benefits that a joint modelling approach can provide. In clinical or epidemiological research it is common for a clinical biomarker to be repeatedly measured over time on a given patient. In addition, it is common for time-to-event data, such as the patient-specific time from a defined origin (e.g. time of diagnosis of a disease) until a terminating clinical event such as death or disease progression to also be collected. Accordingly, the motivations for undertaking a joint modelling approach of these data might include one or more of the following:</p>
+<ul>
+<li><p>One may be interested in how <em>underlying changes in the biomarker influence the occurrence of the event</em>. However, including the observed biomarker measurements directly into a time-to-event model as time-varying covariates poses several problems. For example, if the widely used Cox proportional hazards model is assumed for the time-to-event model then biomarker measurements need to be available for all patients at all failure times, which is unlikely to be the case [3]. If simple methods of imputation are used, such as the “last observation carried forward” method, then these are likely to induce bias [6]. Furthermore, the observed biomarker measurements may be subject to measurement error and therefore their inclusion as time-varying covariates may result in biased and inefficient estimates. In most cases, the measurement error will result in parameter estimates which are shrunk towards the null [7]. On the other hand, joint modelling approaches allow us to estimate the association between the biomarker (or some function of the biomarker trajectory, such as rate of change in the biomarker) and the risk of the event, whilst allowing for both the discrete time and measurement-error aspects of the observed biomarker.</p></li>
+<li><p>One may be interested primarily in the evolution of the clinical biomarker but <em>may wish to account for what is known as informative dropout</em>. If the value of future (unobserved) biomarker measurements are related to the occurrence of the terminating event, then those unobserved biomarker measurements will be “missing not at random” [8,9]. In other words, biomarker measurements for patients who have an event will differ from those who do not have an event. Under these circumstances, inference based solely on observed measurements of the biomarker will be subject to bias. A joint modelling approach can help to adjust for informative dropout and has been shown to reduce bias in the estimated parameters associated with longitudinal changes in the biomarker [1,9,10].</p></li>
+<li><p>Joint models are naturally suited to the task of <em>dynamic risk prediction</em>. For example, joint modelling approaches have been used to develop prognostic models where predictions of event risk can be updated as new longitudinal biomarker measurements become available. Taylor et al. [11] jointly modelled longitudinal measurements of the prostate specific antigen (PSA) and time to clinical recurrence of prostate cancer. The joint model was then used to develop a web-based calculator which could provide real-time predictions of the probability of recurrence based on a patient’s up to date PSA measurements.</p></li>
+</ul>
+<p>In this vignette, we describe the <strong>rstanarm</strong> package’s <code>stan_jm</code> modelling function. This modelling function allows users to fit a shared parameter joint model for longitudinal and time-to-event data under a Bayesian framework, with the backend estimation carried out using Stan. In Section 2 we describe the formulation of the joint model used by <code>stan_jm</code>. In Section 3 we present an applied example to demonstrate how the <code>stan_jm</code> modelling function can be used to estimate the model as well as describe the type of inferences that can be obtained.</p>
+<p>Note that some aspects of the estimation are covered in other vignettes, such as the <code>stan_glmer</code> <a href="glmer.html">vignette</a> which contains details on the prior distribution for covariance matrices for the group-specific terms, or the priors <a href="priors.html">vignette</a> which contains details on the prior distributions available for regression coefficients.</p>
+</div>
+<div id="model-formulation" class="section level2">
+<h2>Model formulation</h2>
+<p>A shared parameter joint model consists of related submodels which are specified separately for each of the longitudinal and time-to-event outcomes. These are therefore commonly referred to as the <em>longitudinal submodel(s)</em> and the <em>event submodel</em>. The longitudinal and event submodels are linked using shared individual-specific parameters, which can be parameterised in a number of ways. We describe each of these submodels below.</p>
+<div id="longitudinal-submodels" class="section level3">
+<h3>Longitudinal submodel(s)</h3>
+<p>We assume <span class="math inline">\(y_{ijm}(t) = y_{im}(t_{ij})\)</span> corresponds to the observed value of the <span class="math inline">\(m^{th}\)</span> <span class="math inline">\((m = 1,...,M)\)</span> biomarker for individual <span class="math inline">\(i\)</span> <span class="math inline">\((i = 1,...,N)\)</span> taken at time point <span class="math inline">\(t_{ij}\)</span>, <span class="math inline">\(j = 1,...,n_{im}\)</span>. We specify a (multivariate) generalised linear mixed model that assumes <span class="math inline">\(y_{ijm}(t)\)</span> follows a distribution in the exponential family with mean <span class="math inline">\(\mu_{ijm}(t)\)</span> and linear predictor</p>
+<span class="math display">\[\begin{align}
+\eta_{ijm}(t) = g_m(\mu_{ijm}(t)) = 
+  \boldsymbol{x}^T_{ijm}(t) \boldsymbol{\beta}_m +
+  \boldsymbol{z}^T_{ijm}(t) \boldsymbol{b}_{im}
+\end{align}\]</span>
+<p>where <span class="math inline">\(\boldsymbol{x}^T_{ijm}(t)\)</span> and <span class="math inline">\(\boldsymbol{z}^T_{ijm}(t)\)</span> are both row-vectors of covariates (which likely include some function of time, for example a linear slope, cubic splines, or polynomial terms) with associated vectors of fixed and individual-specific parameters <span class="math inline">\(\boldsymbol{\beta}_m\)</span> and <span class="math inline">\(\boldsymbol{b}_{im}\)</span>, respectively, and <span class="math inline">\(g_m\)</span> is some known link function.</p>
+<p>The distribution and link function are allowed to differ over the <span class="math inline">\(M\)</span> longitudinal submodels. We assume that the dependence across the different longitudinal submodel (i.e. the correlation between the different longitudinal biomarkers) is captured through a shared multivariate normal distribution for the individual-specific parameters; that is, we assume</p>
+<span class="math display">\[\begin{align}
+\begin{pmatrix} \boldsymbol{b}_{i1} \\ \vdots \\ \boldsymbol{b}_{iM} \end{pmatrix} = 
+  \boldsymbol{b}_i \sim
+  \mathsf{Normal} \left( 0 , \boldsymbol{\Sigma} \right)
+\end{align}\]</span>
+<p>for some unstructured variance-covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span>.</p>
+</div>
+<div id="event-submodel" class="section level3">
+<h3>Event submodel</h3>
+<p>We assume that we also observe an event time <span class="math inline">\(T_i = \mathsf{min} \left( T^*_i , C_i \right)\)</span> where <span class="math inline">\(T^*_i\)</span> denotes the so-called “true” event time for individual <span class="math inline">\(i\)</span> (potentially unobserved) and <span class="math inline">\(C_i\)</span> denotes the censoring time. We define an event indicator <span class="math inline">\(d_i = I(T^*_i \leq C_i)\)</span>. We then model the hazard of the event using a parametric proportional hazards regression model of the form</p>
+<span class="math display">\[\begin{align}
+h_i(t) = h_0(t; \boldsymbol{\omega}) \mathsf{exp} 
+  \left(
+    \boldsymbol{w}^T_i(t) \boldsymbol{\gamma} +
+    \sum_{m=1}^M \sum_{q=1}^{Q_m} \alpha_{mq}
+      f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) 
+  \right) 
+\label{eq:eventsubmodel}
+\end{align}\]</span>
+<p>where <span class="math inline">\(h_i(t)\)</span> is the hazard of the event for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>, <span class="math inline">\(h_0(t; \boldsymbol{\omega})\)</span> is the baseline hazard at time <span class="math inline">\(t\)</span> given parameters <span class="math inline">\(\boldsymbol{\omega}\)</span>, <span class="math inline">\(\boldsymbol{w}^T_i(t)\)</span> is a row-vector of individual-specific covariates (possibly time-dependent) with an associated vector of regression coefficients <span class="math inline">\(\boldsymbol{\gamma}\)</span> (log hazard ratios), and the <span class="math inline">\(\alpha_{mq}\)</span> are also coefficients (log hazard ratios).</p>
+<p>The longitudinal and event submodels are assumed to related via an “association structure” based on shared individual-specific parameters and captured via the <span class="math inline">\(\sum_{m=1}^M \sum_{q=1}^{Q_m} \alpha_{mq} f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t)\)</span> term in the linear predictor of the proportional hazards regression model. The <span class="math inline">\(\alpha_{mq}\)</span> are referred to as the “association parameters” since they quantify the strength of the association between the longitudinal and event processes, while the <span class="math inline">\(f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t)\)</span> (for some functions <span class="math inline">\(f_{mq}(.)\)</span>) can be referred to as the “association terms” and can be specified in a variety of ways which we describe in the next section.</p>
+<p>We assume that the baseline hazard <span class="math inline">\(h_0(t; \boldsymbol{\omega})\)</span> is modelled parametrically. In the <code>stan_jm</code> modelling function the baseline hazard be specified as either: an approximation using B-splines on the log hazard scale (the default); a Weibull distribution; or an approximation using a piecewise constant function on the log hazard scale (sometimes referred to as piecewise exponential). The choice of baseline hazard can be made via the <code>basehaz</code> argument. In the case of the B-splines or piecewise constant baseline hazard, the user can control the flexibility by specifying the knots or degrees of freedom via the <code>basehaz_ops</code> argument. (Note that currently there is slightly limited post-estimation functionality available for models estimated with a piecewise constant baseline hazard, so this is perhaps the least preferable choice).</p>
+</div>
+<div id="association-structures" class="section level3">
+<h3>Association structures</h3>
+<p>As mentioned in the previous section, the dependence between the longitudinal and event submodels is captured through the association structure, which can be specified in a number of ways. The simplest association structure is likely to be</p>
+<span class="math display">\[\begin{align}
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \eta_{im}(t)
+\end{align}\]</span>
+<p>and this is often referred to as a <em>current value</em> association structure since it assumes that the log hazard of the event at time <span class="math inline">\(t\)</span> is linearly associated with the value of the longitudinal submodel’s linear predictor also evaluated at time <span class="math inline">\(t\)</span>. This is the most common association structure used in the joint modelling literature to date. In the situation where the longitudinal submodel is based on an identity link function and normal error distribution (i.e. a linear mixed model) the <em>current value</em> association structure can be viewed as a method for including the underlying “true” value of the biomarker as a time-varying covariate in the event submodel.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
+<p>However, other association structures are also possible. For example, we could assume the log hazard of the event is linearly associated with the <em>current slope</em> (i.e. rate of change) of the longitudinal submodel’s linear predictor, that is</p>
+<span class="math display">\[\begin{align}
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \frac{d\eta_{im}(t)}{dt}
+\end{align}\]</span>
+<p>There are in fact a whole range of possible association structures, many of which have been discussed in the literature [14-16].</p>
+<p>The <code>stan_jm</code> modelling function in the <strong>rstanarm</strong> package allows for the following association structures, which are specified via the <code>assoc</code> argument:</p>
+<p>Current value (of the linear predictor or expected value) <span class="math display">\[
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \eta_{im}(t) \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \mu_{im}(t)
+\]</span></p>
+<p>Current slope (of the linear predictor or expected value) <span class="math display">\[
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \frac{d\eta_{im}(t)}{dt} \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \frac{d\mu_{im}(t)}{dt}
+\]</span></p>
+<p>Area under the curve (of the linear predictor or expected value) <span class="math display">\[
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \int_0^t \eta_{im}(u) du \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \int_0^t \mu_{im}(u) du
+\]</span></p>
+<p>Interactions between different biomarkers <span class="math display">\[
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \eta_{im}(t) \eta_{im'}(t) 
+  \text{ for some } m = m' \text{ or } m \neq m' \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \eta_{im}(t) \mu_{im'}(t) 
+  \text{ for some } m = m' \text{ or } m \neq m' \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \mu_{im}(t) \mu_{im'}(t) 
+  \text{ for some } m = m' \text{ or } m \neq m'
+\]</span></p>
+<p>Interactions between the biomarker (or it’s slope) and observed data <span class="math display">\[
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \eta_{im}(t) c_{i}(t) 
+  \text{  for some covariate value } c_{i}(t) \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \mu_{im}(t) c_{i}(t) 
+  \text{  for some covariate value } c_{i}(t) \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \frac{d\eta_{im}(t)}{dt} c_{i}(t) 
+  \text{  for some covariate value } c_{i}(t) \\
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = \frac{d\mu_{im}(t)}{dt} c_{i}(t) 
+  \text{  for some covariate value } c_{i}(t)
+\]</span></p>
+<p>As well as using lagged values for any of the above. That is, replacing <span class="math inline">\(t\)</span> with <span class="math inline">\(t-u\)</span> where <span class="math inline">\(u\)</span> is some lag time, such that the hazard of the event at time <span class="math inline">\(t\)</span> is assumed to be associated with some function of the longitudinal submodel parameters at time <span class="math inline">\(t-u\)</span>.</p>
+<p>Lastly, we can specify some time-independent function of the random effects, possibly including the fixed effect component. For example,</p>
+<p><span class="math display">\[
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = 
+  \boldsymbol{b}_{im0}
+\]</span></p>
+<p>or</p>
+<p><span class="math display">\[
+f_{mq}(\boldsymbol{\beta}_m, \boldsymbol{b}_{im}; t) = 
+  \boldsymbol{\beta}_{m0} + \boldsymbol{b}_{im0}
+\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol{\beta}_{m0}\)</span> is the population-level intercept for the <span class="math inline">\(m^{th}\)</span> longitudinal submodel and <span class="math inline">\(\boldsymbol{b}_{im0}\)</span> is the <span class="math inline">\(i^{th}\)</span> individual’s random deviation from the population-level intercept for the <span class="math inline">\(m^{th}\)</span> longitudinal submodel.</p>
+<p>Note that more than one association structure can be specified, however, not all possible combinations are allowed. Moreover, if you are fitting a multivariate joint model (i.e. more than one longitudinal outcome) then you can optionally choose to use a different association structure(s) for linking each longitudinal submodel to the event submodel. To do this you can pass a list of length <span class="math inline">\(M\)</span> to the <code>assoc</code> argument.</p>
+</div>
+<div id="conditional-independence-assumption" class="section level3">
+<h3>Conditional independence assumption</h3>
+<p>A key assumption of the multivariate shared parameter joint model is that the observed longitudinal measurements are independent of one another (both across the <span class="math inline">\(M\)</span> biomarkers and across the <span class="math inline">\(n_{im}\)</span> time points), as well as independent of the event time, conditional on the individual-specific parameters <span class="math inline">\(\boldsymbol{b}_i\)</span>. That is, we assume</p>
+<span class="math display">\[\begin{align}
+  \text{Cov} \Big( y_{im}(t), y_{im'}(t) | \boldsymbol{b}_i \Big) = 0 \\
+  \text{Cov} \Big( y_{im}(t), y_{im}(t') | \boldsymbol{b}_i \Big) = 0 \\
+  \text{Cov} \Big( y_{im}(t), T_i        | \boldsymbol{b}_i \Big) = 0
+\end{align}\]</span>
+<p>for some <span class="math inline">\(m \neq m'\)</span> and <span class="math inline">\(t \neq t'\)</span>.</p>
+<p>Although this may be considered a strong assumption, it is useful in that it allows the full likelihood for joint model to be factorised into the likelihoods for each of the component parts (i.e. the likelihood for the longitudinal submodel, the likelihood for the event submodel, and the likelihood for the distribution of the individual-specific parameters).</p>
+</div>
+<div id="log-posterior-distribution" class="section level3">
+<h3>Log posterior distribution</h3>
+<p>Under the conditional independence assumption, the log posterior for the <span class="math inline">\(i^{th}\)</span> individual can be specified as</p>
+<span class="math display">\[\begin{align}
+\log p(\boldsymbol{\theta}, \boldsymbol{b}_{i} | \boldsymbol{y}_{i}, T_i, d_i)
+  \propto
+    \log \Bigg[
+      \Bigg(
+        \prod_{m=1}^M 
+          \prod_{j=1}^{n_i} 
+            p(y_{ijm} | \boldsymbol{b}_{i}, \boldsymbol{\theta})
+      \Bigg)
+      p(T_i, d_i | \boldsymbol{b}_{i}, \boldsymbol{\theta})
+      p(\boldsymbol{b}_{i} | \boldsymbol{\theta})
+      p(\boldsymbol{\theta})
+    \Bigg]    
+\end{align}\]</span>
+<p>which we can rewrite as</p>
+<span class="math display">\[\begin{align}
+\log p(\boldsymbol{\theta}, \boldsymbol{b}_{i} | \boldsymbol{y}_{i}, T_i, d_i)
+  \propto
+    \Bigg(
+      \sum_{m=1}^M 
+        \sum_{j=1}^{n_i} 
+          \log p(y_{ijm} | \boldsymbol{b}_{i}, \boldsymbol{\theta})
+    \Bigg) +
+    \log p(T_i, d_i | \boldsymbol{b}_{i}, \boldsymbol{\theta}) +
+    \log p(\boldsymbol{b}_{i} | \boldsymbol{\theta}) +
+    \log p(\boldsymbol{\theta})
+\end{align}\]</span>
+<p>where <span class="math inline">\(\sum_{j=1}^{n_{im}} \log p(y_{ijm} | \boldsymbol{b}_{i}, \boldsymbol{\theta})\)</span> is the log likelihood for the <span class="math inline">\(m^{th}\)</span> longitudinal submodel, <span class="math inline">\(\log p(T_i, d_i | \boldsymbol{b}_{i}, \boldsymbol{\theta})\)</span> is the log likelihood for the event submodel, <span class="math inline">\(\log p(\boldsymbol{b}_{i} | \boldsymbol{\theta})\)</span> is the log likelihood for the distribution of the group-specific parameters (i.e. random effects), and <span class="math inline">\(\log p(\boldsymbol{\theta})\)</span> represents the log likelihood for the joint prior distribution across all remaining unknown parameters.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+<p>We can rewrite the log likelihood for the event submodel as</p>
+<span class="math display">\[\begin{align}
+\log p(T_i, d_i | \boldsymbol{b}_{i}, \boldsymbol{\theta}) = 
+  d_i * \log h_i(T_i) - \int_0^{T_i} h_i(s) ds
+\end{align}\]</span>
+<p>and then use Gauss-Kronrod quadrature with <span class="math inline">\(Q\)</span> nodes to approximate <span class="math inline">\(\int_0^{T_i} h_i(s) ds\)</span>, such that</p>
+<span class="math display">\[\begin{align}
+\int_0^{T_i} h_i(s) ds \approx \frac{T_i}{2} \sum_{q=1}^{Q} w_q h_i \bigg( \frac{T_i(1+s_q)}{2} \bigg)
+\label{eq:gkrule}
+\end{align}\]</span>
+<p>where <span class="math inline">\(w_q\)</span> and <span class="math inline">\(s_q\)</span>, respectively, are the standardised weights and locations (“abscissa”) for quadrature node <span class="math inline">\(q\)</span> <span class="math inline">\((q=1,...,Q)\)</span> [17]. The default for the <code>stan_jm</code> modelling function is to use <span class="math inline">\(Q=15\)</span> quadrature nodes, however if the user wishes, they can choose between <span class="math inline">\(Q=15\)</span>, <span class="math inline">\(11\)</span>, or <span class="math inline">\(7\)</span> quadrature nodes (specified via the <code>qnodes</code> argument).</p>
+<p>Therefore, once we have an individual’s event time <span class="math inline">\(T_i\)</span> we can evaluate the design matrices for the event submodel and longitudinal submodels at the <span class="math inline">\(Q+1\)</span> necessary time points (which are the event time <span class="math inline">\(T_i\)</span> and the quadrature points <span class="math inline">\(\frac{T_i(1+s_q)}{2}\)</span> for <span class="math inline">\(q=1,...,Q\)</span>) and then pass these to Stan’s data block. We can then evaluate the log likelihood for the event submodel by simply calculating the hazard <span class="math inline">\(h_i(t)\)</span> at those <span class="math inline">\(Q+1\)</span> time points and summing the quantities appropriately. This calculation will need to be performed each time we iterate through Stan’s model block.</p>
+</div>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<p>In the following examples we demonstrate use of the <code>stan_jm</code> modelling function as well as some of the post-estimation functionality. We use the Mayo Clinic’s widely used primary biliary cirrhosis (PBC) data, which contains 312 individuals with primary biliary cirrhosis who participated in a randomised placebo controlled trial of D-penicillamine conducted at the Mayo Clinic between 1974 and 1984 [18]. However, to ensure the examples run quickly, we use a small random subset of just 40 patients from the full data.</p>
+<p>These example data are contained in two separate data frames. The first data frame contains multiple-row per patient longitudinal biomarker information, as shown in</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(pbcLong)</code></pre></div>
+<pre><code>  id      age sex trt      year     logBili albumin platelet
+1  1 58.76523   f   1 0.0000000  2.67414865    2.60      190
+2  1 58.76523   f   1 0.5256674  3.05870707    2.94      183
+3  2 56.44627   f   1 0.0000000  0.09531018    4.14      221
+4  2 56.44627   f   1 0.4982888 -0.22314355    3.60      188
+5  2 56.44627   f   1 0.9993155  0.00000000    3.55      161
+6  2 56.44627   f   1 2.1026694  0.64185389    3.92      122</code></pre>
+<p>while the second data frame contains single-row per patient survival information, as shown in</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(pbcSurv)</code></pre></div>
+<pre><code>   id      age sex trt futimeYears status death
+1   1 58.76523   f   1    1.095140      2     1
+3   2 56.44627   f   1   14.151951      0     0
+12  3 70.07255   m   1    2.770705      2     1
+16  4 54.74059   f   1    5.270363      2     1
+23  5 38.10541   f   0    4.120465      1     0
+29  6 66.25873   f   0    6.852841      2     1</code></pre>
+<p>The variables included across the two datasets can be defined as follows:</p>
+<ul>
+<li><code>age</code> in years</li>
+<li><code>albumin</code> serum albumin (g/dl)</li>
+<li><code>logBili</code> logarithm of serum bilirubin</li>
+<li><code>death</code> indicator of death at endpoint</li>
+<li><code>futimeYears</code> time (in years) between baseline and the earliest of death, transplantion or censoring</li>
+<li><code>id</code> numeric ID unique to each individual</li>
+<li><code>platelet</code> platelet count</li>
+<li><code>sex</code> gender (m = male, f = female)</li>
+<li><code>status</code> status at endpoint (0 = censored, 1 = transplant, 2 = dead)</li>
+<li><code>trt</code> binary treatment code (0 = placebo, 1 = D-penicillamine)</li>
+<li><code>year</code> time (in years) of the longitudinal measurements, taken as time since baseline)</li>
+</ul>
+<p>A description of the example datasets can be found by accessing the following help documentation:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">help</span>(<span class="st">&quot;datasets&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;rstanarm&quot;</span>)</code></pre></div>
+</div>
+<div id="univariate-joint-models" class="section level3">
+<h3>Univariate joint models</h3>
+<div id="current-value-association-structure" class="section level4">
+<h4>Current value association structure</h4>
+<p>We first fit a simple univariate joint model, with one normally distributed longitudinal marker, an association structure based on the current value of the linear predictor, and B-splines baseline hazard. To fit the model we use the main modelling function in the <strong>rstanjm</strong> package: <code>stan_jm</code>. When calling <code>stan_jm</code> we must, at a minimum, specify a formula object for each of the longitudinal and event submodels (through the arguments <code>formulaLong</code> and <code>formulaEvent</code>), the data frames which contain the variables for each of the the longitudinal and event submodels (through the arguments <code>dataLong</code> and <code>dataEvent</code>), and the name of the variable representing time in the longitudinal submodel (through the argument <code>time_var</code>).</p>
+<p>The formula for the longitudinal submodel is specified using the <strong>lme4</strong> package formula style. That is <code>y ~ x + (random_effects | grouping_factor)</code>. In this example we specify that log serum bilirubin (<code>logBili</code>) follows a subject-specific linear trajectory. To do this we include a fixed intercept and fixed slope (<code>year</code>), as well as a random intecept and random slope for each subject <code>id</code> (<code>(year | id)</code>).</p>
+<p>The formula for the event submodel is specified using the <strong>survival</strong> package formula style. That is, the outcome of the left of the <code>~</code> needs to be of the format <code>Surv(event_time, event_indicator)</code> for single row per individual data, or <code>Surv(start_time, stop_time, event_indicator)</code> for multiple row per individual data. The latter allows for exogenous time-varying covariates to be included in the event submodel. In this example we assume that the log hazard of death is linearly related to gender (<code>sex</code>) and an indicator of treatment with D-penicillamine (<code>trt</code>).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rstanarm)
+mod1 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(<span class="dt">formulaLong =</span> logBili <span class="op">~</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id), 
+                <span class="dt">dataLong =</span> pbcLong,
+                <span class="dt">formulaEvent =</span> survival<span class="op">::</span><span class="kw">Surv</span>(futimeYears, death) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt, 
+                <span class="dt">dataEvent =</span> pbcSurv,
+                <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>,
+                <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</code></pre></div>
+<pre><code>Fitting a univariate joint model.
+
+Please note the warmup may be much slower than later iterations!
+
+SAMPLING FOR MODEL 'jm' NOW (CHAIN 1).
+
+Gradient evaluation took 0.000224 seconds
+1000 transitions using 10 leapfrog steps per transition would take 2.24 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 2000 [  0%]  (Warmup)
+Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Iteration: 2000 / 2000 [100%]  (Sampling)
+
+ Elapsed Time: 21.7097 seconds (Warm-up)
+               15.8377 seconds (Sampling)
+               37.5473 seconds (Total)</code></pre>
+<p>The argument <code>refresh = 2000</code> was specified so that Stan didn’t provide us with excessive progress updates whilst fitting the model. However, if you are fitting a model that will take several minutes or hours to fit, then you may wish to request progress updates quite regularly, for example setting <code>refresh = 20</code> for every 20 iterations (by default the refresh argument is set to 1/10th of the total number of iterations).</p>
+<p>The fitted model is returned as an object of the S3 class <code>stanjm</code>. We have a variety of methods and postestimation functions available for this class, including: <code>print</code>, <code>summary</code>, <code>plot</code>, <code>fixef</code>, <code>ranef</code>, <code>coef</code>, <code>VarCorr</code>, <code>posterior_interval</code>, <code>update</code>, and more. Here, we will examine the most basic output for the fitted joint model by typing <code>print(f1)</code>:</p>
+<pre><code>stan_jm
+ formula (Long1): logBili ~ year + (year | id)
+ family  (Long1): gaussian [identity]
+ formula (Event): survival::Surv(futimeYears, death) ~ sex + trt
+ baseline hazard: bs
+ assoc:           etavalue (Long1)
+------
+
+Longitudinal submodel: logBili
+            Median MAD_SD
+(Intercept) 0.668  0.220 
+year        0.213  0.041 
+sigma       0.355  0.017 
+
+Event submodel:
+                Median MAD_SD exp(Median)
+(Intercept)     -3.188  0.643  0.041     
+sexf            -0.373  0.623  0.689     
+trt             -0.732  0.479  0.481     
+Long1|etavalue   1.342  0.266  3.826     
+b-splines-coef1 -0.845  1.032     NA     
+b-splines-coef2  0.530  0.827     NA     
+b-splines-coef3 -1.796  1.157     NA     
+b-splines-coef4  0.435  1.637     NA     
+b-splines-coef5 -0.082  1.556     NA     
+b-splines-coef6 -0.675  1.719     NA     
+
+Group-level error terms:
+ Groups Name              Std.Dev. Corr
+ id     Long1|(Intercept) 1.2854       
+        Long1|year        0.1911   0.52
+Num. levels: id 40 
+
+Sample avg. posterior predictive distribution 
+of longitudinal outcomes:
+               Median MAD_SD
+Long1|mean_PPD 0.587  0.028 
+
+------
+For info on the priors used see help('prior_summary.stanreg').</code></pre>
+<p>The output tells us that for each one unit increase in an individual’s underlying level of log serum bilirubin, their estimated log hazard of death increases by 36% (equivalent to a 3.9-fold increase in the hazard of death). The mean absolute deviation (MAD) is provided as a more robust estimate of the standard deviation of the posterior distribution. In this case the MAD_SD for the association parameter is 0.247, indicating there is quite large uncertainty around the estimated association between log serum bilirubin and risk of death (recall this is a small dataset containing only 40 patients!).</p>
+<p>If we wanted some slightly more detailed output for each of the model parameters, as well as further details regarding the model estimation (for example computation time, number of longitudinal observations, number of individuals, type of baseline hazard, etc) we can instead use the <code>summary</code> method:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod1, <span class="dt">probs =</span> <span class="kw">c</span>(.<span class="dv">025</span>,.<span class="dv">975</span>))</code></pre></div>
+<pre><code>
+Model Info:
+
+ function:        stan_jm
+ formula (Long1): logBili ~ year + (year | id)
+ family  (Long1): gaussian [identity]
+ formula (Event): survival::Surv(futimeYears, death) ~ sex + trt
+ baseline hazard: bs
+ assoc:           etavalue (Long1)
+ algorithm:       sampling
+ priors:          see help('prior_summary')
+ sample:          1000 (posterior sample size)
+ num obs:         304 (Long1)
+ num subjects:    40
+ num events:      29 (72.5%)
+ groups:          id (40)
+ runtime:         0.7 mins
+
+Estimates:
+                                                mean     sd       2.5%  
+Long1|(Intercept)                                0.659    0.208    0.247
+Long1|year                                       0.217    0.042    0.142
+Long1|sigma                                      0.355    0.016    0.326
+Long1|mean_PPD                                   0.587    0.028    0.533
+Event|(Intercept)                               -3.228    0.623   -4.551
+Event|sexf                                      -0.343    0.611   -1.452
+Event|trt                                       -0.741    0.480   -1.739
+Event|b-splines-coef1                           -0.904    1.027   -3.054
+Event|b-splines-coef2                            0.522    0.847   -1.377
+Event|b-splines-coef3                           -1.821    1.231   -4.325
+Event|b-splines-coef4                            0.434    1.682   -2.860
+Event|b-splines-coef5                           -0.120    1.730   -3.583
+Event|b-splines-coef6                           -0.974    1.852   -5.248
+Assoc|Long1|etavalue                             1.365    0.263    0.918
+Sigma[id:Long1|(Intercept),Long1|(Intercept)]    1.652    0.421    1.038
+Sigma[id:Long1|year,Long1|(Intercept)]           0.129    0.064    0.020
+Sigma[id:Long1|year,Long1|year]                  0.037    0.017    0.015
+log-posterior                                 -326.388    9.699 -346.729
+                                                97.5% 
+Long1|(Intercept)                                1.025
+Long1|year                                       0.306
+Long1|sigma                                      0.387
+Long1|mean_PPD                                   0.641
+Event|(Intercept)                               -2.158
+Event|sexf                                       0.912
+Event|trt                                        0.158
+Event|b-splines-coef1                            0.848
+Event|b-splines-coef2                            2.114
+Event|b-splines-coef3                            0.422
+Event|b-splines-coef4                            3.682
+Event|b-splines-coef5                            3.016
+Event|b-splines-coef6                            1.945
+Assoc|Long1|etavalue                             1.923
+Sigma[id:Long1|(Intercept),Long1|(Intercept)]    2.699
+Sigma[id:Long1|year,Long1|(Intercept)]           0.271
+Sigma[id:Long1|year,Long1|year]                  0.079
+log-posterior                                 -308.802
+
+Diagnostics:
+                                              mcse  Rhat  n_eff
+Long1|(Intercept)                             0.023 0.999   86 
+Long1|year                                    0.003 0.999  217 
+Long1|sigma                                   0.001 0.999  739 
+Long1|mean_PPD                                0.001 0.999  929 
+Event|(Intercept)                             0.020 1.000  968 
+Event|sexf                                    0.019 0.999 1000 
+Event|trt                                     0.015 0.999 1000 
+Event|b-splines-coef1                         0.041 0.999  625 
+Event|b-splines-coef2                         0.034 0.999  627 
+Event|b-splines-coef3                         0.055 0.999  507 
+Event|b-splines-coef4                         0.075 0.999  507 
+Event|b-splines-coef5                         0.070 0.999  602 
+Event|b-splines-coef6                         0.072 1.003  664 
+Assoc|Long1|etavalue                          0.010 1.001  695 
+Sigma[id:Long1|(Intercept),Long1|(Intercept)] 0.031 1.006  184 
+Sigma[id:Long1|year,Long1|(Intercept)]        0.005 0.999  197 
+Sigma[id:Long1|year,Long1|year]               0.001 0.999  225 
+log-posterior                                 0.658 1.004  217 
+
+For each parameter, mcse is Monte Carlo standard error, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence Rhat=1).</code></pre>
+<p>The easiest way to extract the correlation matrix for the random effects (aside from viewing the <code>print</code> output) is to use the <code>VarCorr</code> function (modelled on the <code>VarCorr</code> function from the <strong>lme4</strong> package). If you wish to extract the variances and covariances (instead of the standard deviations and correlations) then you can type the following to return a data frame with all of the relevant information:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as.data.frame</span>(<span class="kw">VarCorr</span>(mod1))</code></pre></div>
+<pre><code>  grp              var1       var2       vcov     sdcor
+1  id Long1|(Intercept)       &lt;NA&gt; 1.65224552 1.2853970
+2  id        Long1|year       &lt;NA&gt; 0.03650573 0.1910647
+3  id Long1|(Intercept) Long1|year 0.12871193 0.5240841</code></pre>
+</div>
+<div id="current-value-and-slope-association-structure" class="section level4">
+<h4>Current value and slope association structure</h4>
+<p>In the previous example we were fitting a shared parameter joint model which assumed that the log hazard of the event (in this case the log hazard of death) at time <em>t</em> was linearly related to the subject-specific expected value of the longitudinal marker (in this case the expected value of log serum bilirubin) also at time <em>t</em>. This is the default association structure, although it could be explicitly specified by setting the <code>assoc = &quot;etavalue&quot;</code> argument.</p>
+<p>However, let’s suppose we believe that the log hazard of death is actually related to both the <em>current value</em> of log serum bilirubin and the current <em>rate of change</em> in log serum bilirubin. To estimate this joint model we need to indicate that we want to also include the subject-specific slope (at time <em>t</em>) from the longitudinal submodel as part of the association structure. We do this by setting the <code>assoc</code> argument equal to a character vector <code>c(&quot;etavalue&quot;, &quot;etaslope&quot;)</code> which indicates our desired association structure:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(<span class="dt">formulaLong =</span> logBili <span class="op">~</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id), 
+                <span class="dt">dataLong =</span> pbcLong,
+                <span class="dt">formulaEvent =</span> survival<span class="op">::</span><span class="kw">Surv</span>(futimeYears, death) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt, 
+                <span class="dt">dataEvent =</span> pbcSurv,
+                <span class="dt">assoc =</span> <span class="kw">c</span>(<span class="st">&quot;etavalue&quot;</span>, <span class="st">&quot;etaslope&quot;</span>),
+                <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>, 
+                <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</code></pre></div>
+<p>In this example the subject-specific slope is actually constant across time <em>t</em> since we have a linear trajectory. Note however that we could still use the <code>&quot;etaslope&quot;</code> association structure even if we had a non-linear subject specific trajectory (for example modelled using cubic splines or polynomials).</p>
+</div>
+</div>
+<div id="multivariate-joint-models" class="section level3">
+<h3>Multivariate joint models</h3>
+<div id="fitting-a-multivariate-joint-model" class="section level4">
+<h4>Fitting a multivariate joint model</h4>
+<p>Suppose instead that we were interested in <em>two</em> repeatedly measured clinical biomarkers, log serum bilirubin and serum albumin, and their association with the risk of death. We may wish to model these two biomarkers, allowing for the correlation between them, and estimating their respective associations with the log hazard of death. We will fit a linear mixed effects submodel (identity link, normal distribution) for each biomarker with a patient-specific intercept and linear slope but no other covariates. In the event submodel we will include gender (<code>sex</code>) and treatment (<code>trt</code>) as baseline covariates. Each biomarker is assumed to be associated with the log hazard of death at time <span class="math inline">\(t\)</span> via it’s expected value at time <span class="math inline">\(t\)</span> (i.e. a <em>current value</em> association structure).</p>
+<p>(Note that due to the very small sample size, the clinical findings from this analysis should not to be overinterpreted!).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod3 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(
+    <span class="dt">formulaLong =</span> <span class="kw">list</span>(
+        logBili <span class="op">~</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id), 
+        albumin <span class="op">~</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id)),
+    <span class="dt">formulaEvent =</span> survival<span class="op">::</span><span class="kw">Surv</span>(futimeYears, death) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt, 
+    <span class="dt">dataLong =</span> pbcLong, <span class="dt">dataEvent =</span> pbcSurv,
+    <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>,
+    <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</code></pre></div>
+<pre><code>Fitting a multivariate joint model.
+
+Please note the warmup may be much slower than later iterations!
+
+SAMPLING FOR MODEL 'jm' NOW (CHAIN 1).
+
+Gradient evaluation took 0.000317 seconds
+1000 transitions using 10 leapfrog steps per transition would take 3.17 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 2000 [  0%]  (Warmup)
+Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Iteration: 2000 / 2000 [100%]  (Sampling)
+
+ Elapsed Time: 35.7968 seconds (Warm-up)
+               30.7432 seconds (Sampling)
+               66.5399 seconds (Total)</code></pre>
+<p>We can now examine the output from the fitted model, for example<br />
+</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(mod3)</code></pre></div>
+<pre><code>stan_jm
+ formula (Long1): logBili ~ year + (year | id)
+ family  (Long1): gaussian [identity]
+ formula (Long2): albumin ~ year + (year | id)
+ family  (Long2): gaussian [identity]
+ formula (Event): survival::Surv(futimeYears, death) ~ sex + trt
+ baseline hazard: bs
+ assoc:           etavalue (Long1), etavalue (Long2)
+------
+
+Longitudinal submodel 1: logBili
+            Median MAD_SD
+(Intercept) 0.647  0.206 
+year        0.224  0.040 
+sigma       0.354  0.017 
+
+Longitudinal submodel 2: albumin
+            Median MAD_SD
+(Intercept)  3.529  0.085
+year        -0.156  0.025
+sigma        0.290  0.014
+
+Event submodel:
+                Median  MAD_SD  exp(Median)
+(Intercept)       6.853   3.025 946.795    
+sexf             -0.135   0.669   0.874    
+trt              -0.486   0.480   0.615    
+Long1|etavalue    0.806   0.296   2.239    
+Long2|etavalue   -3.097   0.926   0.045    
+b-splines-coef1  -0.887   1.120      NA    
+b-splines-coef2   0.618   0.919      NA    
+b-splines-coef3  -2.550   1.313      NA    
+b-splines-coef4  -0.509   1.910      NA    
+b-splines-coef5  -1.001   1.994      NA    
+b-splines-coef6  -2.509   1.887      NA    
+
+Group-level error terms:
+ Groups Name              Std.Dev. Corr             
+ id     Long1|(Intercept) 1.2457                    
+        Long1|year        0.1930    0.50            
+        Long2|(Intercept) 0.5037   -0.64 -0.51      
+        Long2|year        0.1005   -0.58 -0.82  0.46
+Num. levels: id 40 
+
+Sample avg. posterior predictive distribution 
+of longitudinal outcomes:
+               Median MAD_SD
+Long1|mean_PPD 0.587  0.029 
+Long2|mean_PPD 3.345  0.022 
+
+------
+For info on the priors used see help('prior_summary.stanreg').</code></pre>
+<p>or we can examine the summary output for the association parameters alone:<br />
+</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod3, <span class="dt">pars =</span> <span class="st">&quot;assoc&quot;</span>)</code></pre></div>
+<pre><code>
+Model Info:
+
+ function:        stan_jm
+ formula (Long1): logBili ~ year + (year | id)
+ family  (Long1): gaussian [identity]
+ formula (Long2): albumin ~ year + (year | id)
+ family  (Long2): gaussian [identity]
+ formula (Event): survival::Surv(futimeYears, death) ~ sex + trt
+ baseline hazard: bs
+ assoc:           etavalue (Long1), etavalue (Long2)
+ algorithm:       sampling
+ priors:          see help('prior_summary')
+ sample:          1000 (posterior sample size)
+ num obs:         304 (Long1), 304 (Long2)
+ num subjects:    40
+ num events:      29 (72.5%)
+ groups:          id (40)
+ runtime:         1.1 mins
+
+Estimates:
+                       mean   sd     2.5%   25%    50%    75%    97.5%
+Assoc|Long1|etavalue  0.805  0.293  0.260  0.607  0.806  1.006  1.343 
+Assoc|Long2|etavalue -3.131  0.922 -5.117 -3.733 -3.097 -2.496 -1.448 
+
+Diagnostics:
+                     mcse  Rhat  n_eff
+Assoc|Long1|etavalue 0.010 1.001 807  
+Assoc|Long2|etavalue 0.035 1.004 705  
+
+For each parameter, mcse is Monte Carlo standard error, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence Rhat=1).</code></pre>
+</div>
+<div id="obtaining-posterior-predictions" class="section level4">
+<h4>Obtaining posterior predictions</h4>
+<p>We can also access the range of post-estimation functions (described in the <code>stan_jm</code> and related help documentation; see for example <code>help(posterior_traj)</code> or <code>help(posterior_survfit)</code>). As an example, let’s plot the predicted trajectories for each biomarker and the predicted survival function under the fitted multivariate joint model, for three selected individuals in the dataset using <code>stan_jm</code> post-estimation functions:<br />
+</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>)
+p2 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">2</span>, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>)
+p3 &lt;-<span class="st"> </span><span class="kw">posterior_survfit</span>(mod3, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>, <span class="dt">draws =</span> <span class="dv">200</span>)
+pp1 &lt;-<span class="st"> </span><span class="kw">plot</span>(p1, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)
+pp2 &lt;-<span class="st"> </span><span class="kw">plot</span>(p2, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot_stack_jm</span>(<span class="dt">yplot =</span> <span class="kw">list</span>(pp1, pp2), <span class="dt">survplot =</span> <span class="kw">plot</span>(p3))</code></pre></div>
+<p><img src="data:image/png;base64,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" width="60%" style="display: block; margin: auto;" /></p>
+<p>Here we can see the strong relationship between the underlying values of the biomarkers and mortality. Patient <code>8</code> who, relative to patients <code>6</code> and <code>7</code>, has a higher underlying value for log serum bilirubin and a lower underlying value for serum albumin at the end of their follow up has a far worse predicted probability of survival.</p>
+</div>
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ol style="list-style-type: decimal">
+<li>Henderson R, Diggle P, Dobson A. Joint modelling of longitudinal measurements and event time data. <em>Biostatistics</em> 2000;<strong>1</strong>(4):465-80.</li>
+<li>Wulfsohn MS, Tsiatis AA. A joint model for survival and longitudinal data measured with error. <em>Biometrics</em> 1997;<strong>53</strong>(1):330-9.</li>
+<li>Tsiatis AA, Davidian M. Joint modeling of longitudinal and time-to-event data: An overview. <em>Stat Sinica</em> 2004;<strong>14</strong>(3):809-34.</li>
+<li>Gould AL, Boye ME, Crowther MJ, Ibrahim JG, Quartey G, Micallef S, et al. Joint modeling of survival and longitudinal non-survival data: current methods and issues. Report of the DIA Bayesian joint modeling working group. <em>Stat Med</em>. 2015;<strong>34</strong>(14):2181-95.</li>
+<li>Rizopoulos D. <em>Joint Models for Longitudinal and Time-to-Event Data: With Applications in R</em> CRC Press; 2012.</li>
+<li>Liu G, Gould AL. Comparison of alternative strategies for analysis of longitudinal trials with dropouts. <em>J Biopharm Stat</em> 2002;<strong>12</strong>(2):207-26.</li>
+<li>Prentice RL. Covariate Measurement Errors and Parameter-Estimation in a Failure Time Regression-Model. <em>Biometrika</em> 1982;<strong>69</strong>(2):331-42.</li>
+<li>Baraldi AN, Enders CK. An introduction to modern missing data analyses. <em>J Sch Psychol</em> 2010;<strong>48</strong>(1):5-37.</li>
+<li>Philipson PM, Ho WK, Henderson R. Comparative review of methods for handling drop-out in longitudinal studies. <em>Stat Med</em> 2008;<strong>27</strong>(30):6276-98.</li>
+<li>Pantazis N, Touloumi G. Bivariate modelling of longitudinal measurements of two human immunodeficiency type 1 disease progression markers in the presence of informative drop-outs. <em>Applied Statistics</em> 2005;<strong>54</strong>:405-23.</li>
+<li>Taylor JM, Park Y, Ankerst DP, et al. Real-time individual predictions of prostate cancer recurrence using joint models. <em>Biometrics</em> 2013;<strong>69</strong>(1):206-13.</li>
+<li>Stan Development Team. <em>rstanarm: Bayesian applied regression modeling via Stan.</em> R package version 2.14.1. <a href="http://mc-stan.org/" class="uri">http://mc-stan.org/</a>. 2016.</li>
+<li>R Core Team. <em>R: A language and environment for statistical computing.</em> Vienna, Austria: R Foundation for Statistical Computing; 2015.</li>
+<li>Crowther MJ, Lambert PC, Abrams KR. Adjusting for measurement error in baseline prognostic biomarkers included in a time-to-event analysis: a joint modelling approach. <em>BMC Med Res Methodol</em> 2013;<strong>13</strong>.</li>
+<li>Hickey GL, Philipson P, Jorgensen A, Kolamunnage-Dona R. Joint modelling of time-to-event and multivariate longitudinal outcomes: recent developments and issues. <em>BMC Med Res Methodol</em> 2016;<strong>16</strong>(1):117.</li>
+<li>Rizopoulos D, Ghosh P. A Bayesian semiparametric multivariate joint model for multiple longitudinal outcomes and a time-to-event. <em>Stat Med</em>. 2011;<strong>30</strong>(12):1366-80.</li>
+<li>Laurie DP. Calculation of Gauss-Kronrod quadrature rules. <em>Math Comput</em> 1997;<strong>66</strong>(219):1133-45.</li>
+<li>Therneau T, Grambsch P. <em>Modeling Survival Data: Extending the Cox Model</em> Springer-Verlag, New York; 2000. ISBN: 0-387-98784-3</li>
+</ol>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>By “true” value of the biomarker, we mean the value of the biomarker which is not subject to measurement error or discrete time observation. Of course, for the expected value from the longitudinal submodel to be considered the so-called “true” underlying biomarker value, we would need to have specified the longitudinal submodel appropriately!<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>We refer the reader to the priors <a href="priors.html">vignette</a> for a discussion of the possible prior distributions.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

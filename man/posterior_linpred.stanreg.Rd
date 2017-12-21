@@ -38,6 +38,15 @@ should be used sparingly. Inference and model checking should generally be
 carried out using the posterior predictive distribution (i.e., using 
 \code{\link{posterior_predict}}).
 }
+\note{
+For models estimated with \code{\link{stan_clogit}}, the number of 
+  successes per stratum is ostensibly fixed by the research design. Thus,
+  when calling \code{posterior_linpred} with new data and \code{transform =
+  TRUE}, the \code{data.frame} passed to the \code{newdata} argument must
+  contain an outcome variable and a stratifying factor, both with the same
+  name as in the original \code{data.frame}. Then, the probabilities will
+  condition on this outcome in the new data.
+}
 \examples{
 if (!exists("example_model")) example(example_model)
 print(family(example_model))

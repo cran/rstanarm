@@ -5,6 +5,8 @@
 \alias{bball2006}
 \alias{kidiq}
 \alias{mortality}
+\alias{pbcLong}
+\alias{pbcSurv}
 \alias{radon}
 \alias{roaches}
 \alias{rstanarm-datasets}
@@ -65,6 +67,34 @@ Source: Spiegelhalter et al. (1996).
 \item \code{K} Number of surgeries
 }
 }
+\item{\code{pbcLong,pbcSurv}}{
+Longitudinal biomarker and time-to-event survival data for 40 patients 
+with primary biliary cirrhosis who participated in a randomised 
+placebo controlled trial of D-penicillamine conducted at the Mayo
+Clinic between 1974 and 1984.
+
+Source: Therneau and Grambsch (2000)
+
+304 obs. of 8 variables (\code{pbcLong}) and 40 obs. of 7 variables (\code{pbcSurv})
+\itemize{
+\item \code{age} {in years}
+\item \code{albumin} {serum albumin (g/dl)}
+\item \code{logBili} {logarithm of serum bilirubin}
+\item \code{death} {indicator of death at endpoint} 
+\item \code{futimeYears} {time (in years) between baseline and  
+    the earliest of death, transplantion or censoring}
+\item \code{id} {numeric ID unique to each individual}
+\item \code{platelet} {platelet count}
+\item \code{sex} {gender (m = male, f = female)}
+\item \code{status} {status at endpoint (0 = censored, 
+    1 = transplant, 2 = dead)}
+\item \code{trt} {binary treatment code (0 = placebo, 1 = 
+    D-penicillamine)}
+\item \code{year} {time (in years) of the longitudinal measurements,
+    taken as time since baseline)}
+}
+}
+
 \item{\code{radon}}{
 Data on radon levels in houses in the state of Minnesota. 
 
@@ -163,5 +193,8 @@ Examples. MRC Biostatistics Unit, Institute of Public health, Cambridge, UK.
 
 Tarone, R. E. (1982) The use of historical control information in testing for
 a trend in proportions. \emph{Biometrics} \strong{38}(1):215--220.
+
+Therneau, T. and Grambsch, P. (2000) \emph{Modeling Survival Data: Extending 
+the Cox Model}. Springer-Verlag, New York, US.
 }
 

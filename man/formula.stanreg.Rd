@@ -4,7 +4,7 @@
 \alias{formula.stanreg}
 \title{formula method for stanreg objects}
 \usage{
-\method{formula}{stanreg}(x, ...)
+\method{formula}{stanreg}(x, ..., m = NULL)
 }
 \arguments{
 \item{x}{A stanreg object.}

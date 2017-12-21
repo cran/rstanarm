@@ -2,11 +2,15 @@
 % Please edit documentation in R/posterior_predict.R
 \name{posterior_predict.stanreg}
 \alias{posterior_predict}
+\alias{posterior_predict.stanmvreg}
 \alias{posterior_predict.stanreg}
 \title{Draw from posterior predictive distribution}
 \usage{
 \method{posterior_predict}{stanreg}(object, newdata = NULL, draws = NULL,
   re.form = NULL, fun = NULL, seed = NULL, offset = NULL, ...)
+
+\method{posterior_predict}{stanmvreg}(object, m = 1, newdata = NULL,
+  draws = NULL, re.form = NULL, fun = NULL, seed = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 
@@ -46,7 +50,10 @@ object, a string naming a function, etc.}
 specified and an \code{offset} argument was specified when fitting the
 model.}
 
-\item{...}{Currently ignored.}
+\item{...}{For \code{stanmvreg} objects, argument \code{m} can be specified
+indicating the submodel for which you wish to obtain predictions.}
+
+\item{m}{Integer specifying the number or name of the submodel}
 }
 \value{
 A \code{draws} by \code{nrow(newdata)} matrix of simulations from the
@@ -81,6 +88,13 @@ For binomial models with a number of trials greater than one (i.e., not
   probably with \code{successes} set to \code{0} and \code{trials} specifying
   the number of trials. See the Examples section below and the
   \emph{How to Use the rstanarm Package} for examples.
+
+For models estimated with \code{\link{stan_clogit}}, the number of 
+  successes per stratum is ostensibly fixed by the research design. Thus, when
+  doing posterior prediction with new data, the \code{data.frame} passed to
+  the \code{newdata} argument must contain an outcome variable and a stratifying
+  factor, both with the same name as in the original \code{data.frame}. Then, the 
+  posterior predictions will condition on this outcome in the new data.
 }
 \examples{
 if (!exists("example_model")) example(example_model)

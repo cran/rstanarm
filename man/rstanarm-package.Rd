@@ -146,6 +146,13 @@ overview:
   estimation, full Bayesian estimation is performed by default, with
   customizable prior distributions for all parameters.
  }
+ \item{\code{\link{stan_clogit}}}{
+   Similar to \code{\link[survival]{clogit}} in that it models an binary outcome
+   where the number of successes and failures is fixed within each stratum by
+   the research design. There are some minor syntactical differences relative
+   to \code{\link[survival]{clogit}} that allow \code{stan_clogit} to accept
+   group-specific terms as in \code{\link{stan_glmer}}.
+ }
 }
 }
 
@@ -169,12 +176,12 @@ Gelman, A. and Hill, J. (2007). \emph{Data Analysis Using
   Regression and Multilevel/Hierarchical Models.} Cambridge University Press,
   Cambridge, UK. \url{http://stat.columbia.edu/~gelman/arm/}
 
-Stan Development Team. (2016). \emph{Stan Modeling Language Users Guide and
+Stan Development Team. (2017). \emph{Stan Modeling Language Users Guide and
 Reference Manual.} \url{http://mc-stan.org/documentation/}
 
-Vehtari, A., Gelman, A., and Gabry, J. (2016a). Practical
+Vehtari, A., Gelman, A., and Gabry, J. (2017). Practical
   Bayesian model evaluation using leave-one-out cross-validation and WAIC.
-  \emph{Statistics and Computing}. Advance online publication.
+  \emph{Statistics and Computing}. 27(5), 1413--1432.
   doi:10.1007/s11222-016-9696-4. arXiv preprint:
   \url{http://arxiv.org/abs/1507.04544/}
 }
@@ -189,7 +196,7 @@ Vehtari, A., Gelman, A., and Gabry, J. (2016a). Practical
   package used by \pkg{rstanarm} for model fitting.
   \item \url{https://github.com/stan-dev/rstanarm/issues/} to submit a bug
   report or feature request.
-  \item \url{https://groups.google.com/forum/#!forum/stan-users/} to ask a
+  \item \url{http://discourse.mc-stan.org} to ask a
   question about \pkg{rstanarm} on the Stan-users forum.
 }
 }

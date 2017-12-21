@@ -10,6 +10,7 @@
 \alias{hs_plus}
 \alias{laplace}
 \alias{lasso}
+\alias{lkj}
 \alias{normal}
 \alias{priors}
 \alias{product_normal}
@@ -22,9 +23,11 @@ student_t(df = 1, location = 0, scale = NULL, autoscale = TRUE)
 
 cauchy(location = 0, scale = NULL, autoscale = TRUE)
 
-hs(df = 3, global_df = 1, global_scale = 1)
+hs(df = 1, global_df = 1, global_scale = 0.01, slab_df = 4,
+  slab_scale = 2.5)
 
-hs_plus(df1 = 3, df2 = 3, global_df = 1, global_scale = 1)
+hs_plus(df1 = 1, df2 = 1, global_df = 1, global_scale = 0.01,
+  slab_df = 4, slab_scale = 2.5)
 
 laplace(location = 0, scale = NULL, autoscale = TRUE)
 
@@ -35,6 +38,8 @@ product_normal(df = 2, location = 0, scale = 1)
 exponential(rate = 1, autoscale = TRUE)
 
 decov(regularization = 1, concentration = 1, shape = 1, scale = 1)
+
+lkj(regularization = 1, scale = 10, df = 1, autoscale = TRUE)
 
 dirichlet(concentration = 1)
 
@@ -74,17 +79,17 @@ freedom parameter(s) default to \eqn{3}. For the \code{product_normal}
 prior, the degrees of freedom parameter must be an integer (vector) that is
 at least \eqn{2} (the default).}
 
-\item{global_df, global_scale}{Optional arguments for the hierarchical
-shrinkage priors. See the \emph{Hierarchical shrinkage family} section
-below.}
+\item{global_df, global_scale, slab_df, slab_scale}{Optional arguments for the
+hierarchical shrinkage priors. See the \emph{Hierarchical shrinkage family}
+section below.}
 
 \item{rate}{Prior rate for the exponential distribution. Defaults to
 \code{1}. For the exponential distribution, the rate parameter is the
 \emph{reciprocal} of the mean.}
 
 \item{regularization}{Exponent for an LKJ prior on the correlation matrix in
-the \code{decov} prior. The default is \eqn{1}, implying a joint uniform
-prior.}
+the \code{decov} or \code{lkj} prior. The default is \eqn{1}, implying a 
+joint uniform prior.}
 
 \item{concentration}{Concentration parameter for a symmetric Dirichlet 
 distribution. The default is \eqn{1}, implying a joint uniform prior.}
@@ -110,18 +115,20 @@ A named list to be used internally by the \pkg{rstanarm} model
   fitting functions.
 }
 \description{
-The functions described on this page are used to specify the prior-related
+The functions described on this page are used to specify the prior-related 
 arguments of the various modeling functions in the \pkg{rstanarm} package (to
 view the priors used for an existing model see \code{\link{prior_summary}}). 
-The default priors used in the various \pkg{rstanarm} modeling functions are
-intended to be \emph{weakly informative} in that they provide moderate
-regularlization and help stabilize computation. For many applications the
-defaults will perform well, but prudent use of more informative priors is
-encouraged. Uniform prior distributions are possible (e.g. by setting
-\code{\link{stan_glm}}'s \code{prior} argument to \code{NULL}) but, unless
-the data is very strong, they are not recommended and are \emph{not}
-non-informative, giving the same probability mass to implausible values as
-plausible ones.
+More information on priors is also available in the \emph{Prior 
+Distributions} vignette as well as the vignettes for the various modeling 
+functions. The default priors used in the various \pkg{rstanarm} modeling
+functions are intended to be \emph{weakly informative} in that they provide
+moderate regularlization and help stabilize computation. For many
+applications the defaults will perform well, but prudent use of more
+informative priors is encouraged. Uniform prior distributions are possible
+(e.g. by setting \code{\link{stan_glm}}'s \code{prior} argument to
+\code{NULL}) but, unless the data is very strong, they are not recommended
+and are \emph{not} non-informative, giving the same probability mass to
+implausible values as plausible ones.
 }
 \details{
 The details depend on the family of the prior being used:
@@ -155,8 +162,8 @@ The details depend on the family of the prior being used:
 \subsection{Hierarchical shrinkage family}{
   Family members:
   \itemize{
-  \item \code{hs(df, global_df, global_scale)}
-  \item \code{hs_plus(df1, df2, global_df, global_scale)}
+  \item \code{hs(df, global_df, global_scale, slab_df, slab_scale)}
+  \item \code{hs_plus(df1, df2, global_df, global_scale, slab_df, slab_scale)}
   }
   
   The hierarchical shrinkage priors are normal with a mean of zero and a 
@@ -165,21 +172,15 @@ The details depend on the family of the prior being used:
   distributed half Cauchy with a median of zero and a scale parameter that is
   also half Cauchy. This is called the "horseshoe prior". The hierarchical 
   shrinkage (\code{hs}) prior in the \pkg{rstanarm} package instead utilizes 
-  a half Student t distribution for the standard deviation (with 3 degrees of
-  freedom by default), as described by Piironen and Vehtari (2015). It is
-  possible to change the \code{df} argument, the prior degrees of freedom, to
-  obtain less or more shrinkage. Traditionally the standard deviation
-  parameter is then scaled by the square root of a \emph{global} half Cauchy 
-  parameter, although \pkg{rstanarm} allows setting \code{global_df} and 
-  \code{global_scale} arguments, in which case this global parameter is 
-  distributed half Student t with degrees of freedom \code{global_df} and 
-  scale \code{global_scale}.
+  a regularized horseshoe prior, as described by Piironen and Vehtari (2017),
+  which recommends setting the \code{global_scale} argument equal to the ratio
+  of the expected number of non-zero coefficients to the expected number of
+  zero coefficients, divided by the square root of the number of observations.
   
-  The hierarhical shrinkpage plus (\code{hs_plus}) prior is a normal with a 
-  mean of zero and a standard deviation that is distributed as the product of
-  two independent half Student t parameters (both with \eqn{3} degrees of
-  freedom (\code{df1}, \code{df2}) by default) that are each scaled in a
-  similar way to the \code{hs} prior.
+  The hierarhical shrinkpage plus (\code{hs_plus}) prior is similar except 
+  that the standard deviation that is distributed as the product of two 
+  independent half Cauchy parameters that are each scaled in a similar way
+  to the \code{hs} prior.
   
   The hierarchical shrinkage priors have very tall modes and very fat tails.
   Consequently, they tend to produce posterior distributions that are very
@@ -292,6 +293,7 @@ The details depend on the family of the prior being used:
   Family members:
   \itemize{
   \item \code{decov(regularization, concentration, shape, scale)}
+  \item \code{lkj(regularization, scale, df)}
   }
   (Also see vignette for \code{stan_glmer})
   
@@ -346,6 +348,27 @@ The details depend on the family of the prior being used:
   \code{concentration} parameters, but does have \code{shape} and 
   \code{scale} parameters for the prior standard deviation of that 
   variable.
+  
+  Note that for \code{\link{stan_mvmer}} and \code{\link{stan_jm}} models an
+  additional prior distribution is provided through the \code{lkj} function.
+  This prior is in fact currently used as the default for those modelling
+  functions (although \code{decov} is still available as an option if the user
+  wishes to specify it through the \code{prior_covariance} argument). The
+  \code{lkj} prior uses the same decomposition of the covariance matrices
+  into correlation matrices and variances, however, the variances are not
+  further decomposed into a simplex vector and the trace; instead the 
+  standard deviations (square root of the variances) for each of the group
+  specific parameters are given a half Student t distribution with the 
+  scale and df parameters specified through the \code{scale} and \code{df}
+  arguments to the \code{lkj} function. The scale parameter default is 10
+  which is then autoscaled, whilst the df parameter default is 1 
+  (therefore equivalent to a half Cauchy prior distribution for the 
+  standard deviation of each group specific parameter). This prior generally
+  leads to similar results as the \code{decov} prior, but it is also likely
+  to be **less** diffuse compared with the \code{decov} prior; therefore it 
+  sometimes seems to lead to faster estimation times, hence why it has
+  been chosen as the default prior for \code{\link{stan_mvmer}} and 
+  \code{\link{stan_jm}} where estimation times can be long.
 }
 \subsection{R2 family}{
   Family members:
@@ -448,10 +471,10 @@ Gelman, A., Jakulin, A., Pittau, M. G., and Su, Y. (2008). A weakly
 informative default prior distribution for logistic and other regression
 models. \emph{Annals of Applied Statistics}. 2(4), 1360--1383.
 
-Piironen, J., and Vehtari, A. (2015). Projection predictive variable
-selection using Stan+R. \url{http://arxiv.org/abs/1508.02502/}
+Piironen, J., and Vehtari, A. (2017). Sparsity information and regularization
+in the horseshoe and other shrinkage priors. \url{https://arxiv.org/abs/1707.01694}
 
-Stan Development Team. (2016). \emph{Stan Modeling Language Users Guide and
+Stan Development Team. (2017). \emph{Stan Modeling Language Users Guide and
 Reference Manual.} \url{http://mc-stan.org/documentation/}
 }
 \seealso{

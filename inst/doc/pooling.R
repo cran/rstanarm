@@ -1,5 +1,5 @@
 params <-
-structure(list(EVAL = TRUE), .Names = "EVAL")
+list(EVAL = TRUE)
 
 ## ---- knitr-settings, include=FALSE--------------------------------------
 stopifnot(require(knitr))
@@ -105,7 +105,8 @@ batting_avg(nopool)
 
 ## ---- partial-pooling, results="hide"------------------------------------
 fit_partialpool <- 
-  stan_glmer(cbind(Hits, AB - Hits) ~ (1 | Player), data = bball, family = binomial("logit"),
+  stan_glmer(cbind(Hits, AB - Hits) ~ (1 | Player), data = bball, 
+             family = binomial("logit"),
              prior_intercept = wi_prior, seed = SEED)
 
 ## ---- partial-pooling-shift-draws----------------------------------------

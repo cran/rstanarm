@@ -2,7 +2,9 @@
 % Please edit documentation in R/print-and-summary.R
 \name{summary.stanreg}
 \alias{as.data.frame.summary.stanreg}
+\alias{print.summary.stanmvreg}
 \alias{print.summary.stanreg}
+\alias{summary.stanmvreg}
 \alias{summary.stanreg}
 \title{Summary method for stanreg objects}
 \usage{
@@ -13,6 +15,12 @@
   ...)
 
 \method{as.data.frame}{summary.stanreg}(x, ...)
+
+\method{summary}{stanmvreg}(object, pars = NULL, regex_pars = NULL,
+  probs = NULL, ..., digits = 3)
+
+\method{print}{summary.stanmvreg}(x, digits = max(1, attr(x, "print.digits")),
+  ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 
@@ -24,8 +32,28 @@ used. Using \code{pars="beta"} will restrict the displayed parameters to
 only the regression coefficients (without the intercept). \code{"alpha"} 
 can also be used as a shortcut for \code{"(Intercept)"}. If the model has 
 varying intercepts and/or slopes they can be selected using \code{pars = 
-"varying"}. If \code{pars} is \code{NULL} all parameters are selected. See 
-Examples.}
+"varying"}.
+
+In addition, for \code{stanmvreg} objects there are some additional shortcuts 
+available. Using \code{pars = "long"} will display the 
+parameter estimates for the longitudinal submodels only (excluding group-specific
+pparameters, but including auxiliary parameters).
+Using \code{pars = "event"} will display the 
+parameter estimates for the event submodel only, including any association
+parameters. 
+Using \code{pars = "assoc"} will display only the 
+association parameters. 
+Using \code{pars = "fixef"} will display all fixed effects, but not
+the random effects or the auxiliary parameters. 
+ \code{pars} and \code{regex_pars} are set to \code{NULL} then all 
+fixed effect regression coefficients are selected, as well as any 
+auxiliary parameters and the log posterior.   
+
+If \code{pars} is \code{NULL} all parameters are selected for a \code{stanreg}
+object, while for a \code{stanmvreg} object all 
+fixed effect regression coefficients are selected as well as any 
+auxiliary parameters and the log posterior. See 
+\strong{Examples}.}
 
 \item{regex_pars}{An optional character vector of \link[=grep]{regular 
 expressions} to use for parameter selection. \code{regex_pars} can be used
@@ -47,13 +75,15 @@ When calling \code{summary}, the value of digits is stored as the
 }
 \value{
 The \code{summary} method returns an object of class 
-  \code{"summary.stanreg"}, which is a matrix of summary statistics and 
+  \code{"summary.stanreg"} (or \code{"summary.stanmvreg"}, inheriting 
+  \code{"summary.stanreg"}), which is a matrix of 
+  summary statistics and 
   diagnostics, with attributes storing information for use by the
-  \code{print} method. The \code{print} method for \code{summary.stanreg}
-  objects is called for its side effect and just returns its input. The 
-  \code{as.data.frame} method for \code{summary.stanreg} objects converts the
-  matrix to a data.frame, preserving row and column names but dropping the 
-  \code{print}-related attributes.
+  \code{print} method. The \code{print} method for \code{summary.stanreg} or
+  \code{summary.stanmvreg} objects is called for its side effect and just returns 
+  its input. The \code{as.data.frame} method for \code{summary.stanreg} 
+  objects converts the matrix to a data.frame, preserving row and column 
+  names but dropping the \code{print}-related attributes.
 }
 \description{
 Summaries of parameter estimates and MCMC convergence diagnostics 

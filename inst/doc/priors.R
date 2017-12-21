@@ -1,5 +1,5 @@
 params <-
-structure(list(EVAL = TRUE), .Names = "EVAL")
+list(EVAL = TRUE)
 
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
@@ -47,7 +47,7 @@ test_no_autoscale <-
     default_prior_test,
     prior = normal(0, 5, autoscale = FALSE),
     prior_intercept = student_t(4, 0, 10, autoscale = FALSE),
-    prior_aux = exponential(1/10, autoscale=FALSE)
+    prior_aux = cauchy(0, 3, autoscale = FALSE)
   )
 
 ## ---- no-autoscale-prior-summary-----------------------------------------

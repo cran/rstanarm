@@ -8,22 +8,22 @@
 \usage{
 stan_glmer(formula, data = NULL, family = gaussian, subset, weights,
   na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
-  ..., prior = normal(), prior_intercept = normal(), prior_aux = cauchy(0,
-  5), prior_covariance = decov(), prior_PD = FALSE,
+  ..., prior = normal(), prior_intercept = normal(),
+  prior_aux = exponential(), prior_covariance = decov(), prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
   QR = FALSE, sparse = FALSE)
 
 stan_lmer(formula, data = NULL, subset, weights,
   na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
-  ..., prior = normal(), prior_intercept = normal(), prior_aux = cauchy(0,
-  5), prior_covariance = decov(), prior_PD = FALSE,
+  ..., prior = normal(), prior_intercept = normal(),
+  prior_aux = exponential(), prior_covariance = decov(), prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
   QR = FALSE)
 
 stan_glmer.nb(formula, data = NULL, subset, weights,
   na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
   link = "log", ..., prior = normal(), prior_intercept = normal(),
-  prior_aux = cauchy(0, 5), prior_covariance = decov(), prior_PD = FALSE,
+  prior_aux = exponential(), prior_covariance = decov(), prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
   QR = FALSE)
 }
@@ -70,10 +70,11 @@ idea.
 family or Laplace family, and if the \code{autoscale} argument to the 
 function used to specify the prior (e.g. \code{\link{normal}}) is left at 
 its default and recommended value of \code{TRUE}, then the default or 
-user-specified prior scale(s) may be adjusted internally based on the scales
-of the predictors. See the \link[=priors]{priors help page} for details on
-the rescaling and the \code{\link{prior_summary}} function for a summary of
-the priors used for a particular model.}
+user-specified prior scale(s) may be adjusted internally based on the
+scales of the predictors. See the \link[=priors]{priors help page} and the
+\emph{Prior Distributions} vignette for details on the rescaling and the
+\code{\link{prior_summary}} function for a summary of the priors used for a
+particular model.}
 
 \item{prior_intercept}{The prior distribution for the intercept. 
 \code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
@@ -83,13 +84,14 @@ these functions. To omit a prior on the intercept ---i.e., to use a flat
 \code{NULL}.
 
 \strong{Note:} If using a dense representation of the design matrix 
----i.e., if the \code{sparse} argument is left at its default value of
-\code{FALSE}--- then the prior distribution for the intercept is set so it
-applies to the value when all predictors are centered. If you prefer to
-specify a prior on the intercept without the predictors being auto-centered,
-then you have to omit the intercept from the \code{\link[stats]{formula}}
-and include a column of ones as a predictor, in which case some element
-of \code{prior} specifies the prior on it, rather than \code{prior_intercept}.}
+---i.e., if the \code{sparse} argument is left at its default value of 
+\code{FALSE}--- then the prior distribution for the intercept is set so it 
+applies to the value \emph{when all predictors are centered}. If you prefer
+to specify a prior on the intercept without the predictors being
+auto-centered, then you have to omit the intercept from the
+\code{\link[stats]{formula}} and include a column of ones as a predictor,
+in which case some element of \code{prior} specifies the prior on it,
+rather than \code{prior_intercept}.}
 
 \item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
 applicable). The "auxiliary" parameter refers to a different parameter 
@@ -147,16 +149,19 @@ easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
 argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
 those are not very interpretable), setting \code{QR=TRUE} is only
 recommended if you do not have an informative prior for the regression
-coefficients.}
+coefficients. 
+
+For more details see the Stan case study 
+\emph{The QR Decomposition For Regression Models} at 
+\url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
-Setting this to \code{TRUE} will likely be twice as slow, even if the
-design matrix has a considerable number of zeros, but it may allow the
-model to be estimated when the computer has too little RAM to
-utilize a dense design matrix. If \code{TRUE}, the the design matrix
-is not centered (since that would destroy the sparsity) and it is
-not possible to specify both \code{QR = TRUE} and \code{sparse = TRUE}.}
+If \code{TRUE}, the the design matrix is not centered (since that would 
+destroy the sparsity) and likewise it is not possible to specify both 
+\code{QR = TRUE} and \code{sparse = TRUE}. Depending on how many zeros
+there are in the design matrix, setting \code{sparse = TRUE} may make
+the code run faster and can consume much less RAM.}
 
 \item{link}{For \code{stan_glmer.nb} only, the link function to use. See 
 \code{\link{neg_binomial_2}}.}

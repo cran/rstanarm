@@ -6,15 +6,18 @@
 \alias{get_z}
 \title{Extract X, Y or Z from a stanreg object}
 \usage{
-get_y(object)
+get_y(object, ...)
 
-get_x(object)
+get_x(object, ...)
 
-get_z(object)
+get_z(object, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
+
+\item{...}{Other arguments passed to methods. For a \code{stanmvreg} object
+this can be an integer \code{m} specifying the submodel.}
 }
 \value{
 For \code{get_x} and \code{get_z}, a matrix. For \code{get_y}, either

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2017-04-29" />
+<meta name="date" content="2017-12-20" />
 
 <title>Estimating ANOVA Models with rstanarm</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating ANOVA Models with rstanarm</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2017-04-29</em></h4>
+<h4 class="date"><em>2017-12-20</em></h4>
 
 
 <div id="TOC">
@@ -115,48 +115,46 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>We will utilize an example from the <strong>HSAUR3</strong> package by Brian S. Everitt and Torsten Hothorn, which is used in their 2014 book <em>A Handbook of Statistical Analyses Using R (3rd Edition)</em> (Chapman &amp; Hall / CRC). This book is frequentist in nature and we will show how to obtain the corresponding Bayesian results.</p>
 <p>The model in section 4.3.1 analyzes an experiment where rats were subjected to different diets in order to see how much weight they gained. The experimental factors were whether their diet had low or high protein and whether the protein was derived from beef or cereal. Before seeing the data, one might expect that a moderate proportion of the variance in weight gain might be attributed to protein (source) in the diet. The frequentist ANOVA estimates can be obtained:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;weightgain&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;HSAUR3&quot;</span>)
-<span class="kw">coef</span>(<span class="kw">aov</span>(weightgain ~<span class="st"> </span>source *<span class="st"> </span>type, <span class="dt">data =</span> weightgain))</code></pre></div>
+<span class="kw">coef</span>(<span class="kw">aov</span>(weightgain <span class="op">~</span><span class="st"> </span>source <span class="op">*</span><span class="st"> </span>type, <span class="dt">data =</span> weightgain))</code></pre></div>
 <pre><code>         (Intercept)         sourceCereal              typeLow 
                100.0                -14.1                -20.8 
 sourceCereal:typeLow 
                 18.8 </code></pre>
 <p>To obtain Bayesian estimates we can prepend <code>stan_</code> to <code>aov</code> and specify the prior location of the <span class="math inline">\(R^2\)</span> as well as optionally the number of cores that the computer is allowed to utilize:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rstanarm)
-post1 &lt;-<span class="st"> </span><span class="kw">stan_aov</span>(weightgain ~<span class="st"> </span>source *<span class="st"> </span>type, <span class="dt">data =</span> weightgain, 
+post1 &lt;-<span class="st"> </span><span class="kw">stan_aov</span>(weightgain <span class="op">~</span><span class="st"> </span>source <span class="op">*</span><span class="st"> </span>type, <span class="dt">data =</span> weightgain, 
                   <span class="dt">prior =</span> <span class="kw">R2</span>(<span class="dt">location =</span> <span class="fl">0.5</span>), <span class="dt">adapt_delta =</span> <span class="fl">0.999</span>,
                   <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)
 post1</code></pre></div>
 <pre><code>stan_aov
- family:  gaussian [identity]
- formula: weightgain ~ source * type
+ family:       gaussian [identity]
+ formula:      weightgain ~ source * type
+ observations: 40
 ------
-
-Estimates:
                      Median MAD_SD
-(Intercept)           98.9    4.5 
-sourceCereal         -13.0    6.4 
-typeLow              -18.8    6.1 
-sourceCereal:typeLow  16.9    8.7 
-sigma                 14.6    1.7 
+(Intercept)           98.9    4.4 
+sourceCereal         -13.0    6.5 
+typeLow              -18.6    6.2 
+sourceCereal:typeLow  17.0    8.8 
+sigma                 14.8    1.8 
 log-fit_ratio          0.0    0.1 
 R2                     0.2    0.1 
 
-Sample avg. posterior predictive 
-distribution of y (X = xbar):
+Sample avg. posterior predictive distribution of y:
          Median MAD_SD
-mean_PPD 87.2    3.2  
+mean_PPD 87.3    3.1  
 
 ANOVA-like table:
                     Median MAD_SD
-Mean Sq source      563.3  429.8 
-Mean Sq type        988.0  595.8 
-Mean Sq source:type 717.8  714.2 
+Mean Sq source      573.6  444.0 
+Mean Sq type        966.8  582.1 
+Mean Sq source:type 722.0  694.2 
 
 ------
 For info on the priors used see help('prior_summary.stanreg').</code></pre>
 <p>Here we have specified <code>adapt_delta = 0.999</code> to decrease the stepsize and largely prevent divergent transitions. See the Troubleshooting section in the main rstanarm <a href="rstanarm.html">vignette</a> for more details about <code>adapt_delta</code>. Also, our prior guess that <span class="math inline">\(R^2 = 0.5\)</span> was overly optimistic. However, the frequentist estimates presumably overfit the data even more.</p>
 <p>Alternatively, we could prepend <code>stan_</code> to <code>lmer</code> and specify the corresponding priors</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post2 &lt;-<span class="st"> </span><span class="kw">stan_lmer</span>(weightgain ~<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span>(<span class="dv">1</span>|source) +<span class="st"> </span>(<span class="dv">1</span>|type) +<span class="st"> </span>(<span class="dv">1</span>|source:type),
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post2 &lt;-<span class="st"> </span><span class="kw">stan_lmer</span>(weightgain <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>source) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>type) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>source<span class="op">:</span>type),
                    <span class="dt">data =</span> weightgain, <span class="dt">prior_intercept =</span> <span class="kw">cauchy</span>(),
                    <span class="dt">prior_covariance =</span> <span class="kw">decov</span>(<span class="dt">shape =</span> <span class="dv">2</span>, <span class="dt">scale =</span> <span class="dv">2</span>),
                    <span class="dt">adapt_delta =</span> <span class="fl">0.999</span>, <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, 

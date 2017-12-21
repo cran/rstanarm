@@ -1,5 +1,5 @@
 params <-
-structure(list(EVAL = TRUE), .Names = "EVAL")
+list(EVAL = TRUE)
 
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
@@ -114,4 +114,19 @@ if (require(gridExtra)) {
 (loo1 <- loo(fit1))
 (loo2 <- loo(fit2))
 compare_models(loo1, loo2)
+
+## ---- results = "hide"---------------------------------------------------
+post <- stan_clogit(case ~ spontaneous + induced + (1 | parity), 
+                    data = infert[order(infert$stratum), ], # order necessary
+                    strata = stratum, QR = TRUE,
+                    chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+
+## ------------------------------------------------------------------------
+post
+
+## ------------------------------------------------------------------------
+PPD <- posterior_predict(post)
+stopifnot(rowSums(PPD) == max(infert$stratum))
+PLP <- posterior_linpred(post, transform = TRUE)
+stopifnot(round(rowSums(PLP)) == max(infert$stratum))
 

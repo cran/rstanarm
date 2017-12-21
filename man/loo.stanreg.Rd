@@ -93,7 +93,7 @@ when the model was fit.
   problems stemming from the posterior's sensitivity to particular
   observations. Warnings about Pareto \eqn{k} estimates indicate observations
   for which the approximation to LOO is problematic (this is described in
-  detail in Vehtari, Gelman, and Gabry (2016) and the
+  detail in Vehtari, Gelman, and Gabry (2017) and the
   \pkg{\link[=loo-package]{loo}} package documentation). The
   \code{k_threshold} argument can be used to set the \eqn{k} value above
   which an observation is flagged. If \code{k_threshold} is not \code{NULL}
@@ -108,7 +108,7 @@ when the model was fit.
   \strong{Note}: in the warning messages issued by \code{loo} about large 
   Pareto \eqn{k} estimates we recommend setting \code{k_threshold} to at
   least \eqn{0.7}. There is a theoretical reason, explained in Vehtari,
-  Gelman, and Gabry (2016), for setting the threshold to the stricter value
+  Gelman, and Gabry (2017), for setting the threshold to the stricter value
   of \eqn{0.5}, but in practice they find that errors in the LOO
   approximation start to increase non-negligibly when \eqn{k > 0.7}. 
   }
@@ -177,9 +177,9 @@ compare_models(kfold1, kfold2)
 
 }
 \references{
-Vehtari, A., Gelman, A., and Gabry, J. (2016a). Practical
+Vehtari, A., Gelman, A., and Gabry, J. (2017). Practical
   Bayesian model evaluation using leave-one-out cross-validation and WAIC.
-  \emph{Statistics and Computing}. Advance online publication.
+  \emph{Statistics and Computing}. 27(5), 1413--1432.
   doi:10.1007/s11222-016-9696-4. arXiv preprint:
   \url{http://arxiv.org/abs/1507.04544/}
 }
