@@ -12,7 +12,7 @@
 
 <meta name="author" content="Sam Brilleman" />
 
-<meta name="date" content="2017-12-20" />
+<meta name="date" content="2018-02-17" />
 
 <title>Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</h1>
 <h4 class="author"><em>Sam Brilleman</em></h4>
-<h4 class="date"><em>2017-12-20</em></h4>
+<h4 class="date"><em>2018-02-17</em></h4>
 
 
 <div id="TOC">
@@ -318,8 +318,8 @@ Please note the warmup may be much slower than later iterations!
 
 SAMPLING FOR MODEL 'jm' NOW (CHAIN 1).
 
-Gradient evaluation took 0.000224 seconds
-1000 transitions using 10 leapfrog steps per transition would take 2.24 seconds.
+Gradient evaluation took 0.000279 seconds
+1000 transitions using 10 leapfrog steps per transition would take 2.79 seconds.
 Adjust your expectations accordingly!
 
 
@@ -327,9 +327,9 @@ Iteration:    1 / 2000 [  0%]  (Warmup)
 Iteration: 1001 / 2000 [ 50%]  (Sampling)
 Iteration: 2000 / 2000 [100%]  (Sampling)
 
- Elapsed Time: 21.7097 seconds (Warm-up)
-               15.8377 seconds (Sampling)
-               37.5473 seconds (Total)</code></pre>
+ Elapsed Time: 21.6129 seconds (Warm-up)
+               15.6251 seconds (Sampling)
+               37.238 seconds (Total)</code></pre>
 <p>The argument <code>refresh = 2000</code> was specified so that Stan didn’t provide us with excessive progress updates whilst fitting the model. However, if you are fitting a model that will take several minutes or hours to fit, then you may wish to request progress updates quite regularly, for example setting <code>refresh = 20</code> for every 20 iterations (by default the refresh argument is set to 1/10th of the total number of iterations).</p>
 <p>The fitted model is returned as an object of the S3 class <code>stanjm</code>. We have a variety of methods and postestimation functions available for this class, including: <code>print</code>, <code>summary</code>, <code>plot</code>, <code>fixef</code>, <code>ranef</code>, <code>coef</code>, <code>VarCorr</code>, <code>posterior_interval</code>, <code>update</code>, and more. Here, we will examine the most basic output for the fitted joint model by typing <code>print(f1)</code>:</p>
 <pre><code>stan_jm
@@ -496,8 +496,8 @@ Please note the warmup may be much slower than later iterations!
 
 SAMPLING FOR MODEL 'jm' NOW (CHAIN 1).
 
-Gradient evaluation took 0.000317 seconds
-1000 transitions using 10 leapfrog steps per transition would take 3.17 seconds.
+Gradient evaluation took 0.000333 seconds
+1000 transitions using 10 leapfrog steps per transition would take 3.33 seconds.
 Adjust your expectations accordingly!
 
 
@@ -505,9 +505,9 @@ Iteration:    1 / 2000 [  0%]  (Warmup)
 Iteration: 1001 / 2000 [ 50%]  (Sampling)
 Iteration: 2000 / 2000 [100%]  (Sampling)
 
- Elapsed Time: 35.7968 seconds (Warm-up)
-               30.7432 seconds (Sampling)
-               66.5399 seconds (Total)</code></pre>
+ Elapsed Time: 36.4717 seconds (Warm-up)
+               31.0187 seconds (Sampling)
+               67.4905 seconds (Total)</code></pre>
 <p>We can now examine the output from the fitted model, for example<br />
 </p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(mod3)</code></pre></div>

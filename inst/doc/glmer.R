@@ -70,6 +70,9 @@ post1
 plot(post1, regex_pars = "^[b]")
 
 ## ------------------------------------------------------------------------
+loo(post1)
+
+## ------------------------------------------------------------------------
 nd <- data.frame(age = 1:20, Tree = factor("6", levels = 1:6))
 PPD <- posterior_predict(post1, newdata = nd)
 PPD_df <- data.frame(age = as.factor(rep(1:20, each = nrow(PPD))),
