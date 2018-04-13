@@ -16,4 +16,3 @@
 terms method for stanmvreg objects
 }
 \keyword{internal}
-

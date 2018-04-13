@@ -2,15 +2,17 @@
 % Please edit documentation in R/loo.R
 \name{print.kfold}
 \alias{print.kfold}
-\title{Print method for kfold}
+\alias{print.compare_rstanarm_loos}
+\title{Various print methods}
 \usage{
 \method{print}{kfold}(x, digits = 1, ...)
+
+\method{print}{compare_rstanarm_loos}(x, ...)
 }
 \arguments{
 \item{x, digits, ...}{See \code{\link{print}}.}
 }
 \description{
-Print method for kfold
+Various print methods
 }
 \keyword{internal}
-

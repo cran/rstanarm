@@ -60,7 +60,7 @@ estimation algorithms. NOTE: not all fitting functions support all four
 algorithms.}
 
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
-\code{\link{adapt_delta}} for details.}
+the \link{adapt_delta} help page for details.}
 
 \item{b}{A numeric vector of OLS coefficients, excluding the intercept}
 
@@ -86,6 +86,7 @@ The output of both \code{stan_biglm} and \code{stan_biglm.fit} is an
   \code{\link{posterior_predict}} cannot be used.
 }
 \description{
+\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
 This is the same model as with \code{\link{stan_lm}} but it utilizes the
 output from \code{\link[biglm]{biglm}} in the \pkg{biglm} package in order to
 proceed when the data is too large to fit in memory.
@@ -120,4 +121,3 @@ post <- stan_biglm.fit(b, R, SSR, N, xbar, ybar, s_y, prior = R2(.75),
                        chains = 1, iter = 500, seed = 12345)
 cbind(lm = b, stan_lm = rstan::get_posterior_mean(post)[13:15,]) # shrunk
 }
-

@@ -15,4 +15,3 @@
 model.frame method for stanreg objects
 }
 \keyword{internal}
-

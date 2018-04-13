@@ -19,4 +19,3 @@ the survival probabilities.}
 Generic print method for \code{survfit.stanjm} objects
 }
 \keyword{internal}
-

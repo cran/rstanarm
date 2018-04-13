@@ -2,7 +2,7 @@
 % Please edit documentation in R/stan_clogit.R
 \name{stan_clogit}
 \alias{stan_clogit}
-\title{Conditional logistic (clogit) models via Stan}
+\title{Conditional logistic (clogit) regression models via Stan}
 \usage{
 stan_clogit(formula, data, subset, na.action = NULL, ..., strata,
   prior = normal(), prior_covariance = decov(), prior_PD = FALSE,
@@ -10,11 +10,11 @@ stan_clogit(formula, data, subset, na.action = NULL, ..., strata,
   adapt_delta = NULL, QR = FALSE, sparse = FALSE)
 }
 \arguments{
-\item{formula, data, subset, na.action}{Same as for \code{\link[lme4]{glmer}}, 
-except that any intercept included in the formula will be dropped. \emph{We
-strongly advise against omitting the \code{data} argument}. Unless 
-\code{data} is specified (and is a data frame) many post-estimation 
-functions (including \code{update}, \code{loo}, \code{kfold}) are not 
+\item{formula, data, subset, na.action}{Same as for \code{\link[lme4]{glmer}},
+except that any global intercept included in the formula will be dropped.
+\emph{We strongly advise against omitting the \code{data} argument}. Unless
+\code{data} is specified (and is a data frame) many post-estimation
+functions (including \code{update}, \code{loo}, \code{kfold}) are not
 guaranteed to work properly.}
 
 \item{...}{Further arguments passed to the function in the \pkg{rstan} 
@@ -79,28 +79,16 @@ estimation algorithms. NOTE: not all fitting functions support all four
 algorithms.}
 
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
-\code{\link{adapt_delta}} for details.}
+the \link{adapt_delta} help page for details.}
 
-\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE} 
-applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* = 
-Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) 
-R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then 
-premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients 
-relative to the original predictors, \eqn{X}. These transformations do not 
-change the likelihood of the data but are recommended for computational 
-reasons when there are multiple predictors. Importantly, while the columns
-of \eqn{X} are almost always correlated, the columns of \eqn{Q^\ast}{Q*}
-are uncorrelated by design, which often makes sampling from the posterior
-easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
-argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
-those are not very interpretable), setting \code{QR=TRUE} is only
-recommended if you do not have an informative prior for the regression
-coefficients. 
-
-For more details see the Stan case study 
-\emph{The QR Decomposition For Regression Models} at 
-\url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.}
+\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE}
+applies a scaled \code{\link{qr}} decomposition to the design matrix. The
+transformation does not change the likelihood of the data but is
+recommended for computational reasons when there are multiple predictors.
+See the \link{QR-argument} documentation page for details on how
+\pkg{rstanarm} does the transformation and important information about how
+to interpret the prior distributions of the model parameters when using
+\code{QR=TRUE}.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
@@ -115,6 +103,7 @@ A \link[=stanreg-objects]{stanreg} object is returned
 for \code{stan_clogit}.
 }
 \description{
+\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
 A model for case-control studies with optional prior distributions for the
 coefficients, intercept, and auxiliary parameters.
 }
@@ -129,30 +118,33 @@ The \code{stan_clogit} function is mostly similar in syntax to
   The \code{data.frame} passed to the \code{data} argument must be sorted by 
   the variable passed to the \code{strata} argument.
   
-  The \code{formula} may have group-specific terms like in 
+  The \code{formula} may have group-specific terms like in
   \code{\link{stan_glmer}} but should not allow the intercept to vary by the
   stratifying variable, since there is no information in the data with which
   to estimate such deviations in the intercept.
 }
 \examples{
+dat <- infert[order(infert$stratum), ] # order by strata
 post <- stan_clogit(case ~ spontaneous + induced + (1 | education), 
                     strata = stratum,
-                    data = infert[order(infert$stratum), ],
+                    data = dat,
                     subset = parity <= 2,
                     QR = TRUE,
                     chains = 2, iter = 500) # for speed only
 
-nd <- infert[infert$parity > 2, c("case", "spontaneous", "induced", 
-                                  "education", "stratum")]
+nd <- dat[dat$parity > 2, c("case", "spontaneous", "induced", "education", "stratum")]
 # next line would fail without case and stratum variables                                 
-pr <- posterior_linpred(post, newdata = nd, transform = TRUE)
-all.equal(rep(sum(nd$case), nrow(pr)), rowSums(pr)) # not a random variable
+pr <- posterior_linpred(post, newdata = nd, transform = TRUE) # transform=TRUE gives probabilities
+
+# not a random variable b/c probabilities add to 1 within strata
+all.equal(rep(sum(nd$case), nrow(pr)), rowSums(pr)) 
             
 }
 \seealso{
 \code{\link{stanreg-methods}} and 
 \code{\link[survival]{clogit}}.
 
-The vignette for Bernoulli and binomial models.
+The vignette for Bernoulli and binomial models, which has more
+  details on using \code{stan_clogit}.
+  \url{http://mc-stan.org/rstanarm/articles/}
 }
-

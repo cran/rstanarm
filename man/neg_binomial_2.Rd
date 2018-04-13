@@ -34,4 +34,3 @@ stan_glm(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine, seed = 123,
 # or, equivalently, call stan_glm.nb() without specifying the family
 
 }
-

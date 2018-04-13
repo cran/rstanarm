@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2018-02-17" />
+<meta name="date" content="2018-04-12" />
 
 <title>Prior Distributions for rstanarm Models</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Prior Distributions for rstanarm Models</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2018-02-17</em></h4>
+<h4 class="date"><em>2018-04-12</em></h4>
 
 
 <div id="TOC">
@@ -129,7 +129,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <tr class="even">
 <td><code>prior_covariance</code></td>
 <td><code>stan_glmer</code>*, <code>stan_gamm4</code>, <code>stan_nlmer</code></td>
-<td>Covariance matrices in multilevel models with varying slopes and intercepts.</td>
+<td>Covariance matrices in multilevel models with varying slopes and intercepts. See the <a href="http://mc-stan.org/rstanarm/articles/glmer.html"><code>stan_glmer</code> vignette</a> for details on this prior.</td>
 </tr>
 </tbody>
 </table>
@@ -326,7 +326,7 @@ See help('prior_summary.stanreg') for more details</code></pre>
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

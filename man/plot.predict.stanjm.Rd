@@ -108,4 +108,3 @@ trajectory beyond the last observation time).
 \code{\link{posterior_traj}}, \code{\link{plot_stack_jm}},
   \code{\link{posterior_survfit}}, \code{\link{plot.survfit.stanjm}}
 }
-

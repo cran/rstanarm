@@ -3,8 +3,8 @@
 \name{stan_aov}
 \alias{stan_aov}
 \alias{stan_lm}
-\alias{stan_lm.fit}
 \alias{stan_lm.wfit}
+\alias{stan_lm.fit}
 \title{Bayesian regularized linear models via Stan}
 \usage{
 stan_aov(formula, data, projections = FALSE, contrasts = NULL, ...,
@@ -63,7 +63,7 @@ estimation algorithms. NOTE: not all fitting functions support all four
 algorithms.}
 
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
-\code{\link{adapt_delta}} for details.}
+the \link{adapt_delta} help page for details.}
 
 \item{na.action, singular.ok, contrasts}{Same as \code{\link[stats]{lm}}, but 
 rarely specified.}
@@ -93,13 +93,14 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
   stanfit object) is returned if \code{stan_lm.fit or stan_lm.wfit} is called directly.
 }
 \description{
-Bayesian inference for linear modeling with regularizing priors on the 
-model parameters that are driven by prior beliefs about \eqn{R^2}, the 
-proportion of variance in the outcome attributable to the predictors. See 
-\code{\link{priors}} for an explanation of this critical point. 
-\code{\link{stan_glm}} with \code{family="gaussian"} also estimates a 
-linear model with normally-distributed errors and allows for various other 
-priors on the coefficients.
+\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+Bayesian inference for linear modeling with regularizing priors on the model
+parameters that are driven by prior beliefs about \eqn{R^2}, the proportion
+of variance in the outcome attributable to the predictors. See
+\code{\link{priors}} for an explanation of this critical point.
+\code{\link{stan_glm}} with \code{family="gaussian"} also estimates a linear
+model with normally-distributed errors and allows for various other priors on
+the coefficients.
 }
 \details{
 The \code{stan_lm} function is similar in syntax to the 
@@ -154,9 +155,9 @@ correlation matrices based on vines and extended onion method.
 \seealso{
 The vignettes for \code{stan_lm} and \code{stan_aov}, which have more
 thorough descriptions and examples.
+\url{http://mc-stan.org/rstanarm/articles/}
 
 Also see \code{\link{stan_glm}}, which --- if \code{family =
 gaussian(link="identity")} --- also estimates a linear model with
 normally-distributed errors but specifies different priors.
 }
-

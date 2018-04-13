@@ -98,28 +98,16 @@ estimation algorithms. NOTE: not all fitting functions support all four
 algorithms.}
 
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
-\code{\link{adapt_delta}} for details.}
+the \link{adapt_delta} help page for details.}
 
-\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE} 
-applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* = 
-Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) 
-R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then 
-premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients 
-relative to the original predictors, \eqn{X}. These transformations do not 
-change the likelihood of the data but are recommended for computational 
-reasons when there are multiple predictors. Importantly, while the columns
-of \eqn{X} are almost always correlated, the columns of \eqn{Q^\ast}{Q*}
-are uncorrelated by design, which often makes sampling from the posterior
-easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
-argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
-those are not very interpretable), setting \code{QR=TRUE} is only
-recommended if you do not have an informative prior for the regression
-coefficients. 
-
-For more details see the Stan case study 
-\emph{The QR Decomposition For Regression Models} at 
-\url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.}
+\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE}
+applies a scaled \code{\link{qr}} decomposition to the design matrix. The
+transformation does not change the likelihood of the data but is
+recommended for computational reasons when there are multiple predictors.
+See the \link{QR-argument} documentation page for details on how
+\pkg{rstanarm} does the transformation and important information about how
+to interpret the prior distributions of the model parameters when using
+\code{QR=TRUE}.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
@@ -134,6 +122,7 @@ A \link[=stanreg-objects]{stanreg} object is returned
 for \code{stan_nlmer}.
 }
 \description{
+\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
 Bayesian inference for NLMMs with group-specific coefficients that have 
 unknown covariance matrices with flexible priors.
 }
@@ -177,6 +166,5 @@ plot(fit, regex_pars = "b\\\\[")
 \code{\link[lme4]{nlmer}}.
 
 The vignette for \code{stan_glmer}, which also discusses 
-  \code{stan_nlmer} models.
+  \code{stan_nlmer} models. \url{http://mc-stan.org/rstanarm/articles/}
 }
-

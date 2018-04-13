@@ -68,4 +68,3 @@ ps +
   predictive distribution for the longitudinal submodel, and 
   \code{\link{pp_check}} for graphical checks of the longitudinal submodel.
 }
-

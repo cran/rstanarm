@@ -4,9 +4,10 @@
 \alias{posterior_traj}
 \title{Estimate the subject-specific or marginal longitudinal trajectory}
 \usage{
-posterior_traj(object, m = 1, newdata = NULL, interpolate = TRUE,
-  extrapolate = FALSE, prob = 0.95, ids, control = list(),
-  return_matrix = FALSE, ...)
+posterior_traj(object, m = 1, newdata = NULL, newdataLong = NULL,
+  newdataEvent = NULL, interpolate = TRUE, extrapolate = FALSE,
+  control = list(), last_time = NULL, prob = 0.95, ids, dynamic = TRUE,
+  scale = 1.5, draws = NULL, seed = NULL, return_matrix = FALSE, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by the 
@@ -15,13 +16,29 @@ posterior_traj(object, m = 1, newdata = NULL, interpolate = TRUE,
 
 \item{m}{Integer specifying the number or name of the submodel}
 
-\item{newdata}{Optionally, a data frame in which to look for variables with
+\item{newdata}{\strong{Deprecated}: please use \code{newdataLong} instead.
+Optionally, a data frame in which to look for variables with
 which to predict. If omitted, the model matrix is used. If \code{newdata}
 is provided and any variables were transformed (e.g. rescaled) in the data
 used to fit the model, then these variables must also be transformed in
 \code{newdata}. This only applies if variables were transformed before
 passing the data to one of the modeling functions and \emph{not} if
 transformations were specified inside the model formula.}
+
+\item{newdataLong, newdataEvent}{Optionally, a data frame (or in the case of 
+\code{newdataLong} this can be a list of data frames) in which to look 
+for variables with which to predict. If omitted, the model matrices are used. 
+If new data is provided, then two options are available. Either one can
+provide observed covariate and outcome data, collected up to some time 
+\emph{t}, and use this data to draw new individual-specific coefficients
+(i.e. individual-level random effects). This is the default behaviour when 
+new data is provided, determined by the argument \code{dynamic = TRUE}, and
+requiring both \code{newdataLong} and \code{newdataEvent} to be specified.
+Alternatively, one can specify \code{dynamic = FALSE}, and then predict 
+using just covariate data, by marginalising over the distribution
+of the group-specific coefficients; in this case, only \code{newdataLong}
+needs to be specified and it only needs to be a single data frame with
+the covariate data for the predictions for the one longitudinal submodel.}
 
 \item{interpolate}{A logical specifying whether to interpolate the estimated 
 longitudinal trajectory in between the observation times. This can be used
@@ -33,18 +50,6 @@ controlled using the \code{control} argument.}
 longitudinal trajectory beyond the time of the last known observation time.
 If \code{TRUE} then the extrapolation can be further controlled using
 the \code{control} argument.}
-
-\item{prob}{A scalar between 0 and 1 specifying the width to use for the 
-uncertainty interval (sometimes called credible interval) for the predicted
-mean response and the prediction interval for the predicted (raw) response. 
-For example \code{prob = 0.95} (the default) means that the 2.5th and 97.5th  
-percentiles will be provided. Only relevant when \code{return_matrix} is 
-\code{FALSE}.}
-
-\item{ids}{An optional vector specifying a subset of subject IDs for whom the 
-predictions should be obtained. The default is to predict for all individuals
-who were used in estimating the model or, if \code{newdata} is specified,
-then all individuals contained in \code{newdata}.}
 
 \item{control}{A named list with parameters controlling the interpolation or
 extrapolation of the estimated longitudinal trajectory when either 
@@ -78,6 +83,64 @@ list can contain one or more of the following named elements: \cr
   represented in units of the time variable \code{time_var} (from fitting the
   model). This cannot be specified if \code{eprop} is specified.} 
 }}
+
+\item{last_time}{A scalar, character string, or \code{NULL}. This argument 
+specifies the last known survival time for each individual when
+conditional predictions are being obtained. If 
+\code{newdataEvent} is provided and conditional survival predictions are being
+obtained, then the \code{last_time} argument can be one of the following:
+(i) a scalar, this will use the same last time for each individual in 
+\code{newdataEvent}; (ii) a character string, naming a column in 
+\code{newdataEvent} in which to look for the last time for each individual;
+(iii) \code{NULL}, in which case the default is to use the time of the latest 
+longitudinal observation in \code{newdataLong}. If \code{newdataEvent} is
+\code{NULL} then the \code{last_time} argument cannot be specified 
+directly; instead it will be set equal to the event or censoring time for
+each individual in the dataset that was used to estimate the model. 
+If standardised survival probabilities are requested (i.e. 
+\code{standardise = TRUE}) then conditional survival probabilities are
+not allowed and therefore the \code{last_time} argument is ignored.}
+
+\item{prob}{A scalar between 0 and 1 specifying the width to use for the 
+uncertainty interval (sometimes called credible interval) for the predicted
+mean response and the prediction interval for the predicted (raw) response. 
+For example \code{prob = 0.95} (the default) means that the 2.5th and 97.5th  
+percentiles will be provided. Only relevant when \code{return_matrix} is 
+\code{FALSE}.}
+
+\item{ids}{An optional vector specifying a subset of subject IDs for whom the 
+predictions should be obtained. The default is to predict for all individuals
+who were used in estimating the model or, if \code{newdata} is specified,
+then all individuals contained in \code{newdata}.}
+
+\item{dynamic}{A logical that is only relevant if new data is provided
+via the \code{newdata} argument. If 
+\code{dynamic = TRUE}, then new group-specific parameters are drawn for 
+the individuals in the new data, conditional on their longitudinal 
+biomarker data contained in \code{newdata}. These group-specific
+parameters are then used to generate individual-specific survival probabilities
+for these individuals. These are often referred to as "dynamic predictions"
+in the joint modelling context, because the predictions can be updated
+each time additional longitudinal biomarker data is collected on the individual.
+On the other hand, if \code{dynamic = FALSE} then the survival probabilities
+will just be marginalised over the distribution of the group-specific
+coefficients; this will mean that the predictions will incorporate all
+uncertainty due to between-individual variation so there will likely be
+very wide credible intervals on the predicted survival probabilities.}
+
+\item{scale}{A scalar, specifying how much to multiply the asymptotic 
+variance-covariance matrix for the random effects by, which is then
+used as the "width" (ie. variance-covariance matrix) of the multivariate
+Student-t proposal distribution in the Metropolis-Hastings algorithm. This
+is only relevant when \code{newdataEvent} is supplied and 
+\code{dynamic = TRUE}, in which case new random effects are simulated
+for the individuals in the new data using the Metropolis-Hastings algorithm.}
+
+\item{draws}{An integer indicating the number of MCMC draws to return. 
+The default is to set the number of draws equal to 200, or equal to the 
+size of the posterior sample if that is less than 200.}
+
+\item{seed}{An optional \code{\link[=set.seed]{seed}} to use.}
 
 \item{return_matrix}{A logical. If \code{TRUE} then a \code{draws} by 
 \code{nrow(newdata)} matrix is returned which contains all the actual
@@ -150,20 +213,45 @@ of individuals, via the \code{ids} argument.
   # then we could specify a named list in the 'control' argument
   pt4 <- posterior_traj(example_jm, control = list(ipoints = 10, epoints = 10, eprop = 0.5))
   
+  # If we have prediction data for a new individual, and we want to
+  # estimate the longitudinal trajectory for that individual conditional
+  # on this new data (perhaps extrapolating forward from our last
+  # longitudinal measurement) then we can do that. It requires drawing
+  # new individual-specific parameters, based on the full likelihood,
+  # so we must supply new data for both the longitudinal and event 
+  # submodels. These are sometimes known as dynamic predictions.
+  ndL <- pbcLong[pbcLong$id == 8, , drop = FALSE]
+  ndE <- pbcSurv[pbcSurv$id == 8, , drop = FALSE]
+  ndL$id <- "new_subject" # new id can't match one used in training data
+  ndE$id <- "new_subject"
+  pt5 <- posterior_traj(example_jm, 
+                        newdataLong = ndL,
+                        newdataEvent = ndE)
+                        
+  # By default it is assumed that the last known survival time for 
+  # the individual is the time of their last biomarker measurement,
+  # but if we know they survived to some later time then we can
+  # condition on that information using the last_time argument
+  pt6 <- posterior_traj(example_jm, 
+                        newdataLong = ndL,
+                        newdataEvent = ndE, 
+                        last_time = "futimeYears")
+  
   # Alternatively we may want to estimate the marginal longitudinal
   # trajectory for a given set of covariates. To do this, we can pass
   # the desired covariate values in a new data frame (however the only
   # covariate in our fitted model was the time variable, year). To make sure  
   # that we marginalise over the random effects, we need to specify an ID value
   # which does not correspond to any of the individuals who were used in the
-  # model estimation. (The marginal prediction is obtained by generating 
-  # subject-specific predictions using a series of random draws from the random 
+  # model estimation and specify the argument dynamic=FALSE.
+  # The marginal prediction is obtained by generating subject-specific 
+  # predictions using a series of random draws from the random 
   # effects distribution, and then integrating (ie, averaging) over these. 
   # Our marginal prediction will therefore capture the between-individual 
-  # variation associated with the random effects.)
+  # variation associated with the random effects.
   nd <- data.frame(id = rep("new1", 11), year = (0:10 / 2))
-  pt5 <- posterior_traj(example_jm, newdata = nd)
-  head(pt5)  # note the greater width of the uncertainty interval compared 
+  pt7 <- posterior_traj(example_jm, newdataLong = nd, dynamic = FALSE)
+  head(pt7)  # note the greater width of the uncertainty interval compared 
              # with the subject-specific predictions in pt1, pt2, etc
   
   # Alternatively, we could have estimated the "marginal" trajectory by 
@@ -183,8 +271,9 @@ of individuals, via the \code{ids} argument.
   # the fixed effect component of the model, we simply specify 're.form = NA'. 
   # (We will use the same covariate values as used in the prediction for 
   # example for pt5).
-  pt6 <- posterior_traj(example_jm, newdata = nd, re.form = NA)
-  head(pt6)  # note the much narrower ci, compared with pt5
+  pt8 <- posterior_traj(example_jm, newdataLong = nd, dynamic = FALSE, 
+                        re.form = NA)
+  head(pt8)  # note the much narrower ci, compared with pt5
 }
 
 }
@@ -192,4 +281,3 @@ of individuals, via the \code{ids} argument.
 \code{\link{plot.predict.stanjm}}, \code{\link{posterior_predict}},
   \code{\link{posterior_survfit}}
 }
-

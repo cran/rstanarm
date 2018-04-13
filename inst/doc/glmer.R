@@ -28,17 +28,23 @@ SEED <- 12345
 
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------
 loo.cores <- if (exists("CORES")) CORES else 1L
-options(loo.cores = loo.cores)
+options(mc.cores = loo.cores)
 
 ## ---- results = "hide"---------------------------------------------------
 library(rstanarm)
 data(roaches)
 roaches$roach1 <- roaches$roach1 / 100
 roaches$log_exposure2 <- log(roaches$exposure2)
-post <- stan_gamm4(y ~ s(roach1) + treatment + log_exposure2,
-                   random = ~(1 | senior),
-                   data = roaches, family = neg_binomial_2, QR = TRUE,
-                   chains = CHAINS, cores = CORES, seed = SEED)
+post <- stan_gamm4(
+  y ~ s(roach1) + treatment + log_exposure2,
+  random = ~(1 | senior),
+  data = roaches, 
+  family = neg_binomial_2, 
+  QR = TRUE,
+  chains = CHAINS, 
+  cores = CORES, 
+  seed = SEED
+)
 
 ## ------------------------------------------------------------------------
 plot_nonlinear(post)
@@ -68,9 +74,6 @@ post1
 
 ## ------------------------------------------------------------------------
 plot(post1, regex_pars = "^[b]")
-
-## ------------------------------------------------------------------------
-loo(post1)
 
 ## ------------------------------------------------------------------------
 nd <- data.frame(age = 1:20, Tree = factor("6", levels = 1:6))

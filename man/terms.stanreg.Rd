@@ -13,4 +13,3 @@
 terms method for stanreg objects
 }
 \keyword{internal}
-

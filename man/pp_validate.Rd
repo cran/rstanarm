@@ -84,4 +84,3 @@ distribution.
 \code{\link[bayesplot]{color_scheme_set}} to change the color scheme of the
 plot.
 }
-

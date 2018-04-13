@@ -21,4 +21,3 @@ Generic function for extracting standard errors from fitted models.
 \code{\link{se.stanreg}}
 }
 \keyword{internal}
-

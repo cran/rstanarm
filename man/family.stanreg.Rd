@@ -13,4 +13,3 @@
 family method for stanreg objects
 }
 \keyword{internal}
-

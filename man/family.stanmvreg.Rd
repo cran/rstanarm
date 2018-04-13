@@ -15,4 +15,3 @@
 family method for stanmvreg objects
 }
 \keyword{internal}
-

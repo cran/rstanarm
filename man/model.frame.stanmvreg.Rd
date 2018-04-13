@@ -17,4 +17,3 @@
 model.frame method for stanmvreg objects
 }
 \keyword{internal}
-

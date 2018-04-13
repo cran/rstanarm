@@ -7,7 +7,7 @@
 posterior_survfit(object, newdataLong = NULL, newdataEvent = NULL,
   extrapolate = TRUE, control = list(), condition = NULL,
   last_time = NULL, prob = 0.95, ids, times = NULL, standardise = FALSE,
-  scale = 1.5, draws = NULL, seed = NULL, ...)
+  dynamic = TRUE, scale = 1.5, draws = NULL, seed = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by the 
@@ -117,22 +117,32 @@ then the \code{times} argument must be specified and it must be constant across
 individuals, that is, the survival probabilities must be calculated at the 
 same time for all individuals.}
 
+\item{dynamic}{A logical that is only relevant if new data is provided
+via the \code{newdataLong} and \code{newdataEvent} arguments. If 
+\code{dynamic = TRUE}, then new group-specific parameters are drawn for 
+the individuals in the new data, conditional on their longitudinal 
+biomarker data contained in \code{newdataLong}. These group-specific
+parameters are then used to generate individual-specific survival probabilities
+for these individuals. These are often referred to as "dynamic predictions"
+in the joint modelling context, because the predictions can be updated
+each time additional longitudinal biomarker data is collected on the individual.
+On the other hand, if \code{dynamic = FALSE} then the survival probabilities
+will just be marginalised over the distribution of the group-specific
+coefficients; this will mean that the predictions will incorporate all
+uncertainty due to between-individual variation so there will likely be
+very wide credible intervals on the predicted survival probabilities.}
+
 \item{scale}{A scalar, specifying how much to multiply the asymptotic 
 variance-covariance matrix for the random effects by, which is then
 used as the "width" (ie. variance-covariance matrix) of the multivariate
 Student-t proposal distribution in the Metropolis-Hastings algorithm. This
-is only relevant when \code{newdataEvent} is supplied, in which case new
-random effects are simulated for the individuals in the new data using 
-the Metropolis-Hastings algorithm.}
+is only relevant when \code{newdataEvent} is supplied and 
+\code{dynamic = TRUE}, in which case new random effects are simulated
+for the individuals in the new data using the Metropolis-Hastings algorithm.}
 
-\item{draws}{An integer indicating the number of MCMC draws to return. If 
-\code{newdataLong} and \code{newdataEvent} are \code{NULL} then the default
-and maximum number of draws is the size of the posterior sample. If 
-\code{newdataLong} and \code{newdataEvent} are provided, then the default 
-is to set the number of draws equal to 200 (or equal to the size of the 
-posterior sample if that
-is less than 200). This ensures that the Monte Carlo algorithm for drawing 
-the new group-specific coefficients doesn't take an excessive amount of time.}
+\item{draws}{An integer indicating the number of MCMC draws to return. 
+The default is to set the number of draws equal to 200, or equal to the 
+size of the posterior sample if that is less than 200.}
 
 \item{seed}{An optional \code{\link[=set.seed]{seed}} to use.}
 
@@ -154,12 +164,24 @@ A data frame of class \code{survfit.stanjm}. The data frame includes
 }
 \description{
 This function allows us to generate estimated survival probabilities 
-based on draws from the posterior predictive distribution. If 
-\code{newdataLong} and \code{newdataEvent} are provided, then the 
-group-specific coefficients for the new individuals
-will be drawn using a Monte Carlo scheme conditional on the new longitudinal
-outcome data (sometimes referred to as "dynamic predictions", see Rizopoulos
-(2011)). In addition, by default the predicted subject-specific survival 
+based on draws from the posterior predictive distribution. By default
+the survival probabilities are conditional on an individual's 
+group-specific coefficients (i.e. their individual-level random
+effects). If prediction data is provided via the \code{newdataLong}  
+and \code{newdataEvent} arguments, then the default behaviour is to
+sample new group-specific coefficients for the individuals in the  
+new data using a Monte Carlo scheme that conditions on their 
+longitudinal outcome data provided in \code{newdataLong} 
+(sometimes referred to as "dynamic predictions", see Rizopoulos
+(2011)). This default behaviour can be stopped by specifying 
+\code{dynamic = FALSE}, in which case the predicted survival
+probabilities will be marginalised over the distribution of the 
+group-specific coefficients. This has the benefit that the user does
+not need to provide longitudinal outcome measurements for the new 
+individuals, however, it does mean that the predictions will incorporate
+all the uncertainty associated with between-individual variation, since
+the predictions aren't conditional on any observed data for the individual.
+In addition, by default, the predicted subject-specific survival 
 probabilities are conditional on observed values of the fixed effect 
 covariates (ie, the predictions will be obtained using either the design 
 matrices used in the original \code{\link{stan_jm}} model call, or using the 
@@ -248,4 +270,3 @@ Rizopoulos, D. (2011). Dynamic predictions and prospective accuracy in
   \code{\link{plot_stack_jm}} for combining plots of the estimated subject-specific
   longitudinal trajectory and survival function.
 }
-

@@ -35,4 +35,3 @@ approximations, see \code{\link{posterior_predict}}.
 \seealso{
 \code{\link{posterior_predict}}
 }
-

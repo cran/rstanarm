@@ -74,7 +74,7 @@ estimation algorithms. NOTE: not all fitting functions support all four
 algorithms.}
 
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
-\code{\link{adapt_delta}} for details.}
+the \link{adapt_delta} help page for details.}
 
 \item{do_residuals}{A logical scalar indicating whether or not to 
 automatically calculate fit residuals after sampling completes. Defaults to
@@ -99,8 +99,9 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
   stanfit object) is returned if \code{stan_polr.fit} is called directly.
 }
 \description{
-Bayesian inference for ordinal (or binary) regression models under
-a proportional odds assumption.
+\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+Bayesian inference for ordinal (or binary) regression models under a
+proportional odds assumption.
 }
 \details{
 The \code{stan_polr} function is similar in syntax to
@@ -170,5 +171,5 @@ Nagler, J., (1994). Scobit: An Alternative Estimator to Logit and Probit.
 \code{\link[MASS]{polr}}.
 
 The vignette for \code{stan_polr}.
+  \url{http://mc-stan.org/rstanarm/articles/}
 }
-

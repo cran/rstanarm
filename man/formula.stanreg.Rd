@@ -16,4 +16,3 @@ that both default to \code{FALSE}.}
 formula method for stanreg objects
 }
 \keyword{internal}
-

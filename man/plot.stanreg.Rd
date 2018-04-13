@@ -145,6 +145,12 @@ plot(fit, regex_pars = c("herd:[279]", "period2"))
 # help("pp_check.stanreg")
 
 }
+\references{
+Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., and Gelman,
+  A. (2018). Visualization in Bayesian workflow. \emph{Journal of the Royal
+  Statistical Society Series A}, accepted for publication. arXiv preprint:
+  \url{http://arxiv.org/abs/1709.01449}.
+}
 \seealso{
 \itemize{ 
   \item The vignettes in the \pkg{bayesplot} package for many examples.
@@ -157,4 +163,3 @@ plot(fit, regex_pars = c("herd:[279]", "period2"))
   functions fit using \code{\link{stan_gamm4}}.
 }
 }
-

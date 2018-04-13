@@ -17,10 +17,15 @@ stan_jm(formulaLong, dataLong, formulaEvent, dataEvent, time_var, id_var,
 }
 \arguments{
 \item{formulaLong}{A two-sided linear formula object describing both the 
-fixed-effects and random-effects parts of the longitudinal submodel  
-(see \code{\link[lme4]{glmer}} for details). For a multivariate joint 
-model (i.e. more than one longitudinal marker) this should 
-be a list of such formula objects, with each element
+fixed-effects and random-effects parts of the longitudinal submodel,
+similar in vein to formula specification in the \strong{lme4} package
+(see \code{\link[lme4]{glmer}} or the \strong{lme4} vignette for details). 
+Note however that the double bar (\code{||}) notation is not allowed 
+when specifying the random-effects parts of the formula, and neither
+are nested grouping factors (e.g. \code{(1 | g1/g2))} or 
+\code{(1 | g1:g2)}, where \code{g1}, \code{g2} are grouping factors. 
+For a multivariate joint model (i.e. more than one longitudinal marker) 
+this should be a list of such formula objects, with each element
 of the list providing the formula for one of the longitudinal submodels.}
 
 \item{dataLong}{A data frame containing the variables specified in
@@ -271,32 +276,20 @@ estimation algorithms. NOTE: not all fitting functions support all four
 algorithms.}
 
 \item{adapt_delta}{Only relevant if \code{algorithm="sampling"}. See 
-\code{\link{adapt_delta}} for details.}
+the \link{adapt_delta} help page for details.}
 
 \item{max_treedepth}{A positive integer specifying the maximum treedepth 
 for the non-U-turn sampler. See the \code{control} argument in 
 \code{\link[rstan]{stan}}.}
 
-\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE} 
-applies a scaled \code{\link{qr}} decomposition to the design matrix, 
-\eqn{X = Q^\ast R^\ast}{X = Q* R*}, where \eqn{Q^\ast = Q \sqrt{n-1}}{Q* = 
-Q (n-1)^0.5} and \eqn{R^\ast = \frac{1}{\sqrt{n-1}} R}{R* = (n-1)^(-0.5) 
-R}. The coefficients relative to \eqn{Q^\ast}{Q*} are obtained and then 
-premultiplied by the inverse of \eqn{R^{\ast}}{R*} to obtain coefficients 
-relative to the original predictors, \eqn{X}. These transformations do not 
-change the likelihood of the data but are recommended for computational 
-reasons when there are multiple predictors. Importantly, while the columns
-of \eqn{X} are almost always correlated, the columns of \eqn{Q^\ast}{Q*}
-are uncorrelated by design, which often makes sampling from the posterior
-easier. However, because when \code{QR} is \code{TRUE} the \code{prior}
-argument applies to the coefficients relative to \eqn{Q^\ast}{Q*} (and
-those are not very interpretable), setting \code{QR=TRUE} is only
-recommended if you do not have an informative prior for the regression
-coefficients. 
-
-For more details see the Stan case study 
-\emph{The QR Decomposition For Regression Models} at 
-\url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.}
+\item{QR}{A logical scalar defaulting to \code{FALSE}, but if \code{TRUE}
+applies a scaled \code{\link{qr}} decomposition to the design matrix. The
+transformation does not change the likelihood of the data but is
+recommended for computational reasons when there are multiple predictors.
+See the \link{QR-argument} documentation page for details on how
+\pkg{rstanarm} does the transformation and important information about how
+to interpret the prior distributions of the model parameters when using
+\code{QR=TRUE}.}
 
 \item{sparse}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to use a sparse representation of the design (X) matrix. 
@@ -317,6 +310,7 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 A \link[=stanreg-objects]{stanjm} object is returned.
 }
 \description{
+\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
 Fits a shared parameter joint model for longitudinal and time-to-event 
 (e.g. survival) data under a Bayesian framework using Stan.
 }
@@ -581,4 +575,3 @@ mv3 <- stan_jm(
   \code{\link{posterior_predict}}, \code{\link{posterior_interval}},
   \code{\link{pp_check}}, \code{\link{ps_check}}, \code{\link{stan_mvmer}}.
 }
-

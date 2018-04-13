@@ -154,7 +154,7 @@ The \code{\link{stan_biglm}} function is an exception. It returns a
   }        
 }
 }
+
 \seealso{
 \code{\link{stanreg-methods}}, \code{\link{stanmvreg-methods}}
 }
-

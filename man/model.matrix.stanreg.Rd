@@ -13,4 +13,3 @@
 model.matrix method for stanreg objects
 }
 \keyword{internal}
-

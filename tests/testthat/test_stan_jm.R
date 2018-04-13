@@ -38,16 +38,16 @@ TOLSCALES <- list(
   event = 0.3        # how many SEs can stan_jm fixefs be from coxph fixefs
 )
 
-source(file.path("helpers", "expect_matrix.R"))
-source(file.path("helpers", "expect_stanreg.R"))
-source(file.path("helpers", "expect_stanmvreg.R"))
-source(file.path("helpers", "expect_survfit.R"))
-source(file.path("helpers", "expect_ppd.R"))
-source(file.path("helpers", "expect_equivalent_loo.R"))
-source(file.path("helpers", "SW.R"))
+source(test_path("helpers", "expect_matrix.R"))
+source(test_path("helpers", "expect_stanreg.R"))
+source(test_path("helpers", "expect_stanmvreg.R"))
+source(test_path("helpers", "expect_survfit.R"))
+source(test_path("helpers", "expect_ppd.R"))
+source(test_path("helpers", "expect_equivalent_loo.R"))
+source(test_path("helpers", "SW.R"))
 # SW <- function(expr) eval(expr)
-source(file.path("helpers", "get_tols.R"))
-source(file.path("helpers", "recover_pars.R"))
+source(test_path("helpers", "get_tols.R"))
+source(test_path("helpers", "recover_pars.R"))
 
 context("stan_jm")
 
@@ -492,21 +492,19 @@ for (j in c(1:30)) {
     }) 
     
     test_that("posterior_traj works with new data (one individual)", {
-      pp <- posterior_traj(mod, newdata = ndL1)
+      pp <- posterior_traj(mod, newdataLong = ndL1, dynamic = FALSE)
       expect_s3_class(pp, "predict.stanjm")
       if (mod$n_markers > 1L) {
-        pp <- posterior_traj(mod, m = 2, newdata = ndL1)
+        pp <- posterior_traj(mod, m = 2, newdataLong = ndL1, dynamic = FALSE)
         expect_s3_class(pp, "predict.stanjm")
       }
-      expect_error(posterior_traj(mod, newdataLong = ndL1), "should not be specified")
-      expect_error(posterior_traj(mod, newdataEvent = ndE1), "should not be specified")
     })  
     
     test_that("posterior_traj works with new data (multiple individuals)", {
-      pp <- posterior_traj(mod, newdata = ndL2)
+      pp <- posterior_traj(mod, newdataLong = ndL2, dynamic = FALSE)
       expect_s3_class(pp, "predict.stanjm")
       if (mod$n_markers > 1L) {
-        pp <- posterior_traj(mod, m = 2, newdata = ndL2)
+        pp <- posterior_traj(mod, m = 2, newdataLong = ndL2, dynamic = FALSE)
         expect_s3_class(pp, "predict.stanjm")
       }            
     })        

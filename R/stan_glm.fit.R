@@ -60,8 +60,11 @@ stan_glm.fit <-
   supported_families <- c("binomial", "gaussian", "Gamma", "inverse.gaussian",
                           "poisson", "neg_binomial_2", "Beta regression")
   fam <- which(pmatch(supported_families, family$family, nomatch = 0L) == 1L)
-  if (!length(fam)) 
-    stop("'family' must be one of ", paste(supported_families, collapse = ", "))
+  if (!length(fam)) {
+    supported_families_err <- supported_families
+    supported_families_err[supported_families_err == "Beta regression"] <- "mgcv::betar"
+    stop("'family' must be one of ", paste(supported_families_err, collapse = ", "))
+  }
   
   supported_links <- supported_glm_links(supported_families[fam])
   link <- which(supported_links == family$link)
@@ -233,10 +236,11 @@ stan_glm.fit <-
       stop("'QR' and 'sparse' cannot both be TRUE.")
     cn <- colnames(xtemp)
     decomposition <- qr(xtemp)
-    sqrt_nm1 <- sqrt(nrow(xtemp) - 1L)
     Q <- qr.Q(decomposition)
-    R_inv <- qr.solve(decomposition, Q) * sqrt_nm1
-    xtemp <- Q * sqrt_nm1
+    if (prior_autoscale) scale_factor <- sqrt(nrow(xtemp) - 1L)
+    else scale_factor <- diag(qr.R(decomposition))[ncol(xtemp)]
+    R_inv <- qr.solve(decomposition, Q) * scale_factor
+    xtemp <- Q * scale_factor
     colnames(xtemp) <- cn
     xbar <- c(xbar %*% R_inv)
   }
@@ -736,7 +740,6 @@ validate_glm_outcome_support <- function(y, family) {
 # @param Ztlist ranef indicator matrices
 # @param cnms group$cnms
 # @param flist group$flist
-#' @importFrom Matrix rBind
 pad_reTrms <- function(Ztlist, cnms, flist) {
   stopifnot(is.list(Ztlist))
   l <- sapply(attr(flist, "assign"), function(i) nlevels(flist[[i]]))
@@ -747,11 +750,7 @@ pad_reTrms <- function(Ztlist, cnms, flist) {
                             paste0("_NEW_", names(flist)[i]))
   }
   for (i in 1:length(p)) {
-    Ztlist[[i]] <- if (getRversion() < "3.2.0") {
-      rBind( Ztlist[[i]], Matrix(0, nrow = p[i], ncol = n, sparse = TRUE))
-    } else {
-      rbind2(Ztlist[[i]], Matrix(0, nrow = p[i], ncol = n, sparse = TRUE))
-    }
+    Ztlist[[i]] <- rbind(Ztlist[[i]], Matrix(0, nrow = p[i], ncol = n, sparse = TRUE))
   }
   Z <- t(do.call(rbind, args = Ztlist))
   return(nlist(Z, cnms, flist))

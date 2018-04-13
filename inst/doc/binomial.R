@@ -28,7 +28,7 @@ SEED <- 12345
 
 ## ---- SETTINGS-loo, include=FALSE----------------------------------------
 loo.cores <- if (exists("CORES")) CORES else 1L
-options(loo.cores = loo.cores)
+options(mc.cores = loo.cores)
 
 ## ----binom-arsenic-data--------------------------------------------------
 library(rstanarm)

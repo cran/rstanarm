@@ -2,8 +2,8 @@
 % Please edit documentation in R/plots.R
 \name{pairs.stanreg}
 \alias{pairs.stanreg}
-\alias{pairs_condition}
 \alias{pairs_style_np}
+\alias{pairs_condition}
 \title{Pairs method for stanreg objects}
 \usage{
 \method{pairs}{stanreg}(x, pars = NULL, regex_pars = NULL,
@@ -113,4 +113,3 @@ pairs(
 }
 
 }
-

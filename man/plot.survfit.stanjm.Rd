@@ -136,4 +136,3 @@ easily understood by running the \strong{Examples} below.
 \code{\link{plot.predict.stanjm}}, \code{\link{plot.survfit.stanjm}},
   \code{\link{posterior_predict}}, \code{\link{posterior_survfit}}
 }
-

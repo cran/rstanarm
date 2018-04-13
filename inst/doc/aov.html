@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2018-02-17" />
+<meta name="date" content="2018-04-12" />
 
 <title>Estimating ANOVA Models with rstanarm</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating ANOVA Models with rstanarm</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2018-02-17</em></h4>
+<h4 class="date"><em>2018-04-12</em></h4>
 
 
 <div id="TOC">
@@ -132,23 +132,23 @@ post1</code></pre></div>
  observations: 40
 ------
                      Median MAD_SD
-(Intercept)           98.9    4.4 
-sourceCereal         -13.0    6.5 
-typeLow              -18.6    6.2 
-sourceCereal:typeLow  17.0    8.8 
+(Intercept)           98.9    4.5 
+sourceCereal         -12.9    6.4 
+typeLow              -18.6    6.4 
+sourceCereal:typeLow  16.9    9.0 
 sigma                 14.8    1.8 
 log-fit_ratio          0.0    0.1 
 R2                     0.2    0.1 
 
 Sample avg. posterior predictive distribution of y:
          Median MAD_SD
-mean_PPD 87.3    3.1  
+mean_PPD 87.3    3.2  
 
 ANOVA-like table:
                     Median MAD_SD
-Mean Sq source      573.6  444.0 
-Mean Sq type        966.8  582.1 
-Mean Sq source:type 722.0  694.2 
+Mean Sq source      565.0  452.8 
+Mean Sq type        979.5  594.8 
+Mean Sq source:type 713.5  710.2 
 
 ------
 For info on the priors used see help('prior_summary.stanreg').</code></pre>
@@ -175,7 +175,7 @@ For info on the priors used see help('prior_summary.stanreg').</code></pre>
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

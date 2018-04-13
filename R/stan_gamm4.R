@@ -19,6 +19,7 @@
 #' Bayesian generalized linear additive models with optional group-specific
 #' terms via Stan
 #' 
+#' \if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
 #' Bayesian inference for GAMMs with flexible priors.
 #' 
 #' @export
@@ -98,7 +99,7 @@
 #' \url{https://www.jstatsoft.org/article/view/v014i14}
 #' 
 #' @seealso The vignette for \code{stan_glmer}, which also discusses
-#'   \code{stan_gamm4}.
+#'   \code{stan_gamm4}. \url{http://mc-stan.org/rstanarm/articles/}
 #' 
 #' @examples
 #' # from example(gamm4, package = "gamm4"), prefixing gamm4() call with stan_
@@ -231,9 +232,8 @@ stan_gamm4 <-
                     flist = group$flist)$Z
     colnames(Z) <- b_names(names(stanfit), value = TRUE)
   }
-  if (getRversion() < "3.2.0") XZ <- cBind(X, Z) 
-  else XZ <- cbind2(X, Z)
-  
+  XZ <- cbind(X, Z) 
+
   # make jam object with point estimates, see ?mgcv::sim2jam
   mat <- as.matrix(stanfit)
   mark <- 1:ncol(X)
