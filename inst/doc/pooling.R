@@ -169,7 +169,7 @@ log_sum_exp <- function(u) {
   max_u + log(a)
 }
 
-# Or equivalenty using vectorization
+# Or equivalently using vectorization
 log_sum_exp <- function(u) {
   max_u <- max(u)
   max_u + log(sum(exp(u - max_u)))

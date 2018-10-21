@@ -6,8 +6,9 @@
 \alias{posterior_predict.stanmvreg}
 \title{Draw from posterior predictive distribution}
 \usage{
-\method{posterior_predict}{stanreg}(object, newdata = NULL, draws = NULL,
-  re.form = NULL, fun = NULL, seed = NULL, offset = NULL, ...)
+\method{posterior_predict}{stanreg}(object, newdata = NULL,
+  draws = NULL, re.form = NULL, fun = NULL, seed = NULL,
+  offset = NULL, ...)
 
 \method{posterior_predict}{stanmvreg}(object, m = 1, newdata = NULL,
   draws = NULL, re.form = NULL, fun = NULL, seed = NULL, ...)

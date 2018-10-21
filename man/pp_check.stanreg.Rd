@@ -5,8 +5,8 @@
 \alias{pp_check}
 \title{Graphical posterior predictive checks}
 \usage{
-\method{pp_check}{stanreg}(object, plotfun = "dens_overlay", nreps = NULL,
-  seed = NULL, ...)
+\method{pp_check}{stanreg}(object, plotfun = "dens_overlay",
+  nreps = NULL, seed = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

@@ -23,7 +23,7 @@ A model for use in the \pkg{rstanarm} examples related to \code{\link{stan_jm}}.
              dataEvent = pbcSurv[1:15,],
              time_var = "year",
              # this next line is only to keep the example small in size!
-             chains = 1, seed = 12345, iter = 200)
+             chains = 1, seed = 12345, iter = 200, refresh = 0)
 
 
 }

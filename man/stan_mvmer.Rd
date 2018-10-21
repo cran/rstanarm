@@ -7,9 +7,10 @@ group-specific terms via Stan}
 \usage{
 stan_mvmer(formula, data, family = gaussian, weights, prior = normal(),
   prior_intercept = normal(), prior_aux = cauchy(0, 5),
-  prior_covariance = lkj(), prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL, max_treedepth = 10L,
-  init = "random", QR = FALSE, sparse = FALSE, ...)
+  prior_covariance = lkj(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL, max_treedepth = 10L, init = "random",
+  QR = FALSE, sparse = FALSE, ...)
 }
 \arguments{
 \item{formula}{A two-sided linear formula object describing both the 

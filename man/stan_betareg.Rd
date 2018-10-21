@@ -10,16 +10,16 @@ stan_betareg(formula, data, subset, na.action, weights, offset,
   link.phi = NULL, model = TRUE, y = TRUE, x = FALSE, ...,
   prior = normal(), prior_intercept = normal(), prior_z = normal(),
   prior_intercept_z = normal(), prior_phi = exponential(),
-  prior_PD = FALSE, algorithm = c("sampling", "optimizing", "meanfield",
-  "fullrank"), adapt_delta = NULL, QR = FALSE)
+  prior_PD = FALSE, algorithm = c("sampling", "optimizing",
+  "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
 
 stan_betareg.fit(x, y, z = NULL, weights = rep(1, NROW(x)),
   offset = rep(0, NROW(x)), link = c("logit", "probit", "cloglog",
   "cauchit", "log", "loglog"), link.phi = NULL, ..., prior = normal(),
   prior_intercept = normal(), prior_z = normal(),
   prior_intercept_z = normal(), prior_phi = exponential(),
-  prior_PD = FALSE, algorithm = c("sampling", "optimizing", "meanfield",
-  "fullrank"), adapt_delta = NULL, QR = FALSE)
+  prior_PD = FALSE, algorithm = c("sampling", "optimizing",
+  "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[betareg]{betareg}}, 
@@ -93,15 +93,18 @@ these functions. To omit a prior on the intercept ---i.e., to use a flat
 (improper) uniform prior--- \code{prior_intercept} can be set to
 \code{NULL}.
 
-\strong{Note:} If using a dense representation of the design matrix 
----i.e., if the \code{sparse} argument is left at its default value of 
-\code{FALSE}--- then the prior distribution for the intercept is set so it 
+\strong{Note:} If using a dense representation of the design matrix
+---i.e., if the \code{sparse} argument is left at its default value of
+\code{FALSE}--- then the prior distribution for the intercept is set so it
 applies to the value \emph{when all predictors are centered}. If you prefer
 to specify a prior on the intercept without the predictors being
 auto-centered, then you have to omit the intercept from the
 \code{\link[stats]{formula}} and include a column of ones as a predictor,
 in which case some element of \code{prior} specifies the prior on it,
-rather than \code{prior_intercept}.}
+rather than \code{prior_intercept}. Regardless of how
+\code{prior_intercept} is specified, the reported \emph{estimates} of the
+intercept always correspond to a parameterization without centered
+predictors (i.e., same as in \code{glm}).}
 
 \item{prior_z}{Prior distribution for the coefficients in the model for 
 \code{phi} (if applicable). Same options as for \code{prior}.}

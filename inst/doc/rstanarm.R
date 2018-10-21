@@ -110,7 +110,7 @@ compare_models(loo_bglm_1, loo_bglm_2)
 loo_bglm_1
 
 ## ---- rstanarm-posterior_predict-manipulate------------------------------
-# note: in newdata we want agree and disgree to sum to the number of people we
+# note: in newdata we want agree and disagree to sum to the number of people we
 # want to predict for. the values of agree and disagree don't matter so long as
 # their sum is the desired number of trials. we need to explicitly imply the
 # number of trials like this because our original data are aggregate. if we had

@@ -11,8 +11,8 @@
 
 \method{log_lik}{stanmvreg}(object, m = 1, newdata = NULL, ...)
 
-\method{log_lik}{stanjm}(object, newdataLong = NULL, newdataEvent = NULL,
-  ...)
+\method{log_lik}{stanjm}(object, newdataLong = NULL,
+  newdataEvent = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

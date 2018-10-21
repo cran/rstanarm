@@ -6,14 +6,15 @@
 \usage{
 stan_jm(formulaLong, dataLong, formulaEvent, dataEvent, time_var, id_var,
   family = gaussian, assoc = "etavalue", lag_assoc = 0, grp_assoc,
-  epsilon = 1e-05, basehaz = c("bs", "weibull", "piecewise"), basehaz_ops,
-  qnodes = 15, init = "prefit", weights, priorLong = normal(),
-  priorLong_intercept = normal(), priorLong_aux = cauchy(0, 5),
-  priorEvent = normal(), priorEvent_intercept = normal(),
-  priorEvent_aux = cauchy(), priorEvent_assoc = normal(),
-  prior_covariance = lkj(), prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL, max_treedepth = 10L,
-  QR = FALSE, sparse = FALSE, ...)
+  epsilon = 1e-05, basehaz = c("bs", "weibull", "piecewise"),
+  basehaz_ops, qnodes = 15, init = "prefit", weights,
+  priorLong = normal(), priorLong_intercept = normal(),
+  priorLong_aux = cauchy(0, 5), priorEvent = normal(),
+  priorEvent_intercept = normal(), priorEvent_aux = cauchy(),
+  priorEvent_assoc = normal(), prior_covariance = lkj(),
+  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL, max_treedepth = 10L, QR = FALSE,
+  sparse = FALSE, ...)
 }
 \arguments{
 \item{formulaLong}{A two-sided linear formula object describing both the 

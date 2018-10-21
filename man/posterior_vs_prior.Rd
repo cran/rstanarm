@@ -7,9 +7,9 @@
 \usage{
 posterior_vs_prior(object, ...)
 
-\method{posterior_vs_prior}{stanreg}(object, pars = NULL, regex_pars = NULL,
-  prob = 0.9, color_by = c("parameter", "vs", "none"),
-  group_by_parameter = FALSE, facet_args = list(), ...)
+\method{posterior_vs_prior}{stanreg}(object, pars = NULL,
+  regex_pars = NULL, prob = 0.9, color_by = c("parameter", "vs",
+  "none"), group_by_parameter = FALSE, facet_args = list(), ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

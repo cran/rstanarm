@@ -77,7 +77,7 @@ test_that("loo errors if model has weights", {
   SW(
     fit <- stan_glm(mpg ~ wt, data = mtcars,
                     weights = rep_len(c(1,2), nrow(mtcars)),
-                    seed = SEED, refresh = REFRESH, iter = 50)
+                    seed = SEED, refresh = 0, iter = 50)
   )
   expect_error(loo(fit), "not supported")
   expect_error(loo(fit), "'kfold'")
@@ -136,7 +136,8 @@ context("kfold")
 
 test_that("kfold throws error for non mcmc models", {
   SW(
-    fito <- stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing",seed = SEED)
+    fito <- stan_glm(mpg ~ wt, data = mtcars, algorithm = "optimizing",
+                     seed = SEED, refresh = 0)
   )
   expect_error(kfold(fito), "MCMC")
 })
@@ -155,7 +156,7 @@ test_that("kfold throws error if folds arg is bad", {
 test_that("kfold throws error if model has weights", {
   SW(
     fit <- stan_glm(mpg ~ wt, data = mtcars,
-                    iter = ITER, chains = CHAINS, refresh = REFRESH,
+                    iter = ITER, chains = CHAINS, refresh = 0,
                     weights = runif(nrow(mtcars), 0.5, 1.5))
   )
   expect_error(kfold(fit), "not currently available for models fit using weights")
@@ -165,8 +166,8 @@ test_that("kfold works on some examples", {
   mtcars2 <- mtcars
   mtcars2$wt[1] <- NA # make sure kfold works if NAs are dropped from original data
   SW(
-    fit_gaus <- stan_glm(mpg ~ wt, data = mtcars2, seed = 12345, refresh = 0,
-                         chains = 1, iter = 100)
+    fit_gaus <- stan_glm(mpg ~ wt, data = mtcars2, refresh = 0,
+                         chains = 1, iter = 200)
   )
   SW(kf <- kfold(fit_gaus, 4))
   SW(kf2 <- kfold(example_model, 2))
@@ -192,7 +193,7 @@ test_that("kfold works on some examples", {
 test_that("compare_models throws correct errors", {
   SW(capture.output({
     mtcars$mpg <- as.integer(mtcars$mpg)
-    fit1 <- stan_glm(mpg ~ wt, data = mtcars, iter = 5, chains = 2, refresh = -1)
+    fit1 <- stan_glm(mpg ~ wt, data = mtcars, iter = 5, chains = 2, refresh = 0)
     fit2 <- update(fit1, data = mtcars[-1, ])
     fit3 <- update(fit1, formula. = log(mpg) ~ .)
     fit4 <- update(fit1, family = poisson("log"))
@@ -233,7 +234,7 @@ test_that("compare_models throws correct errors", {
 test_that("compare_models works", {
   suppressWarnings(capture.output({
     mtcars$mpg <- as.integer(mtcars$mpg)
-    fit1 <- stan_glm(mpg ~ wt, data = mtcars, iter = 40, chains = 2, refresh = -1)
+    fit1 <- stan_glm(mpg ~ wt, data = mtcars, iter = 40, chains = 2, refresh = 0)
     fit2 <- update(fit1, formula. = . ~ . + cyl)
     fit3 <- update(fit2, formula. = . ~ . + gear)
     fit4 <- update(fit1, family = "poisson")
@@ -294,17 +295,17 @@ context("loo and waic helpers")
 test_that("kfold_and_reloo_data works", {
   f <- rstanarm:::kfold_and_reloo_data
   d <- f(example_model)
-  expect_identical(d, lme4::cbpp)
+  expect_identical(d, lme4::cbpp[, colnames(d)])
 
   # if 'data' arg not originally specified when fitting the model
   y <- rnorm(40)
-  SW(fit <- stan_glm(y ~ 1, iter = ITER, chains = CHAINS, refresh = REFRESH))
+  SW(fit <- stan_glm(y ~ 1, iter = ITER, chains = CHAINS, refresh = 0))
   expect_equivalent(f(fit), model.frame(fit))
 
   # if 'subset' arg specified when fitting the model
   SW(fit2 <- stan_glm(mpg ~ wt, data = mtcars, subset = gear != 5, iter = ITER,
-                      chains = CHAINS, refresh = REFRESH))
-  expect_equivalent(f(fit2), subset(mtcars, gear != 5))
+                      chains = CHAINS, refresh = 0))
+  expect_equivalent(f(fit2), subset(mtcars[mtcars$gear != 5, c("mpg", "wt")]))
 })
 
 test_that(".weighted works", {

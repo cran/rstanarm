@@ -5,8 +5,8 @@
 \alias{posterior_interval}
 \title{Posterior uncertainty intervals}
 \usage{
-\method{posterior_interval}{stanreg}(object, prob = 0.9, type = "central",
-  pars = NULL, regex_pars = NULL, ...)
+\method{posterior_interval}{stanreg}(object, prob = 0.9,
+  type = "central", pars = NULL, regex_pars = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

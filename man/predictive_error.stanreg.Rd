@@ -6,8 +6,8 @@
 \alias{predictive_error.ppd}
 \title{In-sample or out-of-sample predictive errors}
 \usage{
-\method{predictive_error}{stanreg}(object, newdata = NULL, draws = NULL,
-  re.form = NULL, seed = NULL, offset = NULL, ...)
+\method{predictive_error}{stanreg}(object, newdata = NULL,
+  draws = NULL, re.form = NULL, seed = NULL, offset = NULL, ...)
 
 \method{predictive_error}{ppd}(object, y, ...)
 }

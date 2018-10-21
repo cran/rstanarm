@@ -6,14 +6,14 @@
 \title{Bayesian regularized linear but big models via Stan}
 \usage{
 stan_biglm(biglm, xbar, ybar, s_y, ...,
-  prior = R2(stop("'location' must be specified")), prior_intercept = NULL,
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL)
+  prior = R2(stop("'location' must be specified")),
+  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
+  "meanfield", "fullrank"), adapt_delta = NULL)
 
 stan_biglm.fit(b, R, SSR, N, xbar, ybar, s_y, has_intercept = TRUE, ...,
-  prior = R2(stop("'location' must be specified")), prior_intercept = NULL,
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL)
+  prior = R2(stop("'location' must be specified")),
+  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
+  "meanfield", "fullrank"), adapt_delta = NULL)
 }
 \arguments{
 \item{biglm}{The list output by \code{\link[biglm]{biglm}} in the \pkg{biglm}
@@ -39,12 +39,26 @@ named by \code{algorithm}. For example, if \code{algorithm} is
 argument specified or \code{NULL}, which would indicate a standard uniform
 prior for the \eqn{R^2}.}
 
-\item{prior_intercept}{Either \code{NULL} (the default) or a call to 
-\code{\link{normal}}. If a \code{\link{normal}} prior is specified without
-a \code{scale}, then the standard deviation is taken to be the marginal
-standard deviation of the outcome divided by the square root of the sample
-size, which is legitimate because the marginal standard deviation of the
-outcome is a primitive parameter being estimated.}
+\item{prior_intercept}{Either \code{NULL} (the default) or a call to
+\code{\link{normal}}. If a \code{\link{normal}} prior is specified
+without a \code{scale}, then the standard deviation is taken to be
+the marginal standard deviation of the outcome divided by the square
+root of the sample size, which is legitimate because the marginal
+standard deviation of the outcome is a primitive parameter being
+estimated.
+
+\strong{Note:} If using a dense representation of the design matrix
+---i.e., if the \code{sparse} argument is left at its default value of
+\code{FALSE}--- then the prior distribution for the intercept is set so it
+applies to the value \emph{when all predictors are centered}. If you prefer
+to specify a prior on the intercept without the predictors being
+auto-centered, then you have to omit the intercept from the
+\code{\link[stats]{formula}} and include a column of ones as a predictor,
+in which case some element of \code{prior} specifies the prior on it,
+rather than \code{prior_intercept}. Regardless of how
+\code{prior_intercept} is specified, the reported \emph{estimates} of the
+intercept always correspond to a parameterization without centered
+predictors (i.e., same as in \code{glm}).}
 
 \item{prior_PD}{A logical scalar (defaulting to \code{FALSE}) indicating
 whether to draw from the prior predictive distribution instead of

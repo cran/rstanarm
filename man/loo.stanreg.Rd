@@ -20,8 +20,8 @@ kfold(x, K = 10, save_fits = FALSE, folds = NULL)
 
 compare_models(..., loos = list(), detail = FALSE)
 
-\method{loo_model_weights}{stanreg_list}(x, ..., cores = getOption("mc.cores",
-  1), k_threshold = NULL)
+\method{loo_model_weights}{stanreg_list}(x, ...,
+  cores = getOption("mc.cores", 1), k_threshold = NULL)
 }
 \arguments{
 \item{x}{For \code{loo}, \code{waic}, and \code{kfold} methods, a fitted
@@ -183,6 +183,10 @@ For models fit using MCMC, compute approximate leave-one-out
   and arranges them in descending order according to expected out-of-sample
   predictive accuracy. That is, the first row of the matrix will be
   for the model with the largest ELPD (smallest LOOIC).
+  The columns containing the ELPD difference and the standard error of the 
+  difference contain values relative to the model with the best ELPD.
+  See the \strong{Details} section at the \code{\link[loo]{compare}}
+  page in the \pkg{loo} package for more information.
 }
 
 \section{Model weights}{
@@ -214,10 +218,8 @@ compare_models(loo1, loo2)
 compare_models(loos = list(loo1, loo2)) # can also provide list
 
 # when comparing three or more models they are ordered by
-# expected predictive accuracy. unlike when doing a pairwise
-# comparison of two models, now the diplayed standard errors
-# do _not_ pertain to differences but rather to the individual
-# elpd_loo estimates.
+# expected predictive accuracy. elpd_diff and se_diff are relative
+# to the model with best elpd_loo (first row)
 fit3 <- stan_glm(mpg ~ disp * as.factor(cyl), data = mtcars)
 loo3 <- loo(fit3, cores = 2, k_threshold = 0.7)
 compare_models(loo1, loo2, loo3)
@@ -234,13 +236,6 @@ loo_model_weights(model_list, cores = 2) # can specify k_threshold=0.7 if necess
 # for loo_models weights to call loo() internally
 loo_list <- list(fit1 = loo1, fit2 = loo2, fit3 = loo3) # names optional (affects printing)
 loo_model_weights(loo_list)
-
-# averaging predictions
-wts <- loo_model_weights(loo_list)
-yrep1 <- posterior_predict(fit1)
-yrep2 <- posterior_predict(fit2)
-yrep3 <- posterior_predict(fit3)
-wt_avg_yrep <- wts[1] * yrep1 + wts[2] * yrep2 + wts[3] * yrep3
 
 # 10-fold cross-validation
 (kfold1 <- kfold(fit1, K = 10))

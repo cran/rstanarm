@@ -7,25 +7,28 @@
 \title{Bayesian generalized linear models with group-specific terms via Stan}
 \usage{
 stan_glmer(formula, data = NULL, family = gaussian, subset, weights,
-  na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
-  ..., prior = normal(), prior_intercept = normal(),
-  prior_aux = exponential(), prior_covariance = decov(), prior_PD = FALSE,
-  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
-  QR = FALSE, sparse = FALSE)
+  na.action = getOption("na.action", "na.omit"), offset,
+  contrasts = NULL, ..., prior = normal(),
+  prior_intercept = normal(), prior_aux = exponential(),
+  prior_covariance = decov(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
 
 stan_lmer(formula, data = NULL, subset, weights,
-  na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
-  ..., prior = normal(), prior_intercept = normal(),
-  prior_aux = exponential(), prior_covariance = decov(), prior_PD = FALSE,
-  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
-  QR = FALSE)
+  na.action = getOption("na.action", "na.omit"), offset,
+  contrasts = NULL, ..., prior = normal(),
+  prior_intercept = normal(), prior_aux = exponential(),
+  prior_covariance = decov(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL, QR = FALSE)
 
 stan_glmer.nb(formula, data = NULL, subset, weights,
-  na.action = getOption("na.action", "na.omit"), offset, contrasts = NULL,
-  link = "log", ..., prior = normal(), prior_intercept = normal(),
-  prior_aux = exponential(), prior_covariance = decov(), prior_PD = FALSE,
-  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL,
-  QR = FALSE)
+  na.action = getOption("na.action", "na.omit"), offset,
+  contrasts = NULL, link = "log", ..., prior = normal(),
+  prior_intercept = normal(), prior_aux = exponential(),
+  prior_covariance = decov(), prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL, QR = FALSE)
 }
 \arguments{
 \item{formula, data}{Same as for \code{\link[lme4]{glmer}}. \emph{We
@@ -87,15 +90,18 @@ these functions. To omit a prior on the intercept ---i.e., to use a flat
 (improper) uniform prior--- \code{prior_intercept} can be set to
 \code{NULL}.
 
-\strong{Note:} If using a dense representation of the design matrix 
----i.e., if the \code{sparse} argument is left at its default value of 
-\code{FALSE}--- then the prior distribution for the intercept is set so it 
+\strong{Note:} If using a dense representation of the design matrix
+---i.e., if the \code{sparse} argument is left at its default value of
+\code{FALSE}--- then the prior distribution for the intercept is set so it
 applies to the value \emph{when all predictors are centered}. If you prefer
 to specify a prior on the intercept without the predictors being
 auto-centered, then you have to omit the intercept from the
 \code{\link[stats]{formula}} and include a column of ones as a predictor,
 in which case some element of \code{prior} specifies the prior on it,
-rather than \code{prior_intercept}.}
+rather than \code{prior_intercept}. Regardless of how
+\code{prior_intercept} is specified, the reported \emph{estimates} of the
+intercept always correspond to a parameterization without centered
+predictors (i.e., same as in \code{glm}).}
 
 \item{prior_aux}{The prior distribution for the "auxiliary" parameter (if
 applicable). The "auxiliary" parameter refers to a different parameter 

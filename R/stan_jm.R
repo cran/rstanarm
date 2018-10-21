@@ -216,6 +216,7 @@
 #'   the output for the fitted model, but this just corresponds to the 
 #'   necessary post-estimation adjustment in the linear predictor due to the
 #'   centering of the predictiors in the event submodel.
+#'   
 #' @param priorLong_aux The prior distribution for the "auxiliary" parameters
 #'   in the longitudinal submodels (if applicable). 
 #'   The "auxiliary" parameter refers to a different parameter 
@@ -603,7 +604,7 @@ stan_jm <- function(formulaLong, dataLong, formulaEvent, dataEvent, time_var,
                          prior_covariance = prior_covariance, prior_PD = prior_PD, 
                          algorithm = algorithm, adapt_delta = adapt_delta, 
                          max_treedepth = max_treedepth, QR = QR, sparse = sparse, ...)
-
+  if (algorithm != "optimizing" && !is(stanfit, "stanfit")) return(stanfit)
   y_mod <- attr(stanfit, "y_mod")
   e_mod <- attr(stanfit, "e_mod")
   a_mod <- attr(stanfit, "a_mod")

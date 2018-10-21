@@ -4,7 +4,8 @@
 \alias{model.frame.stanmvreg}
 \title{model.frame method for stanmvreg objects}
 \usage{
-\method{model.frame}{stanmvreg}(formula, fixed.only = FALSE, m = NULL, ...)
+\method{model.frame}{stanmvreg}(formula, fixed.only = FALSE, m = NULL,
+  ...)
 }
 \arguments{
 \item{formula, ...}{See \code{\link[stats]{model.frame}}.}

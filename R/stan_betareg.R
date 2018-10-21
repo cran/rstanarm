@@ -130,8 +130,9 @@ stan_betareg <-
     if (!requireNamespace("betareg", quietly = TRUE))
       stop("Please install the betareg package before using 'stan_betareg'.")
     
-    data <- validate_data(data, if_missing = environment(formula))
     mc <- match.call(expand.dots = FALSE)
+    data <- validate_data(data, if_missing = environment(formula))
+    mc$data <- data
     mc$model <- mc$y <- mc$x <- TRUE
     
     # NULLify any Stan specific arguments in mc
@@ -170,7 +171,7 @@ stan_betareg <-
                        prior_phi = prior_phi, prior_PD = prior_PD,
                        algorithm = algorithm, adapt_delta = adapt_delta, 
                        QR = QR)
-    
+    if (algorithm != "optimizing" && !is(stanfit, "stanfit")) return(stanfit)
     if (is.null(link.phi) && is.null(Z))
       link_phi <- "identity"
     sel <- apply(X, 2L, function(x) !all(x == 1) && length(unique(x)) < 2)
@@ -191,6 +192,7 @@ stan_betareg <-
       xlev <- if (is.factor(x) || is.character(x)) levels(x) else NULL
       xlev[!vapply(xlev, is.null, NA)]
     })
+    out$levels <- br$levels
     if (!x)
       out$x <- NULL
     if (!y)

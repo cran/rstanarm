@@ -9,23 +9,24 @@
 \usage{
 stan_aov(formula, data, projections = FALSE, contrasts = NULL, ...,
   prior = R2(stop("'location' must be specified")), prior_PD = FALSE,
-  algorithm = c("sampling", "meanfield", "fullrank"), adapt_delta = NULL)
-
-stan_lm(formula, data, subset, weights, na.action, model = TRUE, x = FALSE,
-  y = FALSE, singular.ok = TRUE, contrasts = NULL, offset, ...,
-  prior = R2(stop("'location' must be specified")), prior_intercept = NULL,
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
+  algorithm = c("sampling", "meanfield", "fullrank"),
   adapt_delta = NULL)
+
+stan_lm(formula, data, subset, weights, na.action, model = TRUE,
+  x = FALSE, y = FALSE, singular.ok = TRUE, contrasts = NULL,
+  offset, ..., prior = R2(stop("'location' must be specified")),
+  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
+  "meanfield", "fullrank"), adapt_delta = NULL)
 
 stan_lm.wfit(x, y, w, offset = NULL, singular.ok = TRUE, ...,
-  prior = R2(stop("'location' must be specified")), prior_intercept = NULL,
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL)
+  prior = R2(stop("'location' must be specified")),
+  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
+  "meanfield", "fullrank"), adapt_delta = NULL)
 
 stan_lm.fit(x, y, offset = NULL, singular.ok = TRUE, ...,
-  prior = R2(stop("'location' must be specified")), prior_intercept = NULL,
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL)
+  prior = R2(stop("'location' must be specified")),
+  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
+  "meanfield", "fullrank"), adapt_delta = NULL)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[stats]{lm}}, 
@@ -81,7 +82,20 @@ without a \code{scale}, then the standard deviation is taken to be
 the marginal standard deviation of the outcome divided by the square
 root of the sample size, which is legitimate because the marginal
 standard deviation of the outcome is a primitive parameter being
-estimated.}
+estimated.
+
+\strong{Note:} If using a dense representation of the design matrix
+---i.e., if the \code{sparse} argument is left at its default value of
+\code{FALSE}--- then the prior distribution for the intercept is set so it
+applies to the value \emph{when all predictors are centered}. If you prefer
+to specify a prior on the intercept without the predictors being
+auto-centered, then you have to omit the intercept from the
+\code{\link[stats]{formula}} and include a column of ones as a predictor,
+in which case some element of \code{prior} specifies the prior on it,
+rather than \code{prior_intercept}. Regardless of how
+\code{prior_intercept} is specified, the reported \emph{estimates} of the
+intercept always correspond to a parameterization without centered
+predictors (i.e., same as in \code{glm}).}
 
 \item{w}{Same as in \code{\link[stats]{lm.wfit}} but rarely specified.}
 }
@@ -110,7 +124,7 @@ The \code{stan_lm} function is similar in syntax to the
   \code{"sampling"}). The \code{stan_lm} function has a formula-based
   interface and would usually be called by users but the \code{stan_lm.fit}
   and \code{stan_lm.wfit} functions might be called by other functions that
-  parse the data themselves and are analagous to \code{\link[stats]{lm.fit}}
+  parse the data themselves and are analogous to \code{\link[stats]{lm.fit}}
   and \code{\link[stats]{lm.wfit}} respectively.
      
   In addition to estimating \code{sigma} --- the standard deviation of the
@@ -126,17 +140,19 @@ The \code{stan_lm} function is similar in syntax to the
   checking convergence because it is reasonably normally distributed
   and a function of all the parameters in the model.
   
-  The \code{stan_aov} function is similar to \code{\link[stats]{aov}} and
-  has a somewhat customized \code{\link{print}} method but basically just 
-  calls \code{stan_lm} with dummy variables to do a Bayesian analysis of
-  variance.
+  The \code{stan_aov} function is similar to \code{\link[stats]{aov}}, but
+  does a Bayesian analysis of variance that is basically equivalent to
+  \code{stan_lm} with dummy variables. \code{stan_aov} has a somewhat
+  customized \code{\link{print}} method that prints an ANOVA-like table in
+  addition to the output printed for \code{stan_lm} models.
 }
 \examples{
 \donttest{
 op <- options(contrasts = c("contr.helmert", "contr.poly"))
-stan_aov(yield ~ block + N*P*K, data = npk,
-         prior = R2(0.5), seed = 12345) 
+fit_aov <- stan_aov(yield ~ block + N*P*K, data = npk,
+         prior = R2(0.5), seed = 12345)
 options(op)
+print(fit_aov)
 }
             
 (fit <- stan_lm(mpg ~ wt + qsec + am, data = mtcars, prior = R2(0.75), 

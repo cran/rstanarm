@@ -1,8 +1,8 @@
 Package: rstanarm
 Type: Package
 Title: Bayesian Applied Regression Modeling via Stan
-Version: 2.17.4
-Date: 2018-04-12
+Version: 2.18.1
+Date: 2018-10-20
 Authors@R: c(person("Jonah", "Gabry", email = "jsg2201@columbia.edu", role = "aut"),
              person("Imad", "Ali", role = "ctb"),
              person("Sam", "Brilleman", role = "ctb"),
@@ -29,15 +29,15 @@ Description: Estimates previously compiled regression models using the 'rstan'
     estimation. Users specify models via the customary R syntax with a formula and
     data.frame plus some additional arguments for priors.
 License: GPL (>= 3)
-Depends: R (>= 3.2.0), Rcpp (>= 0.12.0), methods
+Depends: R (>= 3.4.0), Rcpp (>= 0.12.0), methods
 Imports: bayesplot (>= 1.5.0), ggplot2 (>= 2.2.1), lme4 (>= 1.1-8), loo
         (>= 2.0.0), Matrix (>= 1.2-13), nlme (>= 3.1-124), rstan (>=
-        2.17.2), rstantools (>= 1.4.0), shinystan (>= 2.3.0), stats,
+        2.18.1), rstantools (>= 1.4.0), shinystan (>= 2.3.0), stats,
         survival (>= 2.40.1), utils
 Suggests: betareg, data.table (>= 1.10.0), digest, gridExtra, HSAUR3,
         knitr (>= 1.15.1), MASS, mgcv (>= 1.8-13), rmarkdown, roxygen2,
         testthat (>= 1.0.2)
-LinkingTo: StanHeaders (>= 2.17.1), rstan (>= 2.17.2), BH (>= 1.65.0),
+LinkingTo: StanHeaders (>= 2.18.0), rstan (>= 2.18.1), BH (>= 1.66.0),
         Rcpp (>= 0.12.0), RcppEigen (>= 0.3.3.3.0)
 SystemRequirements: GNU make, pandoc (>= 1.12.3), pandoc-citeproc
 VignetteBuilder: knitr
@@ -46,8 +46,8 @@ NeedsCompilation: yes
 URL: http://discourse.mc-stan.org, http://mc-stan.org/,
         http://mc-stan.org/rstanarm/
 BugReports: https://github.com/stan-dev/rstanarm/issues
-RoxygenNote: 6.0.1
-Packaged: 2018-04-13 01:51:52 UTC; goodrich
+RoxygenNote: 6.1.0
+Packaged: 2018-10-20 22:29:40 UTC; ben
 Author: Jonah Gabry [aut],
   Imad Ali [ctb],
   Sam Brilleman [ctb],
@@ -66,4 +66,4 @@ Author: Jonah Gabry [aut],
   Ben Goodrich [cre, aut]
 Maintainer: Ben Goodrich <benjamin.goodrich@columbia.edu>
 Repository: CRAN
-Date/Publication: 2018-04-13 08:28:22 UTC
+Date/Publication: 2018-10-21 21:40:02 UTC

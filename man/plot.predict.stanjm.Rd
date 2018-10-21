@@ -4,9 +4,10 @@
 \alias{plot.predict.stanjm}
 \title{Plot the estimated subject-specific or marginal longitudinal trajectory}
 \usage{
-\method{plot}{predict.stanjm}(x, ids = NULL, limits = c("ci", "pi", "none"),
-  xlab = NULL, ylab = NULL, vline = FALSE, plot_observed = FALSE,
-  facet_scales = "free_x", ci_geom_args = NULL, grp_overlay = FALSE, ...)
+\method{plot}{predict.stanjm}(x, ids = NULL, limits = c("ci", "pi",
+  "none"), xlab = NULL, ylab = NULL, vline = FALSE,
+  plot_observed = FALSE, facet_scales = "free_x",
+  ci_geom_args = NULL, grp_overlay = FALSE, ...)
 }
 \arguments{
 \item{x}{A data frame and object of class \code{predict.stanjm}
