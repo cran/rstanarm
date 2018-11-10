@@ -1,5 +1,5 @@
 params <-
-list(EVAL = TRUE)
+list(EVAL = FALSE)
 
 ## ---- SETTINGS-knitr, include=FALSE--------------------------------------
 stopifnot(require(knitr))
@@ -16,33 +16,19 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=FALSE-----------------------------------------
-library(ggplot2)
-theme_set(bayesplot::theme_default())
-
-## ---- SETTINGS-rstan, include=FALSE--------------------------------------
-ITER <- 500L
-CHAINS <- 2L
-CORES <- 2L
-SEED <- 12345
-
-## ---- SETTINGS-loo, include=FALSE----------------------------------------
-loo.cores <- if (exists("CORES")) CORES else 1L
-options(mc.cores = loo.cores)
-
 ## ----aov-weightgain-aov--------------------------------------------------
-data("weightgain", package = "HSAUR3")
-coef(aov(weightgain ~ source * type, data = weightgain))
+#  data("weightgain", package = "HSAUR3")
+#  coef(aov(weightgain ~ source * type, data = weightgain))
 
 ## ----aov-weightgain-mcmc, results="hide"---------------------------------
-library(rstanarm)
-post1 <- stan_aov(weightgain ~ source * type, data = weightgain, 
-                  prior = R2(location = 0.5), adapt_delta = 0.999,
-                  chains = CHAINS, cores = CORES, seed = SEED)
-post1
+#  library(rstanarm)
+#  post1 <- stan_aov(weightgain ~ source * type, data = weightgain,
+#                    prior = R2(location = 0.5), adapt_delta = 0.999,
+#                    chains = CHAINS, cores = CORES, seed = SEED)
+#  post1
 
 ## ---- echo=FALSE---------------------------------------------------------
-print(post1)
+#  print(post1)
 
 ## ---- aov-weightgain-stan_lmer, eval=FALSE-------------------------------
 #  post2 <- stan_lmer(weightgain ~ 1 + (1|source) + (1|type) + (1|source:type),

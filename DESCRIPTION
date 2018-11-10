@@ -1,8 +1,8 @@
 Package: rstanarm
 Type: Package
 Title: Bayesian Applied Regression Modeling via Stan
-Version: 2.18.1
-Date: 2018-10-20
+Version: 2.18.2
+Date: 2018-11-08
 Authors@R: c(person("Jonah", "Gabry", email = "jsg2201@columbia.edu", role = "aut"),
              person("Imad", "Ali", role = "ctb"),
              person("Sam", "Brilleman", role = "ctb"),
@@ -47,7 +47,7 @@ URL: http://discourse.mc-stan.org, http://mc-stan.org/,
         http://mc-stan.org/rstanarm/
 BugReports: https://github.com/stan-dev/rstanarm/issues
 RoxygenNote: 6.1.0
-Packaged: 2018-10-20 22:29:40 UTC; ben
+Packaged: 2018-11-08 22:19:38 UTC; ben
 Author: Jonah Gabry [aut],
   Imad Ali [ctb],
   Sam Brilleman [ctb],
@@ -66,4 +66,4 @@ Author: Jonah Gabry [aut],
   Ben Goodrich [cre, aut]
 Maintainer: Ben Goodrich <benjamin.goodrich@columbia.edu>
 Repository: CRAN
-Date/Publication: 2018-10-21 21:40:02 UTC
+Date/Publication: 2018-11-10 16:30:02 UTC
