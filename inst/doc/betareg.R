@@ -33,9 +33,9 @@ opts_chunk$set(
 ## ----simulated-fit, results = "hide"-------------------------------------
 #  library(rstanarm)
 #  fit1 <- stan_betareg(y ~ x | z, data = dat, link = "logit", link.phi = "log",
-#                       chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+#                       cores = 2, seed = 12345)
 #  fit2 <- stan_betareg(y ~ -1 + x , data = dat, link = "logit", link.phi = "log",
-#                       chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+#                       cores = 2, seed = 12345)
 #  round(coef(fit1), 2)
 #  round(coef(fit2), 2)
 
@@ -60,16 +60,16 @@ opts_chunk$set(
 ## ----simulated-loo-------------------------------------------------------
 #  loo1 <- loo(fit1)
 #  loo2 <- loo(fit2)
-#  compare_models(loo1, loo2)
+#  loo_compare(loo1, loo2)
 
 ## ---- gas-fit, results="hide"--------------------------------------------
 #  library(rstanarm)
 #  data("GasolineYield", package = "betareg")
 #  gas_fit1 <- stan_betareg(yield ~ temp + batch, data = GasolineYield, link = "logit",
-#                           chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+#                           seed = 12345)
 #  gas_fit2 <- stan_betareg(yield ~ temp + batch | pressure,
 #                           data = GasolineYield, link = "logit",
-#                           chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+#                           seed = 12345)
 #  round(coef(gas_fit1), 2)
 #  round(coef(gas_fit2), 2)
 
@@ -90,5 +90,5 @@ opts_chunk$set(
 ## ---- gas-loo------------------------------------------------------------
 #  gas_loo1 <- loo(gas_fit1)
 #  gas_loo2 <- loo(gas_fit2)
-#  compare_models(gas_loo1, gas_loo2)
+#  loo_compare(gas_loo1, gas_loo2)
 

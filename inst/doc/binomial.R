@@ -27,11 +27,11 @@ opts_chunk$set(
 #    scale_fill_manual(values = c("gray30", "skyblue"))
 
 ## ---- binom-arsenic-mcmc, results="hide"---------------------------------
-#  t_prior <- student_t(df = 7, location = 0, scale = 2.5)
+#  t_prior <- student_t(df = 7, location = 0, scale = 2.5, autoscale = FALSE)
 #  fit1 <- stan_glm(switch ~ dist100, data = wells,
 #                   family = binomial(link = "logit"),
 #                   prior = t_prior, prior_intercept = t_prior,
-#                   chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+#                   cores = 2, seed = 12345)
 
 ## ---- binom-arsenic-print, echo=FALSE------------------------------------
 #  (coef_fit1 <- round(coef(fit1), 3))
@@ -77,35 +77,34 @@ opts_chunk$set(
 #  theme_update(legend.position = "none")
 
 ## ---- binom-arsenic-plot-model2-alt--------------------------------------
-#  if (require(gridExtra)) {
-#    # Quantiles
-#    q_ars <- quantile(wells$dist100, seq(0, 1, 0.25))
-#    q_dist <- quantile(wells$arsenic, seq(0, 1, 0.25))
-#    base <- ggplot(wells) + xlim(c(0, NA)) +
-#      scale_y_continuous(breaks = c(0, 0.5, 1))
-#    vary_arsenic <- base + jitt(x="arsenic", y="switch", color="switch")
-#    vary_dist <- base + jitt(x="dist100", y="switch", color="switch")
-#    for (i in 1:5) {
-#      vary_dist <-
-#        vary_dist + stat_function(fun = pr_switch2, color = "gray35",
-#                                  args = list(ests = coef(fit2), y = q_dist[i]))
-#      vary_arsenic <-
-#        vary_arsenic + stat_function(fun = pr_switch2, color = "gray35",
-#                                     args = list(ests = coef(fit2), x = q_ars[i]))
-#    }
-#    grid.arrange(vary_dist, vary_arsenic, ncol = 2)
+#  # Quantiles
+#  q_ars <- quantile(wells$dist100, seq(0, 1, 0.25))
+#  q_dist <- quantile(wells$arsenic, seq(0, 1, 0.25))
+#  base <- ggplot(wells) + xlim(c(0, NA)) +
+#    scale_y_continuous(breaks = c(0, 0.5, 1))
+#  vary_arsenic <- base + jitt(x="arsenic", y="switch", color="switch")
+#  vary_dist <- base + jitt(x="dist100", y="switch", color="switch")
+#  for (i in 1:5) {
+#    vary_dist <-
+#      vary_dist + stat_function(fun = pr_switch2, color = "gray35",
+#                                args = list(ests = coef(fit2), y = q_dist[i]))
+#    vary_arsenic <-
+#      vary_arsenic + stat_function(fun = pr_switch2, color = "gray35",
+#                                   args = list(ests = coef(fit2), x = q_ars[i]))
 #  }
+#  bayesplot_grid(vary_dist, vary_arsenic,
+#                 grid_args = list(ncol = 2))
 
 ## ---- binom-arsenic-loo--------------------------------------------------
 #  (loo1 <- loo(fit1))
 #  (loo2 <- loo(fit2))
-#  compare_models(loo1, loo2)
+#  loo_compare(loo1, loo2)
 
 ## ---- results = "hide"---------------------------------------------------
 #  post <- stan_clogit(case ~ spontaneous + induced + (1 | parity),
 #                      data = infert[order(infert$stratum), ], # order necessary
 #                      strata = stratum, QR = TRUE,
-#                      chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+#                      cores = 2, seed = 12345)
 
 ## ------------------------------------------------------------------------
 #  post

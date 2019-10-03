@@ -71,6 +71,9 @@ plot(fit, "areas", regex_pars = "period",
 x <- as.array(fit, regex_pars = "period")
 bayesplot::mcmc_areas(x, prob = 0.5, prob_outer = 0.9)
 
+# Ridgelines version of the areas plot
+bayesplot::mcmc_areas_ridges(x, regex_pars = "period", prob = 0.9)
+
 
 ##################################
 ### Histograms & density plots ###
@@ -146,10 +149,12 @@ plot(fit, regex_pars = c("herd:[279]", "period2"))
 
 }
 \references{
-Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., and Gelman,
-  A. (2018). Visualization in Bayesian workflow. \emph{Journal of the Royal
-  Statistical Society Series A}, accepted for publication. arXiv preprint:
-  \url{http://arxiv.org/abs/1709.01449}.
+Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
+  Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
+  Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
+  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
+  \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
+  \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 }
 \seealso{
 \itemize{ 

@@ -3,12 +3,14 @@
 \name{loo.stanreg}
 \alias{loo.stanreg}
 \alias{loo}
-\alias{waic}
 \alias{waic.stanreg}
-\alias{kfold}
-\alias{compare_models}
+\alias{waic}
+\alias{loo_compare.stanreg}
+\alias{loo_compare}
+\alias{loo_compare.stanreg_list}
 \alias{loo_model_weights.stanreg_list}
 \alias{loo_model_weights}
+\alias{compare_models}
 \title{Information criteria and cross-validation}
 \usage{
 \method{loo}{stanreg}(x, ..., cores = getOption("mc.cores", 1),
@@ -16,29 +18,34 @@
 
 \method{waic}{stanreg}(x, ...)
 
-kfold(x, K = 10, save_fits = FALSE, folds = NULL)
+\method{loo_compare}{stanreg}(x, ..., criterion = c("loo", "kfold",
+  "waic"), detail = FALSE)
 
-compare_models(..., loos = list(), detail = FALSE)
+\method{loo_compare}{stanreg_list}(x, ..., criterion = c("loo", "kfold",
+  "waic"), detail = FALSE)
 
 \method{loo_model_weights}{stanreg_list}(x, ...,
   cores = getOption("mc.cores", 1), k_threshold = NULL)
+
+compare_models(..., loos = list(), detail = FALSE)
 }
 \arguments{
-\item{x}{For \code{loo}, \code{waic}, and \code{kfold} methods, a fitted
-  model object returned by one of the rstanarm modeling functions. See
-  \link{stanreg-objects}.
+\item{x}{For \code{loo} and \code{waic}, a fitted model object returned by
+  one of the rstanarm modeling functions. See \link{stanreg-objects}.
 
-  For \code{loo_model_weights}, \code{x} should be a "stanreg_list"
-  object, which is a list of fitted model objects created by
-  \code{\link{stanreg_list}}.}
+  For the \code{loo_model_weights} method, \code{x} should be a
+  "stanreg_list" object, which is a list of fitted model objects created by
+  \code{\link{stanreg_list}}. \code{loo_compare} also allows \code{x} to be a
+  single stanreg object, with the remaining objects passed via \code{...}, or
+  a single \code{stanreg_list} object.}
 
-\item{...}{For \code{compare_models}, \code{...} should contain two or more
-  objects returned by the \code{loo}, \code{kfold}, or \code{waic} method
-  (see the \strong{Examples} section, below).
+\item{...}{For \code{loo_compare.stanreg}, \code{...} can contain objects
+  returned by the \code{loo}, \code{\link[=kfold.stanreg]{kfold}}, or
+  \code{waic} method (see the \strong{Examples} section, below).
 
-  For \code{loo_model_weights}, \code{...} should contain arguments
-  (e.g. \code{method}) to pass to the default
-  \code{\link[loo]{loo_model_weights}} method from the \pkg{loo} package.}
+  For \code{loo_model_weights}, \code{...} should contain arguments (e.g.
+  \code{method}) to pass to the default \code{\link[loo]{loo_model_weights}}
+  method from the \pkg{loo} package.}
 
 \item{cores, save_psis}{Passed to \code{\link[loo]{loo}}.}
 
@@ -46,37 +53,18 @@ compare_models(..., loos = list(), detail = FALSE)
 parameters \eqn{k} estimated by \code{loo}. See the \emph{How to proceed
 when \code{loo} gives warnings} section, below, for details.}
 
-\item{K}{For \code{kfold}, the number of subsets (folds)
-into which the data will be partitioned for performing
-\eqn{K}-fold cross-validation. The model is refit \code{K} times, each time
-leaving out one of the \code{K} folds. If \code{K} is equal to the total
-number of observations in the data then \eqn{K}-fold cross-validation is
-equivalent to exact leave-one-out cross-validation.}
+\item{criterion}{For \code{loo_compare.stanreg} and
+\code{loo_compare.stanreg_list}, should the comparison be based on LOO-CV
+(\code{criterion="loo"}), K-fold-CV (\code{criterion="kfold"}), or WAIC
+(\code{criterion="waic"}). The default is LOO-CV. See the \strong{Comparing
+models} and \strong{Examples} sections below.}
 
-\item{save_fits}{For \code{kfold}, if \code{TRUE}, a component \code{'fits'}
-is added to the returned object to store the cross-validated
-\link[=stanreg-objects]{stanreg} objects and the indices of the omitted
-observations for each fold. Defaults to \code{FALSE}.}
+\item{detail}{For \code{loo_compare.stanreg} and
+\code{loo_compare.stanreg_list}, if \code{TRUE} then extra information
+about each model (currently just the model formulas) will be printed with
+the output.}
 
-\item{folds}{For \code{kfold}, an optional integer vector with one element
-  per observation in the data used to fit the model. Each element of the
-  vector is an integer in \code{1:K} indicating to which of the \code{K}
-  folds the corresponding observation belongs. There are some convenience
-  functions available in the \pkg{loo} package that create integer vectors to
-  use for this purpose (see the \strong{Examples} section below and also the
-  \link[loo]{kfold-helpers} page).
-
-  If \code{folds} is not specified then the default is to call
-  \code{loo::\link[loo]{kfold_split_random}} to randomly partition the data
-  into \code{K} subsets of equal (or as close to equal as possible) size.}
-
-\item{loos}{For \code{compare_models}, a list of two or more objects returned
-by the \code{loo}, \code{kfold}, or \code{waic} method. This argument can
-be used as an alternative to passing these objects via \code{...}.}
-
-\item{detail}{For \code{compare_models}, if \code{TRUE} then extra
-information about each model (currently just the model formulas) will be
-printed with the output.}
+\item{loos}{a list of objects produced by the \code{\link{loo}} function}
 }
 \value{
 The structure of the objects returned by \code{loo} and \code{waic}
@@ -84,26 +72,23 @@ The structure of the objects returned by \code{loo} and \code{waic}
   \code{\link[loo]{loo}} and \code{\link[loo]{waic}} (from the \pkg{loo}
   package).
 
-\code{kfold} returns an object with classes 'kfold' and 'loo' that
-  has a similar structure as the objects returned by the \code{loo} and
-  \code{waic} methods.
-
-\code{compare_models} returns a vector or matrix with class
-  'compare.loo'. See the \strong{Comparing models} section below for more
-  details.
+\code{loo_compare} returns a matrix with class 'compare.loo'. See the
+  \strong{Comparing models} section below for more details.
 }
 \description{
 For models fit using MCMC, compute approximate leave-one-out
   cross-validation (LOO, LOOIC) or, less preferably, the Widely Applicable
   Information Criterion (WAIC) using the \pkg{\link[=loo-package]{loo}}
-  package. Functions for \eqn{K}-fold cross-validation, model comparison,
-  and model weighting/averaging are also provided. \strong{Note}:
-  these functions are not guaranteed to work properly unless the \code{data}
-  argument was specified when the model was fit. Also, as of \pkg{loo}
-  version \code{2.0.0} the default number of cores is now only 1,  but we
-  recommend using as many (or close to as many) cores as possible by setting
-  the \code{cores} argument or using \code{options(mc.cores = VALUE)} to set
-  it for an entire session.
+  package. (For \eqn{K}-fold cross-validation see \code{\link{kfold.stanreg}}.)
+  Functions for  model comparison, and model weighting/averaging are also
+  provided. 
+  
+  \strong{Note}: these functions are not guaranteed to work
+  properly unless the \code{data} argument was specified when the model was
+  fit. Also, as of \pkg{loo} version \code{2.0.0} the default number of cores
+  is now only 1, but we recommend using as many (or close to as many) cores
+  as possible by setting the \code{cores} argument or using
+  \code{options(mc.cores = VALUE)} to set it for an entire session.
 }
 \section{Approximate LOO CV}{
  The \code{loo} method for stanreg objects
@@ -138,7 +123,9 @@ For models fit using MCMC, compute approximate leave-one-out
   problematic observations. The pointwise contributions of these observations
   to the total ELPD are then computed directly and substituted for the
   previous estimates from these \eqn{J} observations that are stored in the
-  object created by \code{loo}.
+  object created by \code{loo}. Another option to consider is K-fold
+  cross-validation, which is documented on a separate page (see
+  \code{\link[=kfold.stanreg]{kfold}}).
 
   \strong{Note}: in the warning messages issued by \code{loo} about large
   Pareto \eqn{k} estimates we recommend setting \code{k_threshold} to at
@@ -149,44 +136,26 @@ For models fit using MCMC, compute approximate leave-one-out
   }
 }
 
-\section{K-fold CV}{
- The \code{kfold} function performs exact \eqn{K}-fold
-  cross-validation. First the data are randomly partitioned into \eqn{K}
-  subsets of equal (or as close to equal as possible) size (unless the folds
-  are specified manually). Then the model is refit \eqn{K} times, each time
-  leaving out one of the \eqn{K} subsets. If \eqn{K} is equal to the total
-  number of observations in the data then \eqn{K}-fold cross-validation is
-  equivalent to exact leave-one-out cross-validation (to which \code{loo} is
-  an efficient approximation). The \code{compare_models} function is also
-  compatible with the objects returned by \code{kfold}.
-}
-
 \section{Comparing models}{
- \code{compare_models} is a method for the
-  \code{\link[loo]{compare}} function in the \pkg{loo} package that
-  performs some extra checks to make sure the \pkg{rstanarm} models are
-  suitable for comparison. These extra checks include verifying that all
-  models to be compared were fit using the same outcome variable and
-  likelihood family.
+ "loo" (or "waic" or "kfold") objects can be passed
+  to the \code{\link[loo]{loo_compare}} function in the \pkg{loo} package to
+  perform model comparison. \pkg{rstanarm} also provides a
+  \code{loo_compare.stanreg} method that can be used if the "loo" (or "waic"
+  or "kfold") object has been added to the fitted model object (see the
+  \strong{Examples} section below for how to do this). This second method
+  allows \pkg{rstanarm} to perform some extra checks that can't be done by
+  the \pkg{loo} package itself (e.g., verifying that all models to be
+  compared were fit using the same outcome variable).
 
-  If exactly two models are being compared then \code{compare_models} returns
-  a vector containing the difference in expected log predictive density
-  (ELPD) between the models and the standard error of that difference (the
-  documentation for \code{\link[loo]{compare}} in the \pkg{loo}
-  package has additional details about the calculation of the standard error
-  of the difference). The difference in ELPD will be negative if the expected
-  out-of-sample predictive accuracy of the first model is higher. If the
-  difference is be positive then the second model is preferred.
-
-  If more than two models are being compared then \code{compare_models}
-  returns a matrix with one row per model. This matrix summarizes the objects
-  and arranges them in descending order according to expected out-of-sample
-  predictive accuracy. That is, the first row of the matrix will be
-  for the model with the largest ELPD (smallest LOOIC).
-  The columns containing the ELPD difference and the standard error of the 
-  difference contain values relative to the model with the best ELPD.
-  See the \strong{Details} section at the \code{\link[loo]{compare}}
-  page in the \pkg{loo} package for more information.
+  \code{loo_compare} will return a matrix with one row per model and columns
+  containing the ELPD difference and the standard error of the difference. In
+  the first row of the matrix will be the model with the largest ELPD
+  (smallest LOOIC) and will contain zeros (there is no difference between
+  this model and itself). For each of the remaining models the ELPD
+  difference and SE are reported relative to the model with the best ELPD
+  (the first row). See the \strong{Details} section at the
+  \code{\link[loo]{loo_compare}} page in the \pkg{loo} package for more
+  information.
 }
 
 \section{Model weights}{
@@ -203,54 +172,57 @@ For models fit using MCMC, compute approximate leave-one-out
 fit1 <- stan_glm(mpg ~ wt, data = mtcars)
 fit2 <- stan_glm(mpg ~ wt + cyl, data = mtcars)
 
-# compare on LOOIC
 # (for bigger models use as many cores as possible)
 loo1 <- loo(fit1, cores = 2)
 print(loo1)
 loo2 <- loo(fit2, cores = 2)
 print(loo2)
 
-# when comparing exactly two models, the reported 'elpd_diff'
-# will be positive if the expected predictive accuracy for the
-# second model is higher. the approximate standard error of the
-# difference is also reported.
-compare_models(loo1, loo2)
-compare_models(loos = list(loo1, loo2)) # can also provide list
+# when comparing models the loo objects can be passed to loo_compare
+# as individual arguments or as a list of loo objects
+loo_compare(loo1, loo2)
+loo_compare(list(loo1, loo2))
 
-# when comparing three or more models they are ordered by
-# expected predictive accuracy. elpd_diff and se_diff are relative
-# to the model with best elpd_loo (first row)
+# if the fitted model objects contain a loo object in the component "loo"
+# then the model objects can be passed directly or as a stanreg_list
+fit1$loo <- loo1
+fit2$loo <- loo2
+loo_compare(fit1, fit2)
+
+# if the fitted model objects contain a loo object _and_ a waic or kfold
+# object, then the criterion argument determines which of them the comparison
+# is based on 
+fit1$waic <- waic(fit1)
+fit2$waic <- waic(fit2)
+loo_compare(fit1, fit2, criterion = "waic")
+
+# the models can also be combined into a stanreg_list object, and more 
+# informative model names can be provided to use when printing
+model_list <- stanreg_list(fit1, fit2, model_names = c("Fewer predictors", "More predictors"))
+loo_compare(model_list)
+
 fit3 <- stan_glm(mpg ~ disp * as.factor(cyl), data = mtcars)
 loo3 <- loo(fit3, cores = 2, k_threshold = 0.7)
-compare_models(loo1, loo2, loo3)
+loo_compare(loo1, loo2, loo3)
 
-# setting detail=TRUE will also print model formulas
-compare_models(loo1, loo2, loo3, detail=TRUE)
+# setting detail=TRUE will also print model formulas if used with
+# loo_compare.stanreg or loo_compare.stanreg_list
+fit3$loo <- loo3
+model_list <- stanreg_list(fit1, fit2, fit3)
+loo_compare(model_list, detail=TRUE)
 
 # Computing model weights
-model_list <- stanreg_list(fit1, fit2, fit3)
-loo_model_weights(model_list, cores = 2) # can specify k_threshold=0.7 if necessary
+#
+# if the objects in model_list already have 'loo' components then those
+# will be used. otherwise loo will be computed for each model internally
+# (in which case the 'cores' argument may also be used and is passed to loo())
+loo_model_weights(model_list)  # defaults to method="stacking"
+loo_model_weights(model_list,  method = "pseudobma")
+loo_model_weights(model_list,  method = "pseudobma", BB = FALSE)
 
-# if you have already computed loo then it's more efficient to pass a list
-# of precomputed loo objects than a "stanreg_list", avoiding the need
-# for loo_models weights to call loo() internally
-loo_list <- list(fit1 = loo1, fit2 = loo2, fit3 = loo3) # names optional (affects printing)
+# you can also pass precomputed loo objects directly to loo_model_weights
+loo_list <- list(A = loo1, B = loo2, C = loo3) # names optional (affects printing)
 loo_model_weights(loo_list)
-
-# 10-fold cross-validation
-(kfold1 <- kfold(fit1, K = 10))
-kfold2 <- kfold(fit2, K = 10)
-compare_models(kfold1, kfold2, detail=TRUE)
-
-# Cross-validation stratifying by a grouping variable
-# (note: might get some divergences warnings with this model but 
-# this is just intended as a quick example of how to code this)
-library(loo)
-fit4 <- stan_lmer(mpg ~ disp + (1|cyl), data = mtcars)
-table(mtcars$cyl)
-folds_cyl <- kfold_split_stratified(K = 3, x = mtcars$cyl)
-table(cyl = mtcars$cyl, fold = folds_cyl)
-kfold4 <- kfold(fit4, K = 3, folds = folds_cyl)
 }
 
 }
@@ -266,10 +238,12 @@ Vehtari, A., Gelman, A., and Gabry, J. (2017). Practical
   Analysis}, advance publication,  doi:10.1214/17-BA1091.
   (\href{https://projecteuclid.org/euclid.ba/1516093227}{online}).
 
-Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., and Gelman,
-  A. (2018). Visualization in Bayesian workflow. \emph{Journal of the Royal
-  Statistical Society Series A}, accepted for publication. arXiv preprint:
-  \url{http://arxiv.org/abs/1709.01449}.
+Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
+  Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
+  Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
+  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
+  \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
+  \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 }
 \seealso{
 \itemize{

@@ -30,7 +30,7 @@ opts_chunk$set(
 #                                family = binomial(link = "logit"),
 #                                prior = student_t(df = 7),
 #                                prior_intercept = student_t(df = 7),
-#                                chains = CHAINS, cores = CORES, seed = SEED)
+#                                cores = 2, seed = 12345)
 #  womensrole_bglm_1
 
 ## ---- echo=FALSE---------------------------------------------------------
@@ -46,7 +46,7 @@ opts_chunk$set(
 #  cov2cor(vcov(womensrole_bglm_1))
 
 ## ----rstanarm-shinystan,eval=FALSE---------------------------------------
-#  launch_shinystan(womensrole_bglm_1)
+#  launch_shinystan(womensrole_bglm_1, ppd = FALSE)
 
 ## ----rstanarm-posterior_predict------------------------------------------
 #  y_rep <- posterior_predict(womensrole_bglm_1)
@@ -90,7 +90,7 @@ opts_chunk$set(
 #  plot(loo_bglm_2, label_points = TRUE)
 
 ## ---- rstanarm-loo-compare-----------------------------------------------
-#  compare_models(loo_bglm_1, loo_bglm_2)
+#  loo_compare(loo_bglm_1, loo_bglm_2)
 
 ## ---- rstanarm-loo-print-------------------------------------------------
 #  loo_bglm_1
@@ -108,10 +108,8 @@ opts_chunk$set(
 #  summary(apply(y_rep, 1, diff))
 
 ## ---- rstanarm-rhat-fit, results='hide', warning=TRUE--------------------
-#  bad_rhat <- stan_glm(mpg ~ ., data = mtcars, iter = 20,
-#                       chains = CHAINS, cores = CORES, seed = SEED)
-#  good_rhat <- update(bad_rhat, iter = 500,
-#                      chains = CHAINS, cores = CORES, seed = SEED)
+#  bad_rhat <- stan_glm(mpg ~ ., data = mtcars, iter = 20, chains = 2, seed = 12345)
+#  good_rhat <- update(bad_rhat, iter = 1000, chains = 2, seed = 12345)
 
 ## ---- rstasnarm-rhat-bad-------------------------------------------------
 #  rhat <- summary(bad_rhat)[, "Rhat"]

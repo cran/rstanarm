@@ -24,7 +24,7 @@ opts_chunk$set(
 #  library(rstanarm)
 #  post1 <- stan_aov(weightgain ~ source * type, data = weightgain,
 #                    prior = R2(location = 0.5), adapt_delta = 0.999,
-#                    chains = CHAINS, cores = CORES, seed = SEED)
+#                    seed = 12345)
 #  post1
 
 ## ---- echo=FALSE---------------------------------------------------------
@@ -34,6 +34,5 @@ opts_chunk$set(
 #  post2 <- stan_lmer(weightgain ~ 1 + (1|source) + (1|type) + (1|source:type),
 #                     data = weightgain, prior_intercept = cauchy(),
 #                     prior_covariance = decov(shape = 2, scale = 2),
-#                     adapt_delta = 0.999, chains = CHAINS, cores = CORES,
-#                     seed = SEED)
+#                     adapt_delta = 0.999, seed = 12345)
 

@@ -24,10 +24,13 @@ opts_chunk$set(
 
 ## ----lm-clouds-mcmc, results='hide'--------------------------------------
 #  library(rstanarm)
-#  post <- stan_lm(rainfall ~ seeding * (sne + cloudcover + prewetness +
-#                                          echomotion) + time, data = clouds,
-#                  prior = R2(location = 0.2),
-#                  chains = CHAINS, cores = CORES, seed = SEED)
+#  post <-
+#    stan_lm(
+#      rainfall ~ seeding * (sne + cloudcover + prewetness + echomotion) + time,
+#      data = clouds,
+#      prior = R2(location = 0.2),
+#      seed = 12345
+#    )
 #  post
 
 ## ---- echo=FALSE---------------------------------------------------------
@@ -42,15 +45,19 @@ opts_chunk$set(
 #  qplot(x = c(y1_rep - y0_rep), geom = "histogram", xlab = "Estimated ATE")
 
 ## ----lm-clouds-simple, results="hide"------------------------------------
-#  simple <- stan_glm(rainfall ~ seeding * (sne + cloudcover + prewetness +
-#                                          echomotion) + time,
-#                     data = clouds, family = gaussian(),
-#                     prior = cauchy(), prior_intercept = cauchy(),
-#                     chains = CHAINS, cores = CORES, seed = SEED)
+#  simple <-
+#    stan_glm(
+#      rainfall ~ seeding * (sne + cloudcover + prewetness + echomotion) + time,
+#      data = clouds,
+#      family = gaussian(),
+#      prior = cauchy(),
+#      prior_intercept = cauchy(),
+#      seed = 12345
+#    )
 
 ## ----lm-clouds-loo, warning=TRUE-----------------------------------------
 #  (loo_post <- loo(post))
-#  compare_models(loo_post, loo(simple))
+#  loo_compare(loo_post, loo(simple))
 
 ## ----lm-clouds-plot-loo--------------------------------------------------
 #  plot(loo_post, label_points = TRUE)

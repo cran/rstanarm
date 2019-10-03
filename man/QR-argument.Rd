@@ -41,6 +41,6 @@ The \code{QR} argument is a logical scalar defaulting to
   \url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.
 }
 \references{
-Stan Development Team. (2017). \emph{Stan Modeling Language Users Guide and
-Reference Manual.} \url{http://mc-stan.org/documentation/}
+Stan Development Team. \emph{Stan Modeling Language Users Guide and
+Reference Manual.} \url{https://mc-stan.org/users/documentation/}.
 }

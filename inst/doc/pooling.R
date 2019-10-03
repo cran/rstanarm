@@ -176,7 +176,7 @@ opts_chunk$set(
 #  round(sort(new_lps_sums, decreasing = TRUE), digits = 1)
 
 ## ---- loo----------------------------------------------------------------
-#  compare_models(loo(fit_partialpool), loo(fit_pool), loo(fit_nopool))
+#  loo_compare(loo(fit_partialpool), loo(fit_pool), loo(fit_nopool))
 
 ## ---- ppd----------------------------------------------------------------
 #  newdata <- data.frame(Hits = y_new, AB = K_new, Player = bball$Player)

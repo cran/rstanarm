@@ -21,7 +21,7 @@ opts_chunk$set(
 #  data(kidiq)
 #  post1 <- stan_glm(kid_score ~ mom_hs, data = kidiq,
 #                    family = gaussian(link = "identity"),
-#                    chains = CHAINS, cores = CORES, seed = SEED, iter = ITER)
+#                    seed = 12345)
 #  post2 <- update(post1, formula = . ~ mom_iq)
 #  post3 <- update(post1, formula = . ~ mom_hs + mom_iq)
 #  (post4 <- update(post1, formula = . ~ mom_hs * mom_iq))
@@ -82,18 +82,18 @@ opts_chunk$set(
 
 ## ---- continuous-kidiq-loo-----------------------------------------------
 #  # Compare them with loo
-#  loo1 <- loo(post1)
-#  loo2 <- loo(post2)
-#  loo3 <- loo(post3)
-#  loo4 <- loo(post4)
-#  (comp <- compare_models(loo1, loo2, loo3, loo4))
+#  loo1 <- loo(post1, cores = 2)
+#  loo2 <- loo(post2, cores = 2)
+#  loo3 <- loo(post3, cores = 2)
+#  loo4 <- loo(post4, cores = 2)
+#  (comp <- loo_compare(loo1, loo2, loo3, loo4))
 
 ## ---- continuous-kidiq-loo-2---------------------------------------------
-#  compare_models(loo1, loo4)
+#  loo_compare(loo1, loo4)
 
 ## ---- continuous-kidiq-loo-3---------------------------------------------
-#  compare_models(loo3, loo4)
-#  compare_models(loo2, loo4)
+#  loo_compare(loo3, loo4)
+#  loo_compare(loo2, loo4)
 
 ## ---- continuous-kidiq-pp_check1-----------------------------------------
 #  pp_check(post4, plotfun = "hist", nreps = 5)
@@ -151,7 +151,7 @@ opts_chunk$set(
 #  
 #  fit <- stan_glm(clot_time ~ log_plasma * lot_id, data = clotting2, family = Gamma,
 #                  prior_intercept = normal(0,1), prior = normal(0,1),
-#                  chains = CHAINS, cores = CORES, seed = SEED)
+#                  seed = 12345)
 
 ## ------------------------------------------------------------------------
 #  print(fit, digits = 3)

@@ -28,7 +28,9 @@ stan_glm.fit(x, y, weights = rep(1, NROW(y)), offset = rep(0, NROW(y)),
   prior_smooth = exponential(autoscale = FALSE), prior_ops = NULL,
   group = list(), prior_PD = FALSE, algorithm = c("sampling",
   "optimizing", "meanfield", "fullrank"), mean_PPD = algorithm !=
-  "optimizing", adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+  "optimizing", adapt_delta = NULL, QR = FALSE, sparse = FALSE,
+  importance_resampling = algorithm != "sampling",
+  keep_every = algorithm != "sampling")
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[stats]{glm}}, 
@@ -204,6 +206,16 @@ indicate the group-specific part of the model. In addition, this list must
 have elements for the \code{regularization}, \code{concentration} 
 \code{shape}, and \code{scale} components of a \code{\link{decov}}
 prior for the covariance matrices among the group-specific coefficients.}
+
+\item{importance_resampling}{Logical scalar indicating whether to use 
+importance resampling when approximating the posterior distribution with
+a multivariate normal around the posterior mode, which only applies
+when \code{algorithm} is \code{"optimizing"} but defaults to \code{TRUE}
+in that case}
+
+\item{keep_every}{Positive integer, which defaults to 1, but can be higher
+in order to "thin" the importance sampling realizations. Applies only
+when \code{importance_resampling=TRUE}.}
 }
 \value{
 A \link[=stanreg-objects]{stanreg} object is returned 

@@ -13,7 +13,8 @@ stan_biglm(biglm, xbar, ybar, s_y, ...,
 stan_biglm.fit(b, R, SSR, N, xbar, ybar, s_y, has_intercept = TRUE, ...,
   prior = R2(stop("'location' must be specified")),
   prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL)
+  "meanfield", "fullrank", "optimizing"), adapt_delta = NULL,
+  importance_resampling = TRUE, keep_every = 1)
 }
 \arguments{
 \item{biglm}{The list output by \code{\link[biglm]{biglm}} in the \pkg{biglm}
@@ -87,6 +88,17 @@ design matrix, excluding the intercept}
 
 \item{has_intercept}{A logical scalar indicating whether to add an intercept 
 to the model when estimating it.}
+
+\item{importance_resampling}{Logical scalar indicating whether to use 
+importance resampling when approximating the posterior distribution with
+a multivariate normal around the posterior mode, which only applies
+when \code{algorithm} is \code{"optimizing"} but defaults to \code{TRUE}
+in that case}
+
+\item{keep_every}{Positive integer, which defaults to 1, but can be higher
+in order to thin the importance sampling realizations and also only
+apples when \code{algorithm} is \code{"optimizing"} but defaults to
+\code{TRUE} in that case}
 }
 \value{
 The output of both \code{stan_biglm} and \code{stan_biglm.fit} is an
@@ -134,4 +146,5 @@ post <- stan_biglm.fit(b, R, SSR, N, xbar, ybar, s_y, prior = R2(.75),
                        # the next line is only to make the example go fast
                        chains = 1, iter = 500, seed = 12345)
 cbind(lm = b, stan_lm = rstan::get_posterior_mean(post)[13:15,]) # shrunk
+
 }

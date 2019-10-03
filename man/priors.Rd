@@ -75,7 +75,7 @@ more than two unique values, we divide the prior scale(s) by \code{sd(x)}.}
 \item{df, df1, df2}{Prior degrees of freedom. The default is \eqn{1} for 
 \code{student_t}, in which case it is equivalent to \code{cauchy}. For the 
 hierarchical shrinkage priors (\code{hs} and \code{hs_plus}) the degrees of
-freedom parameter(s) default to \eqn{3}. For the \code{product_normal} 
+freedom parameter(s) default to \eqn{1}. For the \code{product_normal}
 prior, the degrees of freedom parameter must be an integer (vector) that is
 at least \eqn{2} (the default).}
 
@@ -484,8 +484,8 @@ models. \emph{Annals of Applied Statistics}. 2(4), 1360--1383.
 Piironen, J., and Vehtari, A. (2017). Sparsity information and regularization
 in the horseshoe and other shrinkage priors. \url{https://arxiv.org/abs/1707.01694}
 
-Stan Development Team. (2017). \emph{Stan Modeling Language Users Guide and
-Reference Manual.} \url{http://mc-stan.org/documentation/}
+Stan Development Team. \emph{Stan Modeling Language Users Guide and
+Reference Manual.} \url{https://mc-stan.org/users/documentation/}.
 }
 \seealso{
 The various vignettes for the \pkg{rstanarm} package also discuss 

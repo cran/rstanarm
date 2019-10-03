@@ -12,7 +12,7 @@
 
 <meta name="author" content="Sam Brilleman" />
 
-<meta name="date" content="2018-11-08" />
+<meta name="date" content="2019-10-01" />
 
 <title>Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</title>
 
@@ -20,46 +20,254 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 </head>
 
@@ -70,7 +278,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</h1>
 <h4 class="author"><em>Sam Brilleman</em></h4>
-<h4 class="date"><em>2018-11-08</em></h4>
+<h4 class="date"><em>2019-10-01</em></h4>
 
 
 <div id="TOC">
@@ -200,7 +408,7 @@ S_i(t) =
 <p><span class="math display">\[
 f_{mq}(\boldsymbol{\beta}, \boldsymbol{b}_{im}, \alpha_{mq}; t) = \alpha_{mq} \eta_{im}(t)
 \]</span></p>
-<p>and this is often referred to as a <em>current value</em> association structure since it assumes that the log hazard of the event at time <span class="math inline">\(t\)</span> is linearly associated with the value of the longitudinal submodel’s linear predictor also evaluated at time <span class="math inline">\(t\)</span>. This is the most common association structure used in the joint modelling literature to date. In the situation where the longitudinal submodel is based on an identity link function and normal error distribution (i.e. a linear mixed model) the <em>current value</em> association structure can be viewed as a method for including the underlying “true” value of the biomarker as a time-varying covariate in the event submodel.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
+<p>and this is often referred to as a <em>current value</em> association structure since it assumes that the log hazard of the event at time <span class="math inline">\(t\)</span> is linearly associated with the value of the longitudinal submodel’s linear predictor also evaluated at time <span class="math inline">\(t\)</span>. This is the most common association structure used in the joint modelling literature to date. In the situation where the longitudinal submodel is based on an identity link function and normal error distribution (i.e. a linear mixed model) the <em>current value</em> association structure can be viewed as a method for including the underlying “true” value of the biomarker as a time-varying covariate in the event submodel.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <p>However, other association structures are also possible. For example, we could assume the log hazard of the event is linearly associated with the <em>current slope</em> (i.e. rate of change) of the longitudinal submodel’s linear predictor, that is</p>
 <p><span class="math display">\[
 f_{mq}(\boldsymbol{\beta}, \boldsymbol{b}_{i}, \alpha_{mq}; t) = \alpha_{mq} \frac{d\eta_{im}(t)}{dt}
@@ -293,7 +501,7 @@ f_{mq}(\boldsymbol{\beta}, \boldsymbol{b}_{i}, \alpha_{mq}; t) =
     \log p(\boldsymbol{b}_{i} \mid \boldsymbol{\theta}) +
     \log p(\boldsymbol{\theta})
 \]</span></p>
-<p>where <span class="math inline">\(\sum_{j=1}^{n_{im}} \log p(y_{ijm} \mid \boldsymbol{b}_{i}, \boldsymbol{\theta})\)</span> is the log likelihood for the <span class="math inline">\(m^{th}\)</span> longitudinal submodel, <span class="math inline">\(\log p(T_i, d_i \mid \boldsymbol{b}_{i}, \boldsymbol{\theta})\)</span> is the log likelihood for the event submodel, <span class="math inline">\(\log p(\boldsymbol{b}_{i} \mid \boldsymbol{\theta})\)</span> is the log likelihood for the distribution of the group-specific parameters (i.e. random effects), and <span class="math inline">\(\log p(\boldsymbol{\theta})\)</span> represents the log likelihood for the joint prior distribution across all remaining unknown parameters.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+<p>where <span class="math inline">\(\sum_{j=1}^{n_{im}} \log p(y_{ijm} \mid \boldsymbol{b}_{i}, \boldsymbol{\theta})\)</span> is the log likelihood for the <span class="math inline">\(m^{th}\)</span> longitudinal submodel, <span class="math inline">\(\log p(T_i, d_i \mid \boldsymbol{b}_{i}, \boldsymbol{\theta})\)</span> is the log likelihood for the event submodel, <span class="math inline">\(\log p(\boldsymbol{b}_{i} \mid \boldsymbol{\theta})\)</span> is the log likelihood for the distribution of the group-specific parameters (i.e. random effects), and <span class="math inline">\(\log p(\boldsymbol{\theta})\)</span> represents the log likelihood for the joint prior distribution across all remaining unknown parameters.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
 <p>We can rewrite the log likelihood for the event submodel as</p>
 <p><span class="math display">\[
 \log p(T_i, d_i \mid \boldsymbol{b}_{i}, \boldsymbol{\theta}) = 
@@ -420,7 +628,7 @@ p \Big( S^{*}_{k}(t) \mid \mathcal{D} \Big)
     d \boldsymbol{b}_k \space d \boldsymbol{\theta} \\
 \end{aligned}
 \]</span></p>
-<p>We can obtain draws for <span class="math inline">\(\boldsymbol{\tilde{b}}_k\)</span> in the same manner as for the individual-specific parameters <span class="math inline">\(\boldsymbol{b}_i\)</span>. That is, at the <span class="math inline">\(l^{th}\)</span> iteration of the MCMC sampler we draw <span class="math inline">\(\boldsymbol{\tilde{b}}_k^{(l)}\)</span> and store it<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>. However, individual <span class="math inline">\(k\)</span> did not provide any contribution to the training data and so we are effectively taking random draws from the posterior distribution for the individual-specific parameters. We are therefore effectively marginalising over the distribution of the group-specific coefficients when we obtain predictions using the draws <span class="math inline">\(\boldsymbol{\tilde{b}}_k^{(l)}\)</span> fro <span class="math inline">\(l = 1,\dots,L\)</span>. In other words, we are predicting for a new individual whom we have no information except that they are drawn from the same population as the <span class="math inline">\(i = 1,...,N\)</span> individuals in the training data. Because these predictions will incorporate all the uncertainty associated with between-individual variation our 95% credible intervals are likely to be very wide. These types of marginal predictions can be obtained using the <code>posterior_traj</code> and <code>posterior_survfit</code> functions by providing prediction data and specifying <code>dynamic = FALSE</code>; see the examples provided below.</p>
+<p>We can obtain draws for <span class="math inline">\(\boldsymbol{\tilde{b}}_k\)</span> in the same manner as for the individual-specific parameters <span class="math inline">\(\boldsymbol{b}_i\)</span>. That is, at the <span class="math inline">\(l^{th}\)</span> iteration of the MCMC sampler we draw <span class="math inline">\(\boldsymbol{\tilde{b}}_k^{(l)}\)</span> and store it<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. However, individual <span class="math inline">\(k\)</span> did not provide any contribution to the training data and so we are effectively taking random draws from the posterior distribution for the individual-specific parameters. We are therefore effectively marginalising over the distribution of the group-specific coefficients when we obtain predictions using the draws <span class="math inline">\(\boldsymbol{\tilde{b}}_k^{(l)}\)</span> fro <span class="math inline">\(l = 1,\dots,L\)</span>. In other words, we are predicting for a new individual whom we have no information except that they are drawn from the same population as the <span class="math inline">\(i = 1,...,N\)</span> individuals in the training data. Because these predictions will incorporate all the uncertainty associated with between-individual variation our 95% credible intervals are likely to be very wide. These types of marginal predictions can be obtained using the <code>posterior_traj</code> and <code>posterior_survfit</code> functions by providing prediction data and specifying <code>dynamic = FALSE</code>; see the examples provided below.</p>
 <p>The second way is to effectively ignore the group-level structure in the model. That is, to only predict with only the population-level parameters contributing to the model. For example, under a identity link function and normal error distribution (i.e. linear mixed effect longitudinal submodel), we would obtain draws from the distribution <span class="math inline">\(y^{(l)}_{km}(t) \sim N \Big( \boldsymbol{x}^T_{km}(t) \boldsymbol{\beta}_m^{(l)}, \sigma_m^{(l)} \Big)\)</span> where <span class="math inline">\(\boldsymbol{\beta}_m^{(l)}\)</span> and <span class="math inline">\(\sigma_m^{(l)}\)</span> are the population-level parameters and residual error standard deviation, respectively, for the <span class="math inline">\(l^{th}\)</span> draw of the MCMC samples. However, referring to this as a “marginal” prediction is somewhat misleading since we are not explicitly conditioning on the individual-specific parameters but we are implicitly assuming that we know they are equal to zero with absolute certainty. That is, we are actually drawing from the posterior predictive distribution for the longitudinal outcome</p>
 <p><span class="math display">\[ 
 \begin{aligned}
@@ -477,9 +685,9 @@ S^*(t) = \frac{\sum_{i=1}^{N^{pred}} S_i^*(t)}{N^{pred}}
 <h2>Dataset used in the examples</h2>
 <p>We use the Mayo Clinic’s primary biliary cirrhosis (PBC) dataset in the examples below. The dataset contains 312 individuals with primary biliary cirrhosis who participated in a randomised placebo controlled trial of D-penicillamine conducted at the Mayo Clinic between 1974 and 1984 [19]. However, to ensure the examples run quickly, we use a small random subset of just 40 patients from the full data.</p>
 <p>These example data are contained in two separate data frames. The first data frame contains multiple-row per patient longitudinal biomarker information, as shown in</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(pbcLong)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">head</span>(pbcLong)</a></code></pre></div>
 <p>while the second data frame contains single-row per patient survival information, as shown in</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(pbcSurv)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">head</span>(pbcSurv)</a></code></pre></div>
 <p>The variables included across the two datasets can be defined as follows:</p>
 <ul>
 <li><code>age</code> in years</li>
@@ -495,7 +703,7 @@ S^*(t) = \frac{\sum_{i=1}^{N^{pred}} S_i^*(t)}{N^{pred}}
 <li><code>year</code> time (in years) of the longitudinal measurements, taken as time since baseline)</li>
 </ul>
 <p>A description of the example datasets can be found by accessing the following help documentation:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">help</span>(<span class="st">&quot;datasets&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;rstanarm&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">help</span>(<span class="st">&quot;datasets&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;rstanarm&quot;</span>)</a></code></pre></div>
 </div>
 <div id="fitting-the-models" class="section level2">
 <h2>Fitting the models</h2>
@@ -504,32 +712,32 @@ S^*(t) = \frac{\sum_{i=1}^{N^{pred}} S_i^*(t)}{N^{pred}}
 <p>In this example we fit a simple univariate joint model, with one normally distributed longitudinal marker, an association structure based on the current value of the linear predictor, and B-splines baseline hazard. To fit the model we use the joint (longitudinal and time-to-event) modelling function in the <strong>rstanarm</strong> package: <code>stan_jm</code>. When calling <code>stan_jm</code> we must, at a minimum, specify a formula object for each of the longitudinal and event submodels (through the arguments <code>formulaLong</code> and <code>formulaEvent</code>), the data frames which contain the variables for each of the the longitudinal and event submodels (through the arguments <code>dataLong</code> and <code>dataEvent</code>), and the name of the variable representing time in the longitudinal submodel (through the argument <code>time_var</code>).</p>
 <p>The formula for the longitudinal submodel is specified using the <strong>lme4</strong> package formula style. That is <code>y ~ x + (random_effects | grouping_factor)</code>. In this example we specify that log serum bilirubin (<code>logBili</code>) follows a subject-specific linear trajectory. To do this we include a fixed intercept and fixed slope (<code>year</code>), as well as a random intercept and random slope for each subject <code>id</code> (<code>(year | id)</code>).</p>
 <p>The formula for the event submodel is specified using the <strong>survival</strong> package formula style. That is, the outcome of the left of the <code>~</code> needs to be of the format <code>Surv(event_time, event_indicator)</code> for single row per individual data, or <code>Surv(start_time, stop_time, event_indicator)</code> for multiple row per individual data. The latter allows for exogenous time-varying covariates to be included in the event submodel. In this example we assume that the log hazard of death is linearly related to gender (<code>sex</code>) and an indicator of treatment with D-penicillamine (<code>trt</code>).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rstanarm)
-mod1 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(<span class="dt">formulaLong =</span> logBili ~<span class="st"> </span>sex +<span class="st"> </span>trt +<span class="st"> </span>year +<span class="st"> </span>(year |<span class="st"> </span>id), 
-                <span class="dt">dataLong =</span> pbcLong,
-                <span class="dt">formulaEvent =</span> survival::<span class="kw">Surv</span>(futimeYears, death) ~<span class="st"> </span>sex +<span class="st"> </span>trt, 
-                <span class="dt">dataEvent =</span> pbcSurv,
-                <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>,
-                <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">library</span>(rstanarm)</a>
+<a class="sourceLine" id="cb4-2" title="2">mod1 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(<span class="dt">formulaLong =</span> logBili <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt <span class="op">+</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id), </a>
+<a class="sourceLine" id="cb4-3" title="3">                <span class="dt">dataLong =</span> pbcLong,</a>
+<a class="sourceLine" id="cb4-4" title="4">                <span class="dt">formulaEvent =</span> survival<span class="op">::</span><span class="kw">Surv</span>(futimeYears, death) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt, </a>
+<a class="sourceLine" id="cb4-5" title="5">                <span class="dt">dataEvent =</span> pbcSurv,</a>
+<a class="sourceLine" id="cb4-6" title="6">                <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>,</a>
+<a class="sourceLine" id="cb4-7" title="7">                <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</a></code></pre></div>
 <p>The argument <code>refresh = 2000</code> was specified so that Stan didn’t provide us with excessive progress updates whilst fitting the model. However, if you are fitting a model that will take several minutes or hours to fit, then you may wish to request progress updates quite regularly, for example setting <code>refresh = 20</code> for every 20 iterations (by default the refresh argument is set to 1/10th of the total number of iterations).</p>
 <p>The fitted model is returned as an object of the S3 class <code>stanjm</code>. We have a variety of methods and post-estimation functions available for this class, including: <code>print</code>, <code>summary</code>, <code>plot</code>, <code>fixef</code>, <code>ranef</code>, <code>coef</code>, <code>VarCorr</code>, <code>posterior_interval</code>, <code>update</code>, and more. Here, we will examine the most basic output for the fitted joint model by typing <code>print(mod1)</code>:</p>
 <p>The output tells us that for each one unit increase in an individual’s underlying level of log serum bilirubin, their estimated log hazard of death increases by 35.1% (equivalent to a 3.86-fold increase in the hazard of death). The mean absolute deviation (MAD) is provided as a more robust estimate of the standard deviation of the posterior distribution. In this case the MAD_SD for the association parameter is 0.225, indicating there is quite large uncertainty around the estimated association between log serum bilirubin and risk of death (recall this is a small dataset containing only 40 patients!).</p>
 <p>If we wanted some slightly more detailed output for each of the model parameters, as well as further details regarding the model estimation (for example computation time, number of longitudinal observations, number of individuals, type of baseline hazard, etc) we can instead use the <code>summary</code> method:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod1, <span class="dt">probs =</span> <span class="kw">c</span>(.<span class="dv">025</span>,.<span class="dv">975</span>))</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">summary</span>(mod1, <span class="dt">probs =</span> <span class="kw">c</span>(.<span class="dv">025</span>,.<span class="dv">975</span>))</a></code></pre></div>
 <p>The easiest way to extract the correlation matrix for the random effects (aside from viewing the <code>print</code> output) is to use the <code>VarCorr</code> function (modelled on the <code>VarCorr</code> function from the <strong>lme4</strong> package). If you wish to extract the variances and covariances (instead of the standard deviations and correlations) then you can type the following to return a data frame with all of the relevant information:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as.data.frame</span>(<span class="kw">VarCorr</span>(mod1))</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">as.data.frame</span>(<span class="kw">VarCorr</span>(mod1))</a></code></pre></div>
 </div>
 <div id="univariate-joint-model-current-value-and-current-slope-association-structure" class="section level3">
 <h3>Univariate joint model (current value and current slope association structure)</h3>
 <p>In the previous example we were fitting a shared parameter joint model which assumed that the log hazard of the event (in this case the log hazard of death) at time <em>t</em> was linearly related to the subject-specific expected value of the longitudinal marker (in this case the expected value of log serum bilirubin) also at time <em>t</em>. This is the default association structure, although it could be explicitly specified by setting the <code>assoc = &quot;etavalue&quot;</code> argument.</p>
 <p>However, let’s suppose we believe that the log hazard of death is actually related to both the <em>current value</em> of log serum bilirubin and the current <em>rate of change</em> in log serum bilirubin. To estimate this joint model we need to indicate that we want to also include the subject-specific slope (at time <em>t</em>) from the longitudinal submodel as part of the association structure. We do this by setting the <code>assoc</code> argument equal to a character vector <code>c(&quot;etavalue&quot;, &quot;etaslope&quot;)</code> which indicates our desired association structure:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(<span class="dt">formulaLong =</span> logBili ~<span class="st"> </span>sex +<span class="st"> </span>trt +<span class="st"> </span>year +<span class="st"> </span>(year |<span class="st"> </span>id), 
-                <span class="dt">dataLong =</span> pbcLong,
-                <span class="dt">formulaEvent =</span> survival::<span class="kw">Surv</span>(futimeYears, death) ~<span class="st"> </span>sex +<span class="st"> </span>trt, 
-                <span class="dt">dataEvent =</span> pbcSurv,
-                <span class="dt">assoc =</span> <span class="kw">c</span>(<span class="st">&quot;etavalue&quot;</span>, <span class="st">&quot;etaslope&quot;</span>),
-                <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>, 
-                <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">mod2 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(<span class="dt">formulaLong =</span> logBili <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt <span class="op">+</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id), </a>
+<a class="sourceLine" id="cb7-2" title="2">                <span class="dt">dataLong =</span> pbcLong,</a>
+<a class="sourceLine" id="cb7-3" title="3">                <span class="dt">formulaEvent =</span> survival<span class="op">::</span><span class="kw">Surv</span>(futimeYears, death) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt, </a>
+<a class="sourceLine" id="cb7-4" title="4">                <span class="dt">dataEvent =</span> pbcSurv,</a>
+<a class="sourceLine" id="cb7-5" title="5">                <span class="dt">assoc =</span> <span class="kw">c</span>(<span class="st">&quot;etavalue&quot;</span>, <span class="st">&quot;etaslope&quot;</span>),</a>
+<a class="sourceLine" id="cb7-6" title="6">                <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>, </a>
+<a class="sourceLine" id="cb7-7" title="7">                <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</a></code></pre></div>
 <p>In this example the subject-specific slope is actually constant across time <em>t</em> since we have a linear trajectory. Note however that we could still use the <code>&quot;etaslope&quot;</code> association structure even if we had a non-linear subject specific trajectory (for example modelled using cubic splines or polynomials).</p>
 </div>
 <div id="multivariate-joint-model-current-value-association-structures" class="section level3">
@@ -547,20 +755,20 @@ h_i(t) = h_0(t; \boldsymbol{\omega}) \exp(\gamma_1 w_{1i} + \gamma_2 w_{2i} + \a
 \]</span></p>
 <p>where <span class="math inline">\(t\)</span> is time in years, and <span class="math inline">\(w_{1i}\)</span> and <span class="math inline">\(w_{2i}\)</span> are, respectively, the gender and treatment indicators for individual <span class="math inline">\(i\)</span>.</p>
 <p>(Note that due to the very small sample size, the clinical findings from this analysis should not to be overinterpreted!).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod3 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(
-    <span class="dt">formulaLong =</span> <span class="kw">list</span>(
-        logBili ~<span class="st"> </span>sex +<span class="st"> </span>trt +<span class="st"> </span>year +<span class="st"> </span>(year |<span class="st"> </span>id), 
-        albumin ~<span class="st"> </span>sex +<span class="st"> </span>trt +<span class="st"> </span>year +<span class="st"> </span>(year |<span class="st"> </span>id)),
-    <span class="dt">formulaEvent =</span> survival::<span class="kw">Surv</span>(futimeYears, death) ~<span class="st"> </span>sex +<span class="st"> </span>trt, 
-    <span class="dt">dataLong =</span> pbcLong, <span class="dt">dataEvent =</span> pbcSurv,
-    <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>,
-    <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">mod3 &lt;-<span class="st"> </span><span class="kw">stan_jm</span>(</a>
+<a class="sourceLine" id="cb8-2" title="2">    <span class="dt">formulaLong =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb8-3" title="3">        logBili <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt <span class="op">+</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id), </a>
+<a class="sourceLine" id="cb8-4" title="4">        albumin <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt <span class="op">+</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>(year <span class="op">|</span><span class="st"> </span>id)),</a>
+<a class="sourceLine" id="cb8-5" title="5">    <span class="dt">formulaEvent =</span> survival<span class="op">::</span><span class="kw">Surv</span>(futimeYears, death) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>trt, </a>
+<a class="sourceLine" id="cb8-6" title="6">    <span class="dt">dataLong =</span> pbcLong, <span class="dt">dataEvent =</span> pbcSurv,</a>
+<a class="sourceLine" id="cb8-7" title="7">    <span class="dt">time_var =</span> <span class="st">&quot;year&quot;</span>,</a>
+<a class="sourceLine" id="cb8-8" title="8">    <span class="dt">chains =</span> <span class="dv">1</span>, <span class="dt">refresh =</span> <span class="dv">2000</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</a></code></pre></div>
 <p>We can now examine the output from the fitted model, for example<br />
 </p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(mod3)</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">print</span>(mod3)</a></code></pre></div>
 <p>or we can examine the summary output for the association parameters alone:<br />
 </p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod3, <span class="dt">pars =</span> <span class="st">&quot;assoc&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">summary</span>(mod3, <span class="dt">pars =</span> <span class="st">&quot;assoc&quot;</span>)</a></code></pre></div>
 </div>
 </div>
 <div id="posterior-predictions" class="section level2">
@@ -571,22 +779,22 @@ h_i(t) = h_0(t; \boldsymbol{\omega}) \exp(\gamma_1 w_{1i} + \gamma_2 w_{2i} + \a
 <p>Predicted individual-specific biomarker values can be obtained using either the <code>posterior_traj</code> or <code>posterior_predict</code> function. The <code>posterior_traj</code> is preferable, because it can be used to obtain the biomarker values at a series of evenly spaced time points between baseline and the individual’s event or censoring time by using the default <code>interpolate = TRUE</code> option. Whereas, the <code>posterior_predict</code> function only provides the predicted biomarker values at the observed time points, or the time points in the new data. Predicting the biomarker values at a series of evenly spaced time points can be convenient because they can be easily used for plotting the longitudinal trajectory. Moreover, by default the <code>posterior_traj</code> returns a data frame with variables corresponding to the individual ID, the time, the predicted mean biomarker value, the limits for the 95% credible interval (i.e. uncertainty interval for the predicted mean biomarker value), and limits for the 95% prediction interval (i.e. uncertainty interval for a predicted biomarker data point), where the level for the uncertainty intervals can be changed via the <code>prob</code> argument. Conversely, the <code>posterior_predict</code> function returns an <span class="math inline">\(S\)</span> by <span class="math inline">\(N\)</span> matrix of predictions where <span class="math inline">\(S\)</span> is the number of posterior draws and <span class="math inline">\(N\)</span> is the number of prediction time points (note that this return type can also be obtained for <code>posterior_traj</code> by specifying the argument <code>return_matrix = TRUE</code>).</p>
 <p>As an example, let’s plot the predicted individual-specific longitudinal trajectories for each of the two biomarkers (log serum bilirubin and serum albumin) in the multivariate joint model estimated above. We will do this for three individuals (IDs 6, 7 and 8) who were included in the model estimation.</p>
 <p>Here are the plots for log serum bilirubin:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, <span class="dt">ids =</span> <span class="dv">6</span>:<span class="dv">8</span>)
-pp1 &lt;-<span class="st"> </span><span class="kw">plot</span>(p1, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>)
-pp1</code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">p1 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb11-2" title="2">pp1 &lt;-<span class="st"> </span><span class="kw">plot</span>(p1, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb11-3" title="3">pp1</a></code></pre></div>
 <p>and here are the plots for serum albumin:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">2</span>, <span class="dt">ids =</span> <span class="dv">6</span>:<span class="dv">8</span>)
-pp2 &lt;-<span class="st"> </span><span class="kw">plot</span>(p2, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>)
-pp2</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">p2 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">2</span>, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb12-2" title="2">pp2 &lt;-<span class="st"> </span><span class="kw">plot</span>(p2, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb12-3" title="3">pp2</a></code></pre></div>
 <p>The <code>m</code> argument specifies which biomarker we want to predict for (only relevant for a multivariate joint model). The <code>ids</code> argument is optional, and specifies a subset of individuals for whom we want to predict. In the plotting method, the <code>plot_observed = TRUE</code> specifies that we want to include the observed biomarker values in the plot of the longitudinal trajectory.</p>
 <p>If we wanted to extrapolate the trajectory forward from the event or censoring time for each individual, then this can be easily achieved by specifying <code>extrapolate = TRUE</code> in the <code>posterior_traj</code> call. For example, here is the plot for log serum bilirubin with extrapolation:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p3 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, <span class="dt">ids =</span> <span class="dv">6</span>:<span class="dv">8</span>, <span class="dt">extrapolate =</span> <span class="ot">TRUE</span>)
-pp3 &lt;-<span class="st"> </span><span class="kw">plot</span>(p3, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)
-pp3</code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">p3 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>, <span class="dt">extrapolate =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb13-2" title="2">pp3 &lt;-<span class="st"> </span><span class="kw">plot</span>(p3, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb13-3" title="3">pp3</a></code></pre></div>
 <p>and for serum albumin with extrapolation:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p4 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">2</span>, <span class="dt">ids =</span> <span class="dv">6</span>:<span class="dv">8</span>, <span class="dt">extrapolate =</span> <span class="ot">TRUE</span>)
-pp4 &lt;-<span class="st"> </span><span class="kw">plot</span>(p4, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)
-pp4</code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">p4 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">2</span>, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>, <span class="dt">extrapolate =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb14-2" title="2">pp4 &lt;-<span class="st"> </span><span class="kw">plot</span>(p4, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb14-3" title="3">pp4</a></code></pre></div>
 <p>Here, we included the <code>vline = TRUE</code> which adds a vertical dashed line at the timing of the individual’s event or censoring time. The interpolation and extrapolation of the biomarker trajectory can be further controlled through the <code>control</code> argument to the <code>posterior_traj</code> function; for example, we could specify the number of time points at which to predict, the distance by which to extrapolate, and so on.</p>
 <p>We could customize these plots further, for example, by using any of the <strong>ggplot2</strong> functionality or using the additional arguments described in <code>help(plot.predict.stanjm)</code>.</p>
 </div>
@@ -596,56 +804,56 @@ pp4</code></pre></div>
 <p>The default argument <code>extrapolate = TRUE</code> specifies that the individual-specific conditional survival probabilities will be calculated at evenly spaced time points between the individual’s last known survival time and the maximum follow up time that was observed in the estimation sample. The behaviour of the extrapolation can be further controlled via the <code>control</code> argument. If we were to specify <code>extrapolate = FALSE</code> then the survival probabilities would only be calculated at one time point, which could be specified in the <code>times</code> argument (or otherwise would default to the individual’s last known survival time).</p>
 <p>As an example, let plot the predicted individual-specific conditional survival curve for the same three individual’s that were used in the previous example. The predicted survival curve will be obtained under the multivariate joint model estimated above.<br />
 </p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p5 &lt;-<span class="st"> </span><span class="kw">posterior_survfit</span>(mod3, <span class="dt">ids =</span> <span class="dv">6</span>:<span class="dv">8</span>)
-pp5 &lt;-<span class="st"> </span><span class="kw">plot</span>(p5)
-pp5</code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">p5 &lt;-<span class="st"> </span><span class="kw">posterior_survfit</span>(mod3, <span class="dt">ids =</span> <span class="dv">6</span><span class="op">:</span><span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb15-2" title="2">pp5 &lt;-<span class="st"> </span><span class="kw">plot</span>(p5)</a>
+<a class="sourceLine" id="cb15-3" title="3">pp5</a></code></pre></div>
 <p>We could customize the plot further, for example, by using any of the <strong>ggplot2</strong> functionality or using the additional arguments described in <code>help(plot.survfit.stanjm)</code>.</p>
 </div>
 <div id="combined-plot-of-longitudinal-trajectories-and-survival-curves" class="section level3">
 <h3>Combined plot of longitudinal trajectories and survival curves</h3>
 <p>The package also provides a convenience plotting function, which combines plots of the individual-specific longitudinal trajectories, and the individual-specific survival function. We can demonstrate this by replotting the predictions for the three individuals in the previous example:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot_stack_jm</span>(<span class="dt">yplot =</span> <span class="kw">list</span>(pp3, pp4), <span class="dt">survplot =</span> pp5)</code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">plot_stack_jm</span>(<span class="dt">yplot =</span> <span class="kw">list</span>(pp3, pp4), <span class="dt">survplot =</span> pp5)</a></code></pre></div>
 <p>Here we can see the strong relationship between the underlying values of the biomarkers and mortality. Patient <code>8</code> who, relative to patients <code>6</code> and <code>7</code>, has a higher underlying value for log serum bilirubin and a lower underlying value for serum albumin at the end of their follow up has a far worse predicted probability of survival.</p>
 </div>
 <div id="predicted-individual-specific-longitudinal-trajectory-and-survival-curve-for-out-of-sample-individuals-i.e.dynamic-predictions" class="section level3">
 <h3>Predicted individual-specific longitudinal trajectory and survival curve for out-of-sample individuals (i.e. dynamic predictions)</h3>
 <p>Let us take an individual from our training data, in this case the individual with subject ID value <code>8</code>. However, we will pretend this individual was not a member of our training data and rather that they are a new individual for whom we have obtained new biomarker measurements. Our goal is to obtain predictions for the longitudinal trajectory for this individual, and their conditional survival curve, given that we know they are conditional on their biomarker measurements we currently have available.</p>
 <p>First, let’s extract the data for subject <code>8</code> and then rename their subject ID value so that they appear to be an individual who was not included in our training dataset:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ndL &lt;-<span class="st"> </span>pbcLong[pbcLong$id ==<span class="st"> </span><span class="dv">8</span>, , drop =<span class="st"> </span><span class="ot">FALSE</span>]
-ndE &lt;-<span class="st"> </span>pbcSurv[pbcSurv$id ==<span class="st"> </span><span class="dv">8</span>, , drop =<span class="st"> </span><span class="ot">FALSE</span>]
-ndL$id &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;new_patient&quot;</span>)
-ndE$id &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;new_patient&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">ndL &lt;-<span class="st"> </span>pbcLong[pbcLong<span class="op">$</span>id <span class="op">==</span><span class="st"> </span><span class="dv">8</span>, , drop =<span class="st"> </span><span class="ot">FALSE</span>]</a>
+<a class="sourceLine" id="cb17-2" title="2">ndE &lt;-<span class="st"> </span>pbcSurv[pbcSurv<span class="op">$</span>id <span class="op">==</span><span class="st"> </span><span class="dv">8</span>, , drop =<span class="st"> </span><span class="ot">FALSE</span>]</a>
+<a class="sourceLine" id="cb17-3" title="3">ndL<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;new_patient&quot;</span>)</a>
+<a class="sourceLine" id="cb17-4" title="4">ndE<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;new_patient&quot;</span>)</a></code></pre></div>
 <p>Note that we have both the longitudinal data and event data for this new individual. We require data for both submodels because we are going to generate <em>dynamic predictions</em> that require drawing new individual-specific parameters (i.e. random effects) for this individual conditional on their observed data. That means we need to evaluate the likelihood for the full joint model and that requires both the longitudinal and event data (note however that the status indicator <code>death</code> will be ignored, since it is assumed that the individual we are predicting for is still alive at the time we wish to generate the predictions).</p>
 <p>Now we can pass this data to the <code>posterior_traj</code> function in the same way as for the in-sample individuals, except we will now specify the <code>newdataLong</code> and <code>newdataEvent</code> arguments. We will also specify the <code>last_time</code> argument so that the function knows which variable in the event data specifies the individual’s last known survival time (the default behaviour is to use the time of the last biomarker measurement).</p>
 <p>Our predictions for this new individual for the log serum bilirubin trajectory can be obtained using:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p6 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, 
-                     <span class="dt">newdataLong =</span> ndL, 
-                     <span class="dt">newdataEvent =</span> ndE,
-                     <span class="dt">last_time =</span> <span class="st">&quot;futimeYears&quot;</span>)
-pp6 &lt;-<span class="st"> </span><span class="kw">plot</span>(p6, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)
-pp6</code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">p6 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb18-2" title="2">                     <span class="dt">newdataLong =</span> ndL, </a>
+<a class="sourceLine" id="cb18-3" title="3">                     <span class="dt">newdataEvent =</span> ndE,</a>
+<a class="sourceLine" id="cb18-4" title="4">                     <span class="dt">last_time =</span> <span class="st">&quot;futimeYears&quot;</span>)</a>
+<a class="sourceLine" id="cb18-5" title="5">pp6 &lt;-<span class="st"> </span><span class="kw">plot</span>(p6, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb18-6" title="6">pp6</a></code></pre></div>
 <p>and for the serum albumin trajectory:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p7 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">2</span>, 
-                     <span class="dt">newdataLong =</span> ndL, 
-                     <span class="dt">newdataEvent =</span> ndE,
-                     <span class="dt">last_time =</span> <span class="st">&quot;futimeYears&quot;</span>)
-pp7 &lt;-<span class="st"> </span><span class="kw">plot</span>(p7, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)
-pp7</code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">p7 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">2</span>, </a>
+<a class="sourceLine" id="cb19-2" title="2">                     <span class="dt">newdataLong =</span> ndL, </a>
+<a class="sourceLine" id="cb19-3" title="3">                     <span class="dt">newdataEvent =</span> ndE,</a>
+<a class="sourceLine" id="cb19-4" title="4">                     <span class="dt">last_time =</span> <span class="st">&quot;futimeYears&quot;</span>)</a>
+<a class="sourceLine" id="cb19-5" title="5">pp7 &lt;-<span class="st"> </span><span class="kw">plot</span>(p7, <span class="dt">plot_observed =</span> <span class="ot">TRUE</span>, <span class="dt">vline =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb19-6" title="6">pp7</a></code></pre></div>
 <p>For the conditional survival probabilities we use similar information, provided to the <code>posterior_survfit</code> function:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p8 &lt;-<span class="st"> </span><span class="kw">posterior_survfit</span>(mod3,
-                        <span class="dt">newdataLong =</span> ndL, 
-                        <span class="dt">newdataEvent =</span> ndE,
-                        <span class="dt">last_time =</span> <span class="st">&quot;futimeYears&quot;</span>)
-pp8 &lt;-<span class="st"> </span><span class="kw">plot</span>(p8)
-pp8</code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">p8 &lt;-<span class="st"> </span><span class="kw">posterior_survfit</span>(mod3,</a>
+<a class="sourceLine" id="cb20-2" title="2">                        <span class="dt">newdataLong =</span> ndL, </a>
+<a class="sourceLine" id="cb20-3" title="3">                        <span class="dt">newdataEvent =</span> ndE,</a>
+<a class="sourceLine" id="cb20-4" title="4">                        <span class="dt">last_time =</span> <span class="st">&quot;futimeYears&quot;</span>)</a>
+<a class="sourceLine" id="cb20-5" title="5">pp8 &lt;-<span class="st"> </span><span class="kw">plot</span>(p8)</a>
+<a class="sourceLine" id="cb20-6" title="6">pp8</a></code></pre></div>
 <p>We can then use the <code>plot_stack_jm</code> function, as we saw in a previous example, to stack the plots of the longitudinal trajectory and the conditional survival curve:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot_stack_jm</span>(<span class="dt">yplot =</span> <span class="kw">list</span>(pp6, pp7), <span class="dt">survplot =</span> pp8)</code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">plot_stack_jm</span>(<span class="dt">yplot =</span> <span class="kw">list</span>(pp6, pp7), <span class="dt">survplot =</span> pp8)</a></code></pre></div>
 <p>Here we see that the predicted longitudinal trajectories and conditional survival curve for this individual, obtained using the dynamic predictions approach, are similar to the predictions we obtained when we used their individual-specific parameters from the original model estimation. This is because in both situations we are conditioning on the same outcome data.</p>
 <p><strong>Side note:</strong> We can even compare the estimated individual specific parameters obtained under the two approaches. For example, here is the posterior mean for the estimated individual-specific parameters for individual <code>8</code> from the fitted model:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">c</span>(<span class="kw">ranef</span>(mod3)[[<span class="st">&quot;Long1&quot;</span>]][[<span class="st">&quot;id&quot;</span>]][<span class="dv">8</span>,], 
-  <span class="kw">ranef</span>(mod3)[[<span class="st">&quot;Long2&quot;</span>]][[<span class="st">&quot;id&quot;</span>]][<span class="dv">8</span>,])</code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="kw">c</span>(<span class="kw">ranef</span>(mod3)[[<span class="st">&quot;Long1&quot;</span>]][[<span class="st">&quot;id&quot;</span>]][<span class="dv">8</span>,], </a>
+<a class="sourceLine" id="cb22-2" title="2">  <span class="kw">ranef</span>(mod3)[[<span class="st">&quot;Long2&quot;</span>]][[<span class="st">&quot;id&quot;</span>]][<span class="dv">8</span>,])</a></code></pre></div>
 <p>and here is the mean of the draws for the individual-specific parameters for individual <code>8</code> under the dynamic predictions approach:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colMeans</span>(<span class="kw">attr</span>(p6, <span class="st">&quot;b_new&quot;</span>))</code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">colMeans</span>(<span class="kw">attr</span>(p6, <span class="st">&quot;b_new&quot;</span>))</a></code></pre></div>
 </div>
 <div id="predicted-population-level-longitudinal-trajectory" class="section level3">
 <h3>Predicted population-level longitudinal trajectory</h3>
@@ -656,28 +864,28 @@ pp8</code></pre></div>
 <li><p>Second, we need to specify the argument <code>dynamic = FALSE</code> when calling <code>posterior_traj</code>. This specifies that we do not want to draw new individual-specific parameters conditional on outcome data observed up to some time <span class="math inline">\(t\)</span>. Instead, we want predictions that marginalise over the distribution of individual-specific parameters and are therefore conditional <em>only on covariates</em> and not conditional on outcome data for the new individuals.</p></li>
 </ul>
 <p>Here is our prediction data:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ndL &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">year =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">1</span>),
-                   <span class="dt">sex =</span> <span class="kw">c</span>(<span class="st">&quot;m&quot;</span>, <span class="st">&quot;f&quot;</span>), 
-                   <span class="dt">trt =</span> <span class="dv">0</span>:<span class="dv">1</span>)
-ndL$id &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;male_notrt&quot;</span>, <span class="st">&quot;female_notrt&quot;</span>,
-                <span class="st">&quot;male_trt&quot;</span>, <span class="st">&quot;female_trt&quot;</span>), <span class="dt">each =</span> <span class="dv">11</span>)
-ndL &lt;-<span class="st"> </span>ndL[, <span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)]
-<span class="kw">str</span>(ndL)</code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">ndL &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">year =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb24-2" title="2">                   <span class="dt">sex =</span> <span class="kw">c</span>(<span class="st">&quot;m&quot;</span>, <span class="st">&quot;f&quot;</span>), </a>
+<a class="sourceLine" id="cb24-3" title="3">                   <span class="dt">trt =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb24-4" title="4">ndL<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;male_notrt&quot;</span>, <span class="st">&quot;female_notrt&quot;</span>,</a>
+<a class="sourceLine" id="cb24-5" title="5">                <span class="st">&quot;male_trt&quot;</span>, <span class="st">&quot;female_trt&quot;</span>), <span class="dt">each =</span> <span class="dv">11</span>)</a>
+<a class="sourceLine" id="cb24-6" title="6">ndL &lt;-<span class="st"> </span>ndL[, <span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)]</a>
+<a class="sourceLine" id="cb24-7" title="7"><span class="kw">str</span>(ndL)</a></code></pre></div>
 <p>And to predict the marginal longitudinal trajectory for log serum bilirubin under each covariate profile and plot it we can type:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, <span class="dt">newdataLong =</span> ndL, <span class="dt">dynamic =</span> <span class="ot">FALSE</span>)
-<span class="kw">plot</span>(p1) +<span class="st"> </span>ggplot2::<span class="kw">coord_cartesian</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(-<span class="dv">10</span>,<span class="dv">15</span>))</code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1">p1 &lt;-<span class="st"> </span><span class="kw">posterior_traj</span>(mod3, <span class="dt">m =</span> <span class="dv">1</span>, <span class="dt">newdataLong =</span> ndL, <span class="dt">dynamic =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb25-2" title="2"><span class="kw">plot</span>(p1) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">coord_cartesian</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">10</span>,<span class="dv">15</span>))</a></code></pre></div>
 <p>Because we are marginalising over the distribution of the individual-specific parameters, we are incorporating all the variation related to between-individual differences, and therefore the prediction interval is wide (shown by the shaded area around the marginal longitudinal trajectory). The magnitude of the effects of both <code>sex</code> and <code>trt</code> are relatively small compared to the population-level effect of <code>year</code> and the between-individual variation in the intercept and slope. For example, here are the point estimates for the population-level effects of <code>sex</code>, <code>trt</code>, and <code>year</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">fixef</span>(mod3)$Long1</code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">fixef</span>(mod3)<span class="op">$</span>Long1</a></code></pre></div>
 <p>and here are the standard deviations for the individual-level random effects:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">VarCorr</span>(mod3)</code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">VarCorr</span>(mod3)</a></code></pre></div>
 <p>This shows us that the point estimates for the population-level effects of <code>sex</code> and <code>trt</code> are 0.57 and -0.10, respectively, whereas the standard deviation for the individual-specific intercept and slope parameters are 1.24 and 0.19; hence, any differences due to the population-level effects of gender and treatment (i.e. differences in the black line across the four panels of the plot) are swamped by the width of the uncertainty intervals (i.e. the grey shaded areas).</p>
 </div>
 <div id="standardised-survival-curves" class="section level3">
 <h3>Standardised survival curves</h3>
 <p>In this example we show how a standardised survival curve can be obtained, where the <span class="math inline">\(i = 1,...,N^{pred}\)</span> individuals used in generating the standardised survival curve are the same individuals that were used in estimating the model. We will obtain the survival curve for the multivariate joint model estimated in an earlier example (<code>mod3</code>). The <code>standardise = TRUE</code> argument to <code>posterior_survfit</code> specifies that we want to obtain individual-specific predictions of the survival curve and then average these. Because, in practical terms, we need to obtain survival probabilities at time <span class="math inline">\(t\)</span> for each individual and then average them we want to explicitly specify the values of <span class="math inline">\(t\)</span> we want to use (and the same values of <span class="math inline">\(t\)</span> will be used for individuals). We specify the values of <span class="math inline">\(t\)</span> to use via the <code>times</code> argument; here we will predict the standardised survival curve at time 0 and then for convenience we can just specify <code>extrapolate = TRUE</code> (which is the default anyway) which will mean we automatically predict at 10 evenly spaced time points between 0 and the maximum event or censoring time.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">posterior_survfit</span>(mod3, <span class="dt">standardise =</span> <span class="ot">TRUE</span>, <span class="dt">times =</span> <span class="dv">0</span>)
-<span class="kw">head</span>(p1) <span class="co"># data frame with standardised survival probabilities</span>
-<span class="kw">plot</span>(p1) <span class="co"># plot the standardised survival curve</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">p1 &lt;-<span class="st"> </span><span class="kw">posterior_survfit</span>(mod3, <span class="dt">standardise =</span> <span class="ot">TRUE</span>, <span class="dt">times =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb28-2" title="2"><span class="kw">head</span>(p1) <span class="co"># data frame with standardised survival probabilities</span></a>
+<a class="sourceLine" id="cb28-3" title="3"><span class="kw">plot</span>(p1) <span class="co"># plot the standardised survival curve</span></a></code></pre></div>
 </div>
 </div>
 </div>
@@ -687,14 +895,14 @@ ndL &lt;-<span class="st"> </span>ndL[, <span class="kw">c</span>(<span class="d
 <li>Henderson R, Diggle P, Dobson A. Joint modelling of longitudinal measurements and event time data. <em>Biostatistics</em> 2000;<strong>1</strong>(4):465-80.</li>
 <li>Wulfsohn MS, Tsiatis AA. A joint model for survival and longitudinal data measured with error. <em>Biometrics</em> 1997;<strong>53</strong>(1):330-9.</li>
 <li>Tsiatis AA, Davidian M. Joint modeling of longitudinal and time-to-event data: An overview. <em>Stat Sinica</em> 2004;<strong>14</strong>(3):809-34.</li>
-<li>Gould AL, Boye ME, Crowther MJ, Ibrahim JG, Quartey G, Micallef S, et al. Joint modeling of survival and longitudinal non-survival data: current methods and issues. Report of the DIA Bayesian joint modeling working group. <em>Stat Med</em>. 2015;<strong>34</strong>(14):2181-95.</li>
+<li>Gould AL, Boye ME, Crowther MJ, Ibrahim JG, Quartey G, Micallef S, et al. Joint modeling of survival and longitudinal non-survival data: current methods and issues. Report of the DIA Bayesian joint modeling working group. <em>Stat Med</em>. 2015;<strong>34</strong>(14):2181-95.</li>
 <li>Rizopoulos D. <em>Joint Models for Longitudinal and Time-to-Event Data: With Applications in R</em> CRC Press; 2012.</li>
 <li>Liu G, Gould AL. Comparison of alternative strategies for analysis of longitudinal trials with dropouts. <em>J Biopharm Stat</em> 2002;<strong>12</strong>(2):207-26.</li>
 <li>Prentice RL. Covariate Measurement Errors and Parameter-Estimation in a Failure Time Regression-Model. <em>Biometrika</em> 1982;<strong>69</strong>(2):331-42.</li>
 <li>Baraldi AN, Enders CK. An introduction to modern missing data analyses. <em>J Sch Psychol</em> 2010;<strong>48</strong>(1):5-37.</li>
 <li>Philipson PM, Ho WK, Henderson R. Comparative review of methods for handling drop-out in longitudinal studies. <em>Stat Med</em> 2008;<strong>27</strong>(30):6276-98.</li>
 <li>Pantazis N, Touloumi G. Bivariate modelling of longitudinal measurements of two human immunodeficiency type 1 disease progression markers in the presence of informative drop-outs. <em>Applied Statistics</em> 2005;<strong>54</strong>:405-23.</li>
-<li>Taylor JM, Park Y, Ankerst DP, et al. Real-time individual predictions of prostate cancer recurrence using joint models. <em>Biometrics</em> 2013;<strong>69</strong>(1):206-13.</li>
+<li>Taylor JM, Park Y, Ankerst DP, et al. Real-time individual predictions of prostate cancer recurrence using joint models. <em>Biometrics</em> 2013;<strong>69</strong>(1):206-13.</li>
 <li>Brilleman SL, Crowther MJ, Moreno-Betancur M, Buros Novik J, Wolfe R. Joint longitudinal and time-to-event models via Stan. <em>In: Proceedings of StanCon 2018.</em> <a href="https://github.com/stan-dev/stancon_talks" class="uri">https://github.com/stan-dev/stancon_talks</a></li>
 <li>Stan Development Team. <em>rstanarm: Bayesian applied regression modeling via Stan.</em> R package version 2.14.1. <a href="http://mc-stan.org/" class="uri">http://mc-stan.org/</a>. 2016.</li>
 <li>R Core Team. <em>R: A language and environment for statistical computing.</em> Vienna, Austria: R Foundation for Statistical Computing; 2015.</li>
@@ -709,9 +917,9 @@ ndL &lt;-<span class="st"> </span>ndL[, <span class="kw">c</span>(<span class="d
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>By “true” value of the biomarker, we mean the value of the biomarker which is not subject to measurement error or discrete time observation. Of course, for the expected value from the longitudinal submodel to be considered the so-called “true” underlying biomarker value, we would need to have specified the longitudinal submodel appropriately!<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>We refer the reader to the priors <a href="priors.html">vignette</a> for a discussion of the possible prior distributions.<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>These random draws from the posterior distribution of the group-specific parameters are stored each time a joint model is estimated using <code>stan_glmer</code>, <code>stan_mvmer</code>, or <code>stan_jm</code>; they are saved under an ID value called <code>&quot;_NEW_&quot;</code><a href="#fnref3">↩</a></p></li>
+<li id="fn1"><p>By “true” value of the biomarker, we mean the value of the biomarker which is not subject to measurement error or discrete time observation. Of course, for the expected value from the longitudinal submodel to be considered the so-called “true” underlying biomarker value, we would need to have specified the longitudinal submodel appropriately!<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>We refer the reader to the priors <a href="priors.html">vignette</a> for a discussion of the possible prior distributions.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>These random draws from the posterior distribution of the group-specific parameters are stored each time a joint model is estimated using <code>stan_glmer</code>, <code>stan_mvmer</code>, or <code>stan_jm</code>; they are saved under an ID value called <code>&quot;_NEW_&quot;</code><a href="#fnref3" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
 

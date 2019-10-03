@@ -5,7 +5,7 @@
 \alias{print.stanmvreg}
 \title{Print method for stanreg objects}
 \usage{
-\method{print}{stanreg}(x, digits = 1, ...)
+\method{print}{stanreg}(x, digits = 1, detail = TRUE, ...)
 
 \method{print}{stanmvreg}(x, digits = 3, ...)
 }
@@ -14,6 +14,9 @@
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{digits}{Number of digits to use for formatting numbers.}
+
+\item{detail}{Logical, defaulting to \code{TRUE}. If \code{FALSE} a more
+minimal summary is printed consisting only of the parameter estimates.}
 
 \item{...}{Ignored.}
 }
@@ -47,15 +50,6 @@ returned by \code{\link[=se.stanreg]{se}}.
 }
 \subsection{Additional output}{
 \itemize{
-\item The median and MAD_SD are also reported for \code{mean_PPD}, the sample
-average posterior predictive distribution of the outcome. This is useful as a
-quick diagnostic. A useful heuristic is to check if \code{mean_PPD} is
-plausible when compared to \code{mean(y)}. If it is plausible then this does
-\emph{not} mean that the model is good in general (only that it can reproduce
-the sample mean), however if \code{mean_PPD} is implausible then it is a sign
-that something is wrong (severe model misspecification, problems with the
-data, computational issues, etc.).
-
 \item For GLMs with group-specific terms (see \code{\link{stan_glmer}}) the printed 
 output also shows point estimates of the standard deviations of the group 
 effects (and correlations if there are both intercept and slopes that vary by

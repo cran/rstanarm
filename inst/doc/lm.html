@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2018-11-08" />
+<meta name="date" content="2019-10-01" />
 
 <title>Estimating Regularized Linear Models with rstanarm</title>
 
@@ -20,46 +20,254 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 </head>
 
@@ -70,7 +278,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Estimating Regularized Linear Models with rstanarm</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2018-11-08</em></h4>
+<h4 class="date"><em>2019-10-01</em></h4>
 
 
 <div id="TOC">
@@ -136,7 +344,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li><span class="math inline">\(\sigma_y = \omega s_y\)</span></li>
 <li><span class="math inline">\(\sigma_{\epsilon} = \sigma_y \sqrt{1 - R^2}\)</span></li>
-<li><span class="math inline">\(\boldsymbol{\beta} = \mathbf{R}^{-1} \mathbf{u} \sigma_y  \sqrt{R^2 \left(N-1\right)}\)</span></li>
+<li><span class="math inline">\(\boldsymbol{\beta} = \mathbf{R}^{-1} \mathbf{u} \sigma_y \sqrt{R^2 \left(N-1\right)}\)</span></li>
 </ul>
 <p>The implementation actually utilizes an improper uniform prior on <span class="math inline">\(\ln \omega\)</span>. Consequently, if <span class="math inline">\(\ln \omega = 0\)</span>, then the marginal standard deviation of the outcome <em>implied by the model</em> is the same as the sample standard deviation of the outcome. If <span class="math inline">\(\ln \omega &gt; 0\)</span>, then the marginal standard deviation of the outcome implied by the model exceeds the sample standard deviation, so the model overfits the data. If <span class="math inline">\(\ln \omega &lt; 0\)</span>, then the marginal standard deviation of the outcome implied by the model is less than the sample standard deviation, so the model <em>underfits</em> the data or that the data-generating process is nonlinear. Given the regularizing nature of the prior on <span class="math inline">\(R^2\)</span>, a minor underfit would be considered ideal if the goal is to obtain good out-of-sample predictions. If the model badly underfits or overfits the data, then you may want to reconsider the model.</p>
 </div>
@@ -145,47 +353,54 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>We will utilize an example from the <strong>HSAUR3</strong> package by Brian S. Everitt and Torsten Hothorn, which is used in their 2014 book <em>A Handbook of Statistical Analyses Using R (3rd Edition)</em> (Chapman &amp; Hall / CRC). This book is frequentist in nature and we will show how to obtain the corresponding Bayesian results.</p>
 <p>The model in section 5.3.1 analyzes an experiment where clouds were seeded with different amounts of silver iodide to see if there was increased rainfall. This effect could vary according to covariates, which (except for <code>time</code>) are interacted with the treatment variable. Most people would probably be skeptical that cloud hacking could explain very much of the variation in rainfall and thus the prior mode of the <span class="math inline">\(R^2\)</span> would probably be fairly small.</p>
 <p>The frequentist estimator of this model can be replicated by executing</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;clouds&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;HSAUR3&quot;</span>)
-ols &lt;-<span class="st"> </span><span class="kw">lm</span>(rainfall ~<span class="st"> </span>seeding *<span class="st"> </span>(sne +<span class="st"> </span>cloudcover +<span class="st"> </span>prewetness +<span class="st"> </span>echomotion) +
-<span class="st">            </span>time, <span class="dt">data =</span> clouds)
-<span class="kw">round</span>(<span class="kw">coef</span>(ols), <span class="dv">3</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span>(<span class="st">&quot;clouds&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;HSAUR3&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2">ols &lt;-<span class="st"> </span><span class="kw">lm</span>(rainfall <span class="op">~</span><span class="st"> </span>seeding <span class="op">*</span><span class="st"> </span>(sne <span class="op">+</span><span class="st"> </span>cloudcover <span class="op">+</span><span class="st"> </span>prewetness <span class="op">+</span><span class="st"> </span>echomotion) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="st">            </span>time, <span class="dt">data =</span> clouds)</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">round</span>(<span class="kw">coef</span>(ols), <span class="dv">3</span>)</a></code></pre></div>
 <p>Note that we have <em>not</em> looked at the estimated <span class="math inline">\(R^2\)</span> or <span class="math inline">\(\sigma\)</span> for the ordinary least squares model. We can estimate a Bayesian version of this model by prepending <code>stan_</code> to the <code>lm</code> call, specifying a prior mode for <span class="math inline">\(R^2\)</span>, and optionally specifying how many cores the computer may utilize:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rstanarm)
-post &lt;-<span class="st"> </span><span class="kw">stan_lm</span>(rainfall ~<span class="st"> </span>seeding *<span class="st"> </span>(sne +<span class="st"> </span>cloudcover +<span class="st"> </span>prewetness +<span class="st"> </span>
-<span class="st">                                        </span>echomotion) +<span class="st"> </span>time, <span class="dt">data =</span> clouds,
-                <span class="dt">prior =</span> <span class="kw">R2</span>(<span class="dt">location =</span> <span class="fl">0.2</span>), 
-                <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)
-post</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(rstanarm)</a>
+<a class="sourceLine" id="cb2-2" title="2">post &lt;-</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="st">  </span><span class="kw">stan_lm</span>(</a>
+<a class="sourceLine" id="cb2-4" title="4">    rainfall <span class="op">~</span><span class="st"> </span>seeding <span class="op">*</span><span class="st"> </span>(sne <span class="op">+</span><span class="st"> </span>cloudcover <span class="op">+</span><span class="st"> </span>prewetness <span class="op">+</span><span class="st"> </span>echomotion) <span class="op">+</span><span class="st"> </span>time,</a>
+<a class="sourceLine" id="cb2-5" title="5">    <span class="dt">data =</span> clouds,</a>
+<a class="sourceLine" id="cb2-6" title="6">    <span class="dt">prior =</span> <span class="kw">R2</span>(<span class="dt">location =</span> <span class="fl">0.2</span>),</a>
+<a class="sourceLine" id="cb2-7" title="7">    <span class="dt">seed =</span> <span class="dv">12345</span></a>
+<a class="sourceLine" id="cb2-8" title="8">  )</a>
+<a class="sourceLine" id="cb2-9" title="9">post</a></code></pre></div>
 <p>In this case, the “Bayesian point estimates”, which are represented by the posterior medians, appear quite different from the ordinary least squares estimates. However, the <code>log-fit_ratio</code> (i.e. <span class="math inline">\(\ln \omega\)</span>) is quite small, indicating that the model only slightly overfits the data when the prior derived above is utilized. Thus, it would be safe to conclude that the ordinary least squares estimator considerably overfits the data since there are only <span class="math inline">\(24\)</span> observations to estimate <span class="math inline">\(12\)</span> parameters with and no prior information on the parameters.</p>
 <p>Also, it is not obvious what the estimated average treatment effect is since the treatment variable, <code>seeding</code>, is interacted with four other correlated predictors. However, it is easy to estimate or visualize the average treatment effect (ATE) using <strong>rstanarm</strong>’s <code>posterior_predict</code> function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">clouds_cf &lt;-<span class="st"> </span>clouds
-clouds_cf$seeding[] &lt;-<span class="st"> &quot;yes&quot;</span>
-y1_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(post, <span class="dt">newdata =</span> clouds_cf)
-clouds_cf$seeding[] &lt;-<span class="st"> &quot;no&quot;</span>
-y0_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(post, <span class="dt">newdata =</span> clouds_cf)
-<span class="kw">qplot</span>(<span class="dt">x =</span> <span class="kw">c</span>(y1_rep -<span class="st"> </span>y0_rep), <span class="dt">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="dt">xlab =</span> <span class="st">&quot;Estimated ATE&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">clouds_cf &lt;-<span class="st"> </span>clouds</a>
+<a class="sourceLine" id="cb3-2" title="2">clouds_cf<span class="op">$</span>seeding[] &lt;-<span class="st"> &quot;yes&quot;</span></a>
+<a class="sourceLine" id="cb3-3" title="3">y1_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(post, <span class="dt">newdata =</span> clouds_cf)</a>
+<a class="sourceLine" id="cb3-4" title="4">clouds_cf<span class="op">$</span>seeding[] &lt;-<span class="st"> &quot;no&quot;</span></a>
+<a class="sourceLine" id="cb3-5" title="5">y0_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(post, <span class="dt">newdata =</span> clouds_cf)</a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="kw">qplot</span>(<span class="dt">x =</span> <span class="kw">c</span>(y1_rep <span class="op">-</span><span class="st"> </span>y0_rep), <span class="dt">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="dt">xlab =</span> <span class="st">&quot;Estimated ATE&quot;</span>)</a></code></pre></div>
 <p>As can be seen, the treatment effect is not estimated precisely and is as almost as likely to be negative as it is to be positive.</p>
 </div>
 <div id="alternative-approach" class="section level1">
 <h1>Alternative Approach</h1>
 <p>The prior derived above works well in many situations and is quite simple to <em>use</em> since it only requires the user to specify the prior location of the <span class="math inline">\(R^2\)</span>. Nevertheless, the implications of the prior are somewhat difficult to <em>conceptualize</em>. Thus, it is perhaps worthwhile to compare to another estimator of a linear model that simply puts independent Cauchy priors on the regression coefficients. This simpler approach can be executed by calling the <code>stan_glm</code> function with <code>family = gaussian()</code> and specifying the priors:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">simple &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(rainfall ~<span class="st"> </span>seeding *<span class="st"> </span>(sne +<span class="st"> </span>cloudcover +<span class="st"> </span>prewetness +<span class="st"> </span>
-<span class="st">                                        </span>echomotion) +<span class="st"> </span>time,
-                   <span class="dt">data =</span> clouds, <span class="dt">family =</span> <span class="kw">gaussian</span>(), 
-                   <span class="dt">prior =</span> <span class="kw">cauchy</span>(), <span class="dt">prior_intercept =</span> <span class="kw">cauchy</span>(),
-                   <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">simple &lt;-</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="st">  </span><span class="kw">stan_glm</span>(</a>
+<a class="sourceLine" id="cb4-3" title="3">    rainfall <span class="op">~</span><span class="st"> </span>seeding <span class="op">*</span><span class="st"> </span>(sne <span class="op">+</span><span class="st"> </span>cloudcover <span class="op">+</span><span class="st"> </span>prewetness <span class="op">+</span><span class="st"> </span>echomotion) <span class="op">+</span><span class="st"> </span>time,</a>
+<a class="sourceLine" id="cb4-4" title="4">    <span class="dt">data =</span> clouds,</a>
+<a class="sourceLine" id="cb4-5" title="5">    <span class="dt">family =</span> <span class="kw">gaussian</span>(),</a>
+<a class="sourceLine" id="cb4-6" title="6">    <span class="dt">prior =</span> <span class="kw">cauchy</span>(),</a>
+<a class="sourceLine" id="cb4-7" title="7">    <span class="dt">prior_intercept =</span> <span class="kw">cauchy</span>(),</a>
+<a class="sourceLine" id="cb4-8" title="8">    <span class="dt">seed =</span> <span class="dv">12345</span></a>
+<a class="sourceLine" id="cb4-9" title="9">  )</a></code></pre></div>
 <p>We can compare the two approaches using an approximation to Leave-One-Out (LOO) cross-validation, which is implemented by the <code>loo</code> function in the <strong>loo</strong> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(loo_post &lt;-<span class="st"> </span><span class="kw">loo</span>(post))
-<span class="kw">compare_models</span>(loo_post, <span class="kw">loo</span>(simple))</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">(loo_post &lt;-<span class="st"> </span><span class="kw">loo</span>(post))</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">loo_compare</span>(loo_post, <span class="kw">loo</span>(simple))</a></code></pre></div>
 <p>The results indicate that the first approach is expected to produce better out-of-sample predictions but the Warning messages are at least as important. Many of the estimated shape parameters for the Generalized Pareto distribution are above <span class="math inline">\(0.5\)</span> in the model with Cauchy priors, which indicates that these estimates are only going to converge slowly to the true out-of-sample deviance measures. Thus, with only <span class="math inline">\(24\)</span> observations, they should not be considered reliable. The more complicated prior derived above is stronger — as evidenced by the fact that the effective number of parameters is about half of that in the simpler approach and <span class="math inline">\(12\)</span> for the maximum likelihood estimator — and only has a few of the <span class="math inline">\(24\)</span> Pareto shape estimates in the “danger zone”. We might want to reexamine these observations</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(loo_post, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">plot</span>(loo_post, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>because the posterior is sensitive to them but, overall, the results seem tolerable.</p>
 <p>In general, we would expect the joint prior derived here to work better when there are many predictors relative to the number of observations. Placing independent, heavy-tailed priors on the coefficients neither reflects the beliefs of the researcher nor conveys enough information to stabilize all the computations.</p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
 <p>This vignette has discussed the prior distribution utilized in the <code>stan_lm</code> function, which has the same likelihood and a similar syntax as the <code>lm</code> function in R but adds the ability to expression prior beliefs about the location of the <span class="math inline">\(R^2\)</span>, which is the familiar proportion of variance in the outcome variable that is attributable to the predictors under a linear model. Since the <span class="math inline">\(R^2\)</span> is a well-understood bounded scalar, it is easy to specify prior information about it, whereas other Bayesian approaches require the researcher to specify a joint prior distribution for the regression coefficients (and the intercept and error variance).</p>
-<p>However, most researchers have little inclination to specify all these prior distributions thoughtfully and take a short-cut by specifying one prior distribution that is taken to apply to all the regression coefficients as if they were independent of each other (and the intercept and error variance). This short-cut is available in the <code>stan_glm</code> function and is described in more detail in other <strong>rstanarm</strong> <a href="glm.html">vignette</a> for Generalized Linear Models (GLMs).</p>
+<p>However, most researchers have little inclination to specify all these prior distributions thoughtfully and take a short-cut by specifying one prior distribution that is taken to apply to all the regression coefficients as if they were independent of each other (and the intercept and error variance). This short-cut is available in the <code>stan_glm</code> function and is described in more detail in other <strong>rstanarm</strong> vignettes for Generalized Linear Models (GLMs), which can be found by navigating up one level.</p>
 <p>We are optimistic that this prior on the <span class="math inline">\(R^2\)</span> will greatly help in accomplishing our goal for <strong>rstanarm</strong> of making Bayesian estimation of regression models routine. The same approach is used to specify a prior in ANOVA models (see <code>stan_aov</code>) and proportional-odds models for ordinal outcomes (see <code>stan_polr</code>).</p>
 <p>Finally, the <code>stan_biglm</code> function can be used when the design matrix is too large for the <code>qr</code> function to process. The <code>stan_biglm</code> function inputs the output of the <code>biglm</code> function in the <strong>biglm</strong> package, which utilizes an incremental QR decomposition that does not require the entire dataset to be loaded into memory simultaneously. However, the <code>biglm</code> function needs to be called in a particular way in order to work with <code>stan_biglm</code>. In particular, The means of the columns of the design matrix, the sample mean of the outcome, and the sample standard deviation of the outcome all need to be passed to the <code>stan_biglm</code> function, as well as a flag indicating whether the model really does include an intercept. Also, the number of columns of the design matrix currently cannot exceed the number of rows. Although <code>stan_biglm</code> should run fairly quickly and without much memory, the resulting object is a fairly plain <code>stanfit</code> object rather than an enhanced <code>stanreg</code> object like that produced by <code>stan_lm</code>. Many of the enhanced capabilities of a <code>stanreg</code> object depend on being able to access the full design matrix, so doing posterior predictions, posterior checks, etc. with the output of <code>stan_biglm</code> would require some custom R code.</p>
 </div>

@@ -24,7 +24,7 @@ opts_chunk$set(
 #  library(rstanarm)
 #  post0 <- stan_polr(tobgp ~ agegp + alcgp, data = esoph,
 #                     prior = R2(0.25), prior_counts = dirichlet(1),
-#                     chains = CHAINS, cores = CORES, seed = SEED, iter = 200)
+#                     seed = 12345)
 
 ## ------------------------------------------------------------------------
 #  print(post0, digits = 1)
@@ -43,7 +43,7 @@ opts_chunk$set(
 ## ----polr-stan_lm, results="hide"----------------------------------------
 #  post1 <- stan_lm(-bwt ~ smoke + age + race + ptl + ht + ftv,
 #                   data = birthwt, prior = R2(0.5),
-#                   chains = CHAINS, cores = CORES, seed = SEED)
+#                   seed = 12345)
 
 ## ------------------------------------------------------------------------
 #  print(post1)
@@ -51,8 +51,7 @@ opts_chunk$set(
 ## ----polr-birthwt-mcmc, results="hide"-----------------------------------
 #  post2 <- stan_polr(low ~ smoke + age + race + ptl + ht + ftv, data = birthwt,
 #                     prior = R2(0.5), prior_counts = dirichlet(c(1,1)),
-#                     method = "probit",
-#                     chains = CHAINS, cores = CORES, seed = SEED)
+#                     method = "probit", seed = 12345)
 
 ## ---- polr-loo-plot------------------------------------------------------
 #  plot(loo(post2))

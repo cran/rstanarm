@@ -107,10 +107,12 @@ if (interactive()) launch_shinystan(sso)
 
 }
 \references{
-Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., and Gelman,
-  A. (2018). Visualization in Bayesian workflow. \emph{Journal of the Royal
-  Statistical Society Series A}, accepted for publication. arXiv preprint:
-  \url{http://arxiv.org/abs/1709.01449}.
+Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
+  Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
+  Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
+  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
+  \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
+  \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 
 Muth, C., Oravecz, Z., and Gabry, J. (2018)
 User-friendly Bayesian regression modeling: A tutorial with rstanarm and shinystan.

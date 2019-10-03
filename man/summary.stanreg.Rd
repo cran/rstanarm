@@ -9,7 +9,7 @@
 \title{Summary method for stanreg objects}
 \usage{
 \method{summary}{stanreg}(object, pars = NULL, regex_pars = NULL,
-  probs = NULL, ..., digits = 1)
+  probs = c(0.1, 0.5, 0.9), ..., digits = 1)
 
 \method{print}{summary.stanreg}(x, digits = max(1, attr(x,
   "print.digits")), ...)
@@ -88,6 +88,18 @@ The \code{summary} method returns an object of class
 \description{
 Summaries of parameter estimates and MCMC convergence diagnostics 
 (Monte Carlo error, effective sample size, Rhat).
+}
+\details{
+\subsection{mean_PPD diagnostic}{
+Summary statistics are also reported for \code{mean_PPD}, the sample
+average posterior predictive distribution of the outcome. This is useful as a
+quick diagnostic. A useful heuristic is to check if \code{mean_PPD} is
+plausible when compared to \code{mean(y)}. If it is plausible then this does
+\emph{not} mean that the model is good in general (only that it can reproduce
+the sample mean), however if \code{mean_PPD} is implausible then it is a sign
+that something is wrong (severe model misspecification, problems with the
+data, computational issues, etc.).
+}
 }
 \examples{
 if (!exists("example_model")) example(example_model) 

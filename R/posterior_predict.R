@@ -141,8 +141,6 @@
 posterior_predict.stanreg <- function(object, newdata = NULL, draws = NULL,
                                       re.form = NULL, fun = NULL, seed = NULL,
                                       offset = NULL, ...) {
-  if (used.optimizing(object))
-    STOP_not_optimizing("posterior_predict")
   if (!is.null(seed))
     set.seed(seed)
   if (!is.null(fun))
@@ -161,7 +159,7 @@ posterior_predict.stanreg <- function(object, newdata = NULL, draws = NULL,
     stanmat <- NULL
   }
   
-  newdata <- validate_newdata(newdata)
+  newdata <- validate_newdata(object, newdata = newdata, m = m)
   pp_data_args <- c(list(object,
                          newdata = newdata,
                          re.form = re.form,
@@ -209,8 +207,11 @@ posterior_predict.stanreg <- function(object, newdata = NULL, draws = NULL,
 
   ppfun <- pp_fun(object, m = m)
   ytilde <- do.call(ppfun, ppargs)
-  if (!is.null(newdata) && nrow(newdata) == 1L)
+  
+  if ((is.null(newdata) && nobs(object) == 1L) || 
+      (!is.null(newdata) && nrow(newdata) == 1L)) {
     ytilde <- t(ytilde)
+  }
   if (!is.null(fun))
     ytilde <- do.call(fun, list(ytilde))
   if (is_polr(object) && !is_scobit(object))

@@ -16,19 +16,10 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=FALSE-----------------------------------------
+## ---- SETTINGS-gg, include=TRUE------------------------------------------
 library(ggplot2)
+library(bayesplot)
 theme_set(bayesplot::theme_default())
-
-## ---- SETTINGS-rstan, include=FALSE--------------------------------------
-ITER <- 500L
-CHAINS <- 2L
-CORES <- 2L
-SEED <- 12345
-
-## ---- SETTINGS-loo, include=FALSE----------------------------------------
-loo.cores <- if (exists("CORES")) CORES else 1L
-options(mc.cores = loo.cores)
 
 ## ---- default-prior-1, results="hide"------------------------------------
 library("rstanarm")

@@ -3,42 +3,40 @@
 \name{bayes_R2.stanreg}
 \alias{bayes_R2.stanreg}
 \alias{bayes_R2}
-\title{Compute a Bayesian version of R-squared for regression models}
+\alias{loo_R2.stanreg}
+\alias{loo_R2}
+\title{Compute a Bayesian version of R-squared or LOO-adjusted R-squared for
+regression models.}
 \usage{
-\method{bayes_R2}{stanreg}(object, newdata = NULL, re.form = NULL,
-  offset = NULL, ...)
+\method{bayes_R2}{stanreg}(object, ..., re.form = NULL)
+
+\method{loo_R2}{stanreg}(object, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
-\item{newdata}{Similar to the \code{newdata} argument to 
-\code{\link{posterior_linpred}} and \code{\link{posterior_predict}} except,
-in addition to new observations of the predictors, new observations of the
-\emph{outcome} must be also included. See the \strong{Examples} section below.}
-
-\item{re.form, offset}{For models with group-level terms, these arguments are 
-passed to \code{\link{posterior_linpred}} if the \code{newdata} argument is
-specified.}
-
 \item{...}{Currently ignored.}
+
+\item{re.form}{For models with group-level terms, \code{re.form} is
+passed to \code{\link{posterior_linpred}} if specified.}
 }
 \value{
-A vector of Bayesian R-squared values with length equal to the 
-  posterior sample size.
+A vector of R-squared values with length equal to the posterior
+  sample size (the posterior distribution of R-squared).
 }
 \description{
-Compute a Bayesian version of R-squared for regression models
+Compute a Bayesian version of R-squared or LOO-adjusted R-squared for
+regression models.
 }
 \examples{
 fit <- stan_glm(mpg ~ wt + cyl, data = mtcars, QR = TRUE, chains = 2)
 rsq <- bayes_R2(fit)
 print(median(rsq))
+hist(rsq)
 
-# specifying newdata (including outcome variable 'mpg')
-nd <- data.frame(mpg = c(10, 20, 30), wt = c(4, 3, 2), cyl = c(8, 6, 4))
-rsq_new <- bayes_R2(fit, newdata = nd)
-print(median(rsq_new))
+loo_rsq <- loo_R2(fit)
+print(median(loo_rsq))
 
 # multilevel binomial model
 if (!exists("example_model")) example(example_model)
@@ -47,6 +45,11 @@ median(bayes_R2(example_model))
 median(bayes_R2(example_model, re.form = NA)) # exclude group-level
 
 }
-\seealso{
-\url{https://github.com/jgabry/bayes_R2}
+\references{
+Andrew Gelman, Ben Goodrich, Jonah Gabry, and Aki Vehtari (2018). R-squared
+for Bayesian regression models. \emph{The American Statistician}, to appear.
+DOI: 10.1080/00031305.2018.1549100.
+(\href{https://doi.org/10.1080/00031305.2018.1549100}{Journal},
+\href{http://www.stat.columbia.edu/~gelman/research/published/bayes_R2_v3.pdf}{Preprint},
+\href{https://avehtari.github.io/bayes_R2/bayes_R2.html}{Notebook})
 }

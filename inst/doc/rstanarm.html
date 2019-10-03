@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2018-11-08" />
+<meta name="date" content="2019-10-01" />
 
 <title>How to Use the rstanarm Package</title>
 
@@ -20,46 +20,254 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 </head>
 
@@ -70,7 +278,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">How to Use the rstanarm Package</h1>
 <h4 class="author"><em>Jonah Gabry and Ben Goodrich</em></h4>
-<h4 class="date"><em>2018-11-08</em></h4>
+<h4 class="date"><em>2019-10-01</em></h4>
 
 
 <div id="TOC">
@@ -121,89 +329,89 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1>Step 2: Draw from the posterior distribution</h1>
 <p>The likelihood for the sample is just the product over the <span class="math inline">\(J\)</span> groups of <span class="math display">\[g^{-1}\left(\eta_i \right)^{y_i} 
   \left(1 - g^{-1}\left(\eta_i \right)\right)^{n_i-y_i},\]</span> which can be maximized over <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta_1\)</span>, and <span class="math inline">\(\beta_2\)</span> to obtain frequentist estimates by calling</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;womensrole&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;HSAUR3&quot;</span>)
-womensrole$total &lt;-<span class="st"> </span>womensrole$agree +<span class="st"> </span>womensrole$disagree
-womensrole_glm_1 &lt;-<span class="st"> </span><span class="kw">glm</span>(<span class="kw">cbind</span>(agree, disagree) ~<span class="st"> </span>education +<span class="st"> </span>gender,
-                        <span class="dt">data =</span> womensrole, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))
-<span class="kw">round</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(womensrole_glm_1)), <span class="dv">3</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span>(<span class="st">&quot;womensrole&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;HSAUR3&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2">womensrole<span class="op">$</span>total &lt;-<span class="st"> </span>womensrole<span class="op">$</span>agree <span class="op">+</span><span class="st"> </span>womensrole<span class="op">$</span>disagree</a>
+<a class="sourceLine" id="cb1-3" title="3">womensrole_glm_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(<span class="kw">cbind</span>(agree, disagree) <span class="op">~</span><span class="st"> </span>education <span class="op">+</span><span class="st"> </span>gender,</a>
+<a class="sourceLine" id="cb1-4" title="4">                        <span class="dt">data =</span> womensrole, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))</a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="kw">round</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(womensrole_glm_<span class="dv">1</span>)), <span class="dv">3</span>)</a></code></pre></div>
 <p>The p-value for the null hypothesis that <span class="math inline">\(\beta_1 = 0\)</span> is very small, while the p-value for the null hypothesis that <span class="math inline">\(\beta_2 = 0\)</span> is very large. However, frequentist p-values are awkward because they do not pertain to the probability that a scientific hypothesis is true but rather to the probability of observing a <span class="math inline">\(z\)</span>-statistic that is so large (in magnitude) if the null hypothesis were true. The desire to make probabilistic statements about a scientific hypothesis is one reason why many people are drawn to the Bayesian approach.</p>
 <p>A model with the same likelihood but Student t priors with seven degrees of freedom can be specified using the <strong>rstanarm</strong> package in a similar way by prepending <code>stan_</code> to the <code>glm</code> call and specifying priors (and optionally the number of cores on your computer to utilize):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rstanarm)
-womensrole_bglm_1 &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(<span class="kw">cbind</span>(agree, disagree) ~<span class="st"> </span>education +<span class="st"> </span>gender,
-                              <span class="dt">data =</span> womensrole,
-                              <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), 
-                              <span class="dt">prior =</span> <span class="kw">student_t</span>(<span class="dt">df =</span> <span class="dv">7</span>), 
-                              <span class="dt">prior_intercept =</span> <span class="kw">student_t</span>(<span class="dt">df =</span> <span class="dv">7</span>),
-                              <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)
-womensrole_bglm_1</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(rstanarm)</a>
+<a class="sourceLine" id="cb2-2" title="2">womensrole_bglm_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(<span class="kw">cbind</span>(agree, disagree) <span class="op">~</span><span class="st"> </span>education <span class="op">+</span><span class="st"> </span>gender,</a>
+<a class="sourceLine" id="cb2-3" title="3">                              <span class="dt">data =</span> womensrole,</a>
+<a class="sourceLine" id="cb2-4" title="4">                              <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), </a>
+<a class="sourceLine" id="cb2-5" title="5">                              <span class="dt">prior =</span> <span class="kw">student_t</span>(<span class="dt">df =</span> <span class="dv">7</span>), </a>
+<a class="sourceLine" id="cb2-6" title="6">                              <span class="dt">prior_intercept =</span> <span class="kw">student_t</span>(<span class="dt">df =</span> <span class="dv">7</span>),</a>
+<a class="sourceLine" id="cb2-7" title="7">                              <span class="dt">cores =</span> <span class="dv">2</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</a>
+<a class="sourceLine" id="cb2-8" title="8">womensrole_bglm_<span class="dv">1</span></a></code></pre></div>
 <p>As can be seen, the “Bayesian point estimates” — which are represented by the posterior medians — are very similar to the maximum likelihood estimates. Frequentists would ask whether the point estimate is greater in magnitude than double the estimated standard deviation of the sampling distribution. But here we simply have estimates of the standard deviation of the marginal posterior distributions, which are based on a scaling of the Median Absolute Deviation (MAD) from the posterior medians to obtain a robust estimator of the posterior standard deviation. In addition, we can use the <code>posterior_interval</code> function to obtain a Bayesian uncertainty interval for <span class="math inline">\(\beta_1\)</span>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ci95 &lt;-<span class="st"> </span><span class="kw">posterior_interval</span>(womensrole_bglm_1, <span class="dt">prob =</span> <span class="fl">0.95</span>, <span class="dt">pars =</span> <span class="st">&quot;education&quot;</span>)
-<span class="kw">round</span>(ci95, <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">ci95 &lt;-<span class="st"> </span><span class="kw">posterior_interval</span>(womensrole_bglm_<span class="dv">1</span>, <span class="dt">prob =</span> <span class="fl">0.95</span>, <span class="dt">pars =</span> <span class="st">&quot;education&quot;</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">round</span>(ci95, <span class="dv">2</span>)</a></code></pre></div>
 <p>Unlike frequentist confidence intervals — which are <em>not</em> interpretable in terms of post-data probabilities — the Bayesian uncertainty interval indicates we believe after seeing the data that there is a <span class="math inline">\(0.95\)</span> probability that <span class="math inline">\(\beta_2\)</span> is between <code>ci95[1,1]</code> and <code>ci95[1,2]</code>. Alternatively, we could say that there is essentially zero probability that <span class="math inline">\(\beta_2 &gt; 0\)</span>, although frequentists cannot make such a claim coherently.</p>
 <p>Many of the post-estimation methods that are available for a model that is estimated by <code>glm</code> are also available for a model that is estimated by <code>stan_glm</code>. For example,</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cbind</span>(<span class="dt">Median =</span> <span class="kw">coef</span>(womensrole_bglm_1), <span class="dt">MAD_SD =</span> <span class="kw">se</span>(womensrole_bglm_1))
-<span class="kw">summary</span>(<span class="kw">residuals</span>(womensrole_bglm_1)) <span class="co"># not deviance residuals</span>
-<span class="kw">cov2cor</span>(<span class="kw">vcov</span>(womensrole_bglm_1))</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">cbind</span>(<span class="dt">Median =</span> <span class="kw">coef</span>(womensrole_bglm_<span class="dv">1</span>), <span class="dt">MAD_SD =</span> <span class="kw">se</span>(womensrole_bglm_<span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">summary</span>(<span class="kw">residuals</span>(womensrole_bglm_<span class="dv">1</span>)) <span class="co"># not deviance residuals</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">cov2cor</span>(<span class="kw">vcov</span>(womensrole_bglm_<span class="dv">1</span>))</a></code></pre></div>
 <p><strong>rstanarm</strong> does provide a <code>confint</code> method, although it is reserved for computing confidence intervals in the case that the user elects to estimate a model by (penalized) maximum likelihood. When using full Bayesian inference (the <strong>rstanarm</strong> default) or approximate Bayesian inference the <code>posterior_interval</code> function should be used to obtain Bayesian uncertainty intervals.</p>
 </div>
 <div id="step-3-criticize-the-model" class="section level1">
 <h1>Step 3: Criticize the model</h1>
 <p>The <code>launch_shinystan</code> function in the <strong>shinystan</strong> package provides almost all the tools you need to visualize the posterior distribution and diagnose any problems with the Markov chains. In this case, the results are fine and to verify that, you can call</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">launch_shinystan</span>(womensrole_bglm_1)</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">launch_shinystan</span>(womensrole_bglm_<span class="dv">1</span>, <span class="dt">ppd =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <p>which will open a web browser that drives the visualizations.</p>
 <p>For the rest of this subsection, we focus on what users can do programmatically to evaluate whether a model is adequate. A minimal requirement for Bayesian estimates is that the model should fit the data that the estimates conditioned on. The key function here is <code>posterior_predict</code>, which can be passed a new <code>data.frame</code> to predict out-of-sample, but in this case is omitted to obtain in-sample posterior predictions:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(womensrole_bglm_1)
-<span class="kw">dim</span>(y_rep)</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">y_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(womensrole_bglm_<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="kw">dim</span>(y_rep)</a></code></pre></div>
 <p>The resulting matrix has rows equal to the number of posterior simulations, which in this case is <span class="math inline">\(2000\)</span> and columns equal to the number of observations in the original dataset, which is <span class="math inline">\(42\)</span> combinations of education and gender. Each element of this matrix is a predicted number of respondents with that value of education and gender who agreed with the survey question and thus should be reasonably close to the observed proportion of agreements in the data. We can create a plot to check this:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="fl">3.7</span>,<span class="dv">1</span>,<span class="dv">0</span>) +<span class="st"> </span><span class="fl">0.1</span>, <span class="dt">las =</span> <span class="dv">3</span>)
-<span class="kw">boxplot</span>(<span class="kw">sweep</span>(y_rep[,womensrole$gender ==<span class="st"> &quot;Male&quot;</span>], <span class="dv">2</span>, <span class="dt">STATS =</span> 
-               womensrole$total[womensrole$gender ==<span class="st"> &quot;Male&quot;</span>], <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>), 
-        <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;Male&quot;</span>, <span class="dt">pch =</span> <span class="ot">NA</span>,
-        <span class="dt">xlab =</span> <span class="st">&quot;Years of Education&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Proportion of Agrees&quot;</span>)
-<span class="kw">with</span>(womensrole, <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> education[gender ==<span class="st"> &quot;Male&quot;</span>] +<span class="st"> </span><span class="dv">1</span>, 
-                      <span class="dt">labels =</span> <span class="dv">0</span>:<span class="dv">20</span>))
-<span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">las =</span> <span class="dv">1</span>)
-<span class="kw">with</span>(womensrole[womensrole$gender ==<span class="st"> &quot;Male&quot;</span>,], 
-     <span class="kw">points</span>(education +<span class="st"> </span><span class="dv">1</span>,  agree /<span class="st"> </span>(agree +<span class="st"> </span>disagree), 
-            <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>))
-<span class="kw">boxplot</span>(<span class="kw">sweep</span>(y_rep[,womensrole$gender ==<span class="st"> &quot;Female&quot;</span>], <span class="dv">2</span>, <span class="dt">STATS =</span> 
-          womensrole$total[womensrole$gender ==<span class="st"> &quot;Female&quot;</span>], <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>), 
-          <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;Female&quot;</span>, <span class="dt">pch =</span> <span class="ot">NA</span>,
-        <span class="dt">xlab =</span> <span class="st">&quot;Years of Education&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;&quot;</span>)
-<span class="kw">with</span>(womensrole, <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> education[gender ==<span class="st"> &quot;Female&quot;</span>] +<span class="st"> </span><span class="dv">1</span>,
-     <span class="dt">labels =</span> <span class="dv">0</span>:<span class="dv">20</span>))
-<span class="kw">with</span>(womensrole[womensrole$gender ==<span class="st"> &quot;Female&quot;</span>,], 
-     <span class="kw">points</span>(education +<span class="st"> </span><span class="dv">1</span>,  agree /<span class="st"> </span>(agree +<span class="st"> </span>disagree), 
-            <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>))</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="fl">3.7</span>,<span class="dv">1</span>,<span class="dv">0</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span>, <span class="dt">las =</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">boxplot</span>(<span class="kw">sweep</span>(y_rep[,womensrole<span class="op">$</span>gender <span class="op">==</span><span class="st"> &quot;Male&quot;</span>], <span class="dv">2</span>, <span class="dt">STATS =</span> </a>
+<a class="sourceLine" id="cb7-3" title="3">               womensrole<span class="op">$</span>total[womensrole<span class="op">$</span>gender <span class="op">==</span><span class="st"> &quot;Male&quot;</span>], <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>), </a>
+<a class="sourceLine" id="cb7-4" title="4">        <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;Male&quot;</span>, <span class="dt">pch =</span> <span class="ot">NA</span>,</a>
+<a class="sourceLine" id="cb7-5" title="5">        <span class="dt">xlab =</span> <span class="st">&quot;Years of Education&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Proportion of Agrees&quot;</span>)</a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="kw">with</span>(womensrole, <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> education[gender <span class="op">==</span><span class="st"> &quot;Male&quot;</span>] <span class="op">+</span><span class="st"> </span><span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb7-7" title="7">                      <span class="dt">labels =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">20</span>))</a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">las =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="kw">with</span>(womensrole[womensrole<span class="op">$</span>gender <span class="op">==</span><span class="st"> &quot;Male&quot;</span>,], </a>
+<a class="sourceLine" id="cb7-10" title="10">     <span class="kw">points</span>(education <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,  agree <span class="op">/</span><span class="st"> </span>(agree <span class="op">+</span><span class="st"> </span>disagree), </a>
+<a class="sourceLine" id="cb7-11" title="11">            <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>))</a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="kw">boxplot</span>(<span class="kw">sweep</span>(y_rep[,womensrole<span class="op">$</span>gender <span class="op">==</span><span class="st"> &quot;Female&quot;</span>], <span class="dv">2</span>, <span class="dt">STATS =</span> </a>
+<a class="sourceLine" id="cb7-13" title="13">          womensrole<span class="op">$</span>total[womensrole<span class="op">$</span>gender <span class="op">==</span><span class="st"> &quot;Female&quot;</span>], <span class="dt">FUN =</span> <span class="st">&quot;/&quot;</span>), </a>
+<a class="sourceLine" id="cb7-14" title="14">          <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;Female&quot;</span>, <span class="dt">pch =</span> <span class="ot">NA</span>,</a>
+<a class="sourceLine" id="cb7-15" title="15">        <span class="dt">xlab =</span> <span class="st">&quot;Years of Education&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb7-16" title="16"><span class="kw">with</span>(womensrole, <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> education[gender <span class="op">==</span><span class="st"> &quot;Female&quot;</span>] <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb7-17" title="17">     <span class="dt">labels =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">20</span>))</a>
+<a class="sourceLine" id="cb7-18" title="18"><span class="kw">with</span>(womensrole[womensrole<span class="op">$</span>gender <span class="op">==</span><span class="st"> &quot;Female&quot;</span>,], </a>
+<a class="sourceLine" id="cb7-19" title="19">     <span class="kw">points</span>(education <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,  agree <span class="op">/</span><span class="st"> </span>(agree <span class="op">+</span><span class="st"> </span>disagree), </a>
+<a class="sourceLine" id="cb7-20" title="20">            <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>))</a></code></pre></div>
 <p>Here the boxplots provide the median, interquartile range, and hinges of the posterior predictive distribution for a given gender and level of education, while the red points represent the corresponding observed data. As can be seen, the model predicts the observed data fairly well for six to sixteen years of education but predicts less well for very low or very high levels of education where there are less data.</p>
 <p>Consequently, we might consider a model where education has a quadratic effect on agreement, which is easy to specify using R’s formula-based syntax.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(womensrole_bglm_2 &lt;-<span class="st"> </span><span class="kw">update</span>(womensrole_bglm_1, <span class="dt">formula. =</span> . ~<span class="st"> </span>. +<span class="st"> </span><span class="kw">I</span>(education^<span class="dv">2</span>)))</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">(womensrole_bglm_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">update</span>(womensrole_bglm_<span class="dv">1</span>, <span class="dt">formula. =</span> . <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(education<span class="op">^</span><span class="dv">2</span>)))</a></code></pre></div>
 <p>Frequentists would test the null hypothesis that the coefficient on the squared level of education is zero. Bayesians might ask whether such a model is expected to produce better out-of-sample predictions than a model with only the level of education. The latter question can be answered using leave-one-out cross-validation or the approximation thereof provided by the <code>loo</code> function in the <strong>loo</strong> package, for which a method is provided by the <strong>rstanarm</strong> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">loo_bglm_1 &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_1)
-loo_bglm_2 &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_2)</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">loo_bglm_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb9-2" title="2">loo_bglm_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">loo</span>(womensrole_bglm_<span class="dv">2</span>)</a></code></pre></div>
 <p>First, we verify that the posterior is not too sensitive to any particular observation in the dataset.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="fl">3.8</span>,<span class="dv">1</span>,<span class="dv">0</span>) +<span class="st"> </span><span class="fl">0.1</span>, <span class="dt">las =</span> <span class="dv">3</span>)
-<span class="kw">plot</span>(loo_bglm_1, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)
-<span class="kw">plot</span>(loo_bglm_2, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="fl">3.8</span>,<span class="dv">1</span>,<span class="dv">0</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span>, <span class="dt">las =</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="kw">plot</span>(loo_bglm_<span class="dv">1</span>, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">plot</span>(loo_bglm_<span class="dv">2</span>, <span class="dt">label_points =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>There are only one or two moderate outliers (whose statistics are greater than <span class="math inline">\(0.5\)</span>), which should not have too much of an effect on the resulting model comparison:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">compare_models</span>(loo_bglm_1, loo_bglm_2)</code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">loo_compare</span>(loo_bglm_<span class="dv">1</span>, loo_bglm_<span class="dv">2</span>)</a></code></pre></div>
 <p>In this case, there is little difference in the expected log pointwise deviance between the two models, so we are essentially indifferent between them after taking into account that the second model estimates an additional parameter. The “LOO Information Criterion (LOOIC)”</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">loo_bglm_1</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">loo_bglm_<span class="dv">1</span></a></code></pre></div>
 <p>has the same purpose as the Akaike Information Criterion (AIC) that is used by frequentists. Both are intended to estimate the expected log predicted density (ELPD) for a new dataset. However, the AIC ignores priors and assumes that the posterior distribution is multivariate normal, whereas the functions from the loo package used here do not assume that the posterior distribution is multivariate normal and integrate over uncertainty in the parameters. This only assumes that any one observation can be omitted without having a major effect on the posterior distribution, which can be judged using the plots above.</p>
 </div>
 <div id="step-4-analyze-manipulations-of-predictors" class="section level1">
 <h1>Step 4: Analyze manipulations of predictors</h1>
 <p>Frequentists attempt to interpret the estimates of the model, which is difficult except when the model is linear, has no inverse link function, and contains no interaction terms. Bayesians can avoid this difficulty simply by inspecting the posterior predictive distribution at different levels of the predictors. For example,</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># note: in newdata we want agree and disagree to sum to the number of people we</span>
-<span class="co"># want to predict for. the values of agree and disagree don't matter so long as</span>
-<span class="co"># their sum is the desired number of trials. we need to explicitly imply the</span>
-<span class="co"># number of trials like this because our original data are aggregate. if we had</span>
-<span class="co"># bernoulli data then it would be a given we wanted to predict for single</span>
-<span class="co"># individuals.</span>
-newdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">agree =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">disagree =</span> <span class="kw">c</span>(<span class="dv">100</span>,<span class="dv">100</span>), <span class="dt">education =</span> <span class="kw">c</span>(<span class="dv">12</span>,<span class="dv">16</span>),
-                      <span class="dt">gender =</span> <span class="kw">factor</span>(<span class="st">&quot;Female&quot;</span>, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>)))
-y_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(womensrole_bglm_2, newdata)
-<span class="kw">summary</span>(<span class="kw">apply</span>(y_rep, <span class="dv">1</span>, diff))</code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="co"># note: in newdata we want agree and disagree to sum to the number of people we</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="co"># want to predict for. the values of agree and disagree don't matter so long as</span></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="co"># their sum is the desired number of trials. we need to explicitly imply the</span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="co"># number of trials like this because our original data are aggregate. if we had</span></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="co"># bernoulli data then it would be a given we wanted to predict for single</span></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="co"># individuals.</span></a>
+<a class="sourceLine" id="cb13-7" title="7">newdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">agree =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">disagree =</span> <span class="kw">c</span>(<span class="dv">100</span>,<span class="dv">100</span>), <span class="dt">education =</span> <span class="kw">c</span>(<span class="dv">12</span>,<span class="dv">16</span>),</a>
+<a class="sourceLine" id="cb13-8" title="8">                      <span class="dt">gender =</span> <span class="kw">factor</span>(<span class="st">&quot;Female&quot;</span>, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>)))</a>
+<a class="sourceLine" id="cb13-9" title="9">y_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(womensrole_bglm_<span class="dv">2</span>, newdata)</a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="kw">summary</span>(<span class="kw">apply</span>(y_rep, <span class="dv">1</span>, diff))</a></code></pre></div>
 <p>As can be seen, out of <span class="math inline">\(100\)</span> women who have a college degree versus <span class="math inline">\(100\)</span> women with only a high school degree, we would expect about <span class="math inline">\(20\)</span> fewer college-educated women to agree with the question. There is an even chance that the difference is between <span class="math inline">\(24\)</span> and <span class="math inline">\(16\)</span>, a one-in-four chance that it is greater, and one-in-four chance that it is less.</p>
 </div>
 <div id="troubleshooting" class="section level1">
@@ -217,16 +425,14 @@ y_rep &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(wo
 <p>Gelman and Rubin’s recommendation is that the independent Markov chains be initialized with diffuse starting values for the parameters and sampled until all values for Rhat are below 1.1. When any Rhat values are above 1.1 <strong>rstanarm</strong> will print a warning message like this:</p>
 <pre><code>Markov chains did not converge! Do not analyze results! </code></pre>
 <p>To illustrate how to check the Rhat values after fitting a model using <strong>rstanarm</strong> we’ll fit two models and run them for different numbers of iterations.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bad_rhat &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(mpg ~<span class="st"> </span>., <span class="dt">data =</span> mtcars, <span class="dt">iter =</span> <span class="dv">20</span>, 
-                     <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)
-good_rhat &lt;-<span class="st"> </span><span class="kw">update</span>(bad_rhat, <span class="dt">iter =</span> <span class="dv">500</span>, 
-                    <span class="dt">chains =</span> CHAINS, <span class="dt">cores =</span> CORES, <span class="dt">seed =</span> SEED)</code></pre></div>
-<p>Here the first model leads to the warning message about convergence but the second model does not. Indeed, we can see that not all Rhat values are less than 1.1 for the first model:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rhat &lt;-<span class="st"> </span><span class="kw">summary</span>(bad_rhat)[, <span class="st">&quot;Rhat&quot;</span>]
-rhat[rhat &gt;<span class="st"> </span><span class="fl">1.1</span>]</code></pre></div>
-<p>Since we didn’t get a warning for the second model we shouldn’t find any parameters with an Rhat greater than 1.1:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">any</span>(<span class="kw">summary</span>(good_rhat)[, <span class="st">&quot;Rhat&quot;</span>] &gt;<span class="st"> </span><span class="fl">1.1</span>)</code></pre></div>
-<p>Details on the computation of Rhat and some of its limitations can be found in the chapter of the <a href="http://mc-stan.org/documentation/">Stan Modeling Language User’s Guide and Reference Manual</a>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">bad_rhat &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(mpg <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> mtcars, <span class="dt">iter =</span> <span class="dv">20</span>, <span class="dt">chains =</span> <span class="dv">2</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</a>
+<a class="sourceLine" id="cb15-2" title="2">good_rhat &lt;-<span class="st"> </span><span class="kw">update</span>(bad_rhat, <span class="dt">iter =</span> <span class="dv">1000</span>, <span class="dt">chains =</span> <span class="dv">2</span>, <span class="dt">seed =</span> <span class="dv">12345</span>)</a></code></pre></div>
+<p>Here the first model leads to the warning message about convergence but the second model does not. Indeed, we can see that many Rhat values are much bigger than 1 for the first model:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">rhat &lt;-<span class="st"> </span><span class="kw">summary</span>(bad_rhat)[, <span class="st">&quot;Rhat&quot;</span>]</a>
+<a class="sourceLine" id="cb16-2" title="2">rhat[rhat <span class="op">&gt;</span><span class="st"> </span><span class="fl">1.1</span>]</a></code></pre></div>
+<p>Since we didn’t get a warning for the second model we shouldn’t find any parameters with an Rhat far from 1:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">any</span>(<span class="kw">summary</span>(good_rhat)[, <span class="st">&quot;Rhat&quot;</span>] <span class="op">&gt;</span><span class="st"> </span><span class="fl">1.1</span>)</a></code></pre></div>
+<p>Details on the computation of Rhat and some of its limitations can be found in <a href="https://mc-stan.org/users/documentation/">Stan Modeling Language User’s Guide and Reference Manual</a>.</p>
 </div>
 <div id="divergent-transitions" class="section level3">
 <h3>Divergent transitions</h3>
@@ -244,7 +450,7 @@ rhat[rhat &gt;<span class="st"> </span><span class="fl">1.1</span>]</code></pre>
 <h1>Conclusion</h1>
 <p>In this vignette, we have gone through the four steps of a Bayesian analysis. The first step — specifying the posterior distribution — varies considerably from one analysis to the next because the likelihood function employed differs depending on the nature of the outcome variable and our prior beliefs about the parameters in the model varies not only from situation to situation but from researcher to researcher. However, given a posterior distribution and given that this posterior distribution can be drawn from using the <strong>rstanarm</strong> package, the remaining steps are conceptually similar across analyses. The key is to draw from the posterior predictive distribution of the outcome, which is the what the model predicts the outcome to be after having updated our beliefs about the unknown parameters with the observed data. Posterior predictive distributions can be used for model checking and for making inferences about how manipulations of the predictors would affect the outcome.</p>
 <p>Of course, all of this assumes that you have obtained draws from the posterior distribution faithfully. The functions in the <strong>rstanarm</strong> package will throw warnings if there is evidence that the draws are tainted, and we have discussed some steps to remedy these problems. For the most part, the model-fitting functions in the <strong>rstanarm</strong> package are unlikely to produce many such warnings, but they may appear in more complicated models.</p>
-<p>If the posterior distribution that you specify in the first step cannot be sampled from using the <strong>rstanarm</strong> package, then it is often possible to create a hand-written program in the the Stan language so that the posterior distribution can be drawn from using the <strong>rstan</strong> package. See the documentation for the <strong>rstan</strong> package or <a href="http://mc-stan.org" class="uri">http://mc-stan.org</a> for more details about this more advanced usage of Stan. However, many relatively simple models can be fit using the <strong>rstanarm</strong> package without writing any code in the Stan language, which is illustrated for each estimating function in the <strong>rstanarm</strong> package in the other <a href="index.html">vignettes</a>.</p>
+<p>If the posterior distribution that you specify in the first step cannot be sampled from using the <strong>rstanarm</strong> package, then it is often possible to create a hand-written program in the the Stan language so that the posterior distribution can be drawn from using the <strong>rstan</strong> package. See the documentation for the <strong>rstan</strong> package or <a href="https://mc-stan.org" class="uri">https://mc-stan.org</a> for more details about this more advanced usage of Stan. However, many relatively simple models can be fit using the <strong>rstanarm</strong> package without writing any code in the Stan language, which is illustrated for each estimating function in the <strong>rstanarm</strong> package in the other <a href="index.html">vignettes</a>.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>

@@ -167,6 +167,14 @@ the code run faster and can consume much less RAM.}
 \value{
 A \link[=stanreg-objects]{stanreg} object is returned 
 for \code{stan_glmer, stan_lmer, stan_glmer.nb}.
+
+A list with classes \code{stanreg}, \code{glm}, \code{lm}, 
+  and \code{lmerMod}. The conventions for the parameter names are the
+  same as in the lme4 package with the addition that the standard
+  deviation of the errors is called \code{sigma} and the variance-covariance
+  matrix of the group-specific deviations from the common parameters is
+  called \code{Sigma}, even if this variance-covariance matrix only has
+  one row and one column (in which case it is just the group-level variance).
 }
 \description{
 \if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}

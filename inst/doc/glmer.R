@@ -27,9 +27,10 @@ opts_chunk$set(
 #    data = roaches,
 #    family = neg_binomial_2,
 #    QR = TRUE,
-#    chains = CHAINS,
-#    cores = CORES,
-#    seed = SEED
+#    cores = 2,
+#    chains = 2,
+#    adapt_delta = 0.99,
+#    seed = 12345
 #  )
 
 ## ------------------------------------------------------------------------
@@ -52,8 +53,7 @@ opts_chunk$set(
 
 ## ---- results = "hide"---------------------------------------------------
 #  post1 <- stan_nlmer(circumference ~ SSlogis(age, Asym, xmid, scal) ~ Asym|Tree,
-#                      data = Orange, chains = CHAINS, cores = CORES, seed = SEED,
-#                      init_r = 0.5)
+#                      data = Orange, cores = 2, seed = 12345, init_r = 0.5)
 
 ## ------------------------------------------------------------------------
 #  post1
@@ -71,7 +71,7 @@ opts_chunk$set(
 ## ---- eval = FALSE-------------------------------------------------------
 #  post3 <- stan_nlmer(conc ~ SSfol(Dose, Time, lKe, lKa, lCl) ~
 #                      (0 + lKe + lKa + lCl | Subject), data = Theoph,
-#                      chains = CHAINS, cores = CORES, seed = SEED,
+#                      cores = 2, seed = 12345,
 #                      QR = TRUE, init_r = 0.25, adapt_delta = 0.999)
 #  pairs(post3, regex_pars = "^l")
 #  pairs(post3, regex_pars = "igma")
