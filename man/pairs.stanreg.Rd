@@ -6,8 +6,13 @@
 \alias{pairs_condition}
 \title{Pairs method for stanreg objects}
 \usage{
-\method{pairs}{stanreg}(x, pars = NULL, regex_pars = NULL,
-  condition = pairs_condition(nuts = "accept_stat__"), ...)
+\method{pairs}{stanreg}(
+  x,
+  pars = NULL,
+  regex_pars = NULL,
+  condition = pairs_condition(nuts = "accept_stat__"),
+  ...
+)
 }
 \arguments{
 \item{x}{A fitted model object returned by one of the 
@@ -81,7 +86,8 @@ fit <- stan_glm(
   iter = 1000,
   # this combo of prior and adapt_delta should lead to some divergences
   prior = hs(),
-  adapt_delta = 0.9
+  adapt_delta = 0.9,
+  refresh = 0
 )
 
 pairs(fit, pars = c("wt", "sigma", "log-posterior"))

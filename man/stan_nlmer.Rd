@@ -4,11 +4,24 @@
 \alias{stan_nlmer}
 \title{Bayesian nonlinear models with group-specific terms via Stan}
 \usage{
-stan_nlmer(formula, data = NULL, subset, weights, na.action, offset,
-  contrasts = NULL, ..., prior = normal(), prior_aux = exponential(),
-  prior_covariance = decov(), prior_PD = FALSE,
+stan_nlmer(
+  formula,
+  data = NULL,
+  subset,
+  weights,
+  na.action,
+  offset,
+  contrasts = NULL,
+  ...,
+  prior = normal(),
+  prior_aux = exponential(),
+  prior_covariance = decov(),
+  prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+  adapt_delta = NULL,
+  QR = FALSE,
+  sparse = FALSE
+)
 }
 \arguments{
 \item{formula, data}{Same as for \code{\link[lme4]{nlmer}}. \emph{We strongly

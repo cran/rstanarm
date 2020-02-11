@@ -5,21 +5,49 @@
 \alias{stan_betareg.fit}
 \title{Bayesian beta regression models via Stan}
 \usage{
-stan_betareg(formula, data, subset, na.action, weights, offset,
+stan_betareg(
+  formula,
+  data,
+  subset,
+  na.action,
+  weights,
+  offset,
   link = c("logit", "probit", "cloglog", "cauchit", "log", "loglog"),
-  link.phi = NULL, model = TRUE, y = TRUE, x = FALSE, ...,
-  prior = normal(), prior_intercept = normal(), prior_z = normal(),
-  prior_intercept_z = normal(), prior_phi = exponential(),
-  prior_PD = FALSE, algorithm = c("sampling", "optimizing",
-  "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
+  link.phi = NULL,
+  model = TRUE,
+  y = TRUE,
+  x = FALSE,
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_z = normal(),
+  prior_intercept_z = normal(),
+  prior_phi = exponential(),
+  prior_PD = FALSE,
+  algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
+  adapt_delta = NULL,
+  QR = FALSE
+)
 
-stan_betareg.fit(x, y, z = NULL, weights = rep(1, NROW(x)),
-  offset = rep(0, NROW(x)), link = c("logit", "probit", "cloglog",
-  "cauchit", "log", "loglog"), link.phi = NULL, ..., prior = normal(),
-  prior_intercept = normal(), prior_z = normal(),
-  prior_intercept_z = normal(), prior_phi = exponential(),
-  prior_PD = FALSE, algorithm = c("sampling", "optimizing",
-  "meanfield", "fullrank"), adapt_delta = NULL, QR = FALSE)
+stan_betareg.fit(
+  x,
+  y,
+  z = NULL,
+  weights = rep(1, NROW(x)),
+  offset = rep(0, NROW(x)),
+  link = c("logit", "probit", "cloglog", "cauchit", "log", "loglog"),
+  link.phi = NULL,
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_z = normal(),
+  prior_intercept_z = normal(),
+  prior_phi = exponential(),
+  prior_PD = FALSE,
+  algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
+  adapt_delta = NULL,
+  QR = FALSE
+)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[betareg]{betareg}}, 

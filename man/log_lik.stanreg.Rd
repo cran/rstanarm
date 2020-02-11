@@ -11,8 +11,7 @@
 
 \method{log_lik}{stanmvreg}(object, m = 1, newdata = NULL, ...)
 
-\method{log_lik}{stanjm}(object, newdataLong = NULL,
-  newdataEvent = NULL, ...)
+\method{log_lik}{stanjm}(object, newdataLong = NULL, newdataEvent = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 
@@ -63,7 +62,8 @@ of individuals.
     family = poisson(link = "log"),
     prior = normal(0, 2.5),
     prior_intercept = normal(0, 10),
-    iter = 500 # to speed up example
+    iter = 500, # just to speed up example,
+    refresh = 0
  )
  ll <- log_lik(fit)
  dim(ll)

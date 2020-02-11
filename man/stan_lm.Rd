@@ -7,26 +7,64 @@
 \alias{stan_lm.fit}
 \title{Bayesian regularized linear models via Stan}
 \usage{
-stan_aov(formula, data, projections = FALSE, contrasts = NULL, ...,
-  prior = R2(stop("'location' must be specified")), prior_PD = FALSE,
+stan_aov(
+  formula,
+  data,
+  projections = FALSE,
+  contrasts = NULL,
+  ...,
+  prior = R2(stop("'location' must be specified")),
+  prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL)
+  adapt_delta = NULL
+)
 
-stan_lm(formula, data, subset, weights, na.action, model = TRUE,
-  x = FALSE, y = FALSE, singular.ok = TRUE, contrasts = NULL,
-  offset, ..., prior = R2(stop("'location' must be specified")),
-  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL)
-
-stan_lm.wfit(x, y, w, offset = NULL, singular.ok = TRUE, ...,
+stan_lm(
+  formula,
+  data,
+  subset,
+  weights,
+  na.action,
+  model = TRUE,
+  x = FALSE,
+  y = FALSE,
+  singular.ok = TRUE,
+  contrasts = NULL,
+  offset,
+  ...,
   prior = R2(stop("'location' must be specified")),
-  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL)
+  prior_intercept = NULL,
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL
+)
 
-stan_lm.fit(x, y, offset = NULL, singular.ok = TRUE, ...,
+stan_lm.wfit(
+  x,
+  y,
+  w,
+  offset = NULL,
+  singular.ok = TRUE,
+  ...,
   prior = R2(stop("'location' must be specified")),
-  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL)
+  prior_intercept = NULL,
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL
+)
+
+stan_lm.fit(
+  x,
+  y,
+  offset = NULL,
+  singular.ok = TRUE,
+  ...,
+  prior = R2(stop("'location' must be specified")),
+  prior_intercept = NULL,
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL
+)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[stats]{lm}}, 
@@ -157,8 +195,7 @@ print(fit_aov)
             
 (fit <- stan_lm(mpg ~ wt + qsec + am, data = mtcars, prior = R2(0.75), 
                 # the next line is only to make the example go fast enough
-                chains = 1, iter = 500, seed = 12345))
-plot(fit, prob = 0.8)
+                chains = 1, iter = 300, seed = 12345, refresh = 0))
 plot(fit, "hist", pars = c("wt", "am", "qsec", "sigma"), 
      transformations = list(sigma = "log"))
 

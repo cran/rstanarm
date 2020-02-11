@@ -5,9 +5,16 @@
 \alias{posterior_linpred}
 \title{Posterior distribution of the linear predictor}
 \usage{
-\method{posterior_linpred}{stanreg}(object, transform = FALSE,
-  newdata = NULL, draws = NULL, re.form = NULL, offset = NULL,
-  XZ = FALSE, ...)
+\method{posterior_linpred}{stanreg}(
+  object,
+  transform = FALSE,
+  newdata = NULL,
+  draws = NULL,
+  re.form = NULL,
+  offset = NULL,
+  XZ = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

@@ -9,15 +9,24 @@
 \alias{loo_predictive_interval.stanreg}
 \title{Compute weighted expectations using LOO}
 \usage{
-\method{loo_predict}{stanreg}(object, type = c("mean", "var",
-  "quantile"), probs = 0.5, ..., psis_object = NULL)
+\method{loo_predict}{stanreg}(
+  object,
+  type = c("mean", "var", "quantile"),
+  probs = 0.5,
+  ...,
+  psis_object = NULL
+)
 
-\method{loo_linpred}{stanreg}(object, type = c("mean", "var",
-  "quantile"), probs = 0.5, transform = FALSE, ...,
-  psis_object = NULL)
+\method{loo_linpred}{stanreg}(
+  object,
+  type = c("mean", "var", "quantile"),
+  probs = 0.5,
+  transform = FALSE,
+  ...,
+  psis_object = NULL
+)
 
-\method{loo_predictive_interval}{stanreg}(object, prob = 0.9, ...,
-  psis_object = NULL)
+\method{loo_predictive_interval}{stanreg}(object, prob = 0.9, ..., psis_object = NULL)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

@@ -4,10 +4,21 @@
 \alias{stan_clogit}
 \title{Conditional logistic (clogit) regression models via Stan}
 \usage{
-stan_clogit(formula, data, subset, na.action = NULL, ..., strata,
-  prior = normal(), prior_covariance = decov(), prior_PD = FALSE,
+stan_clogit(
+  formula,
+  data,
+  subset,
+  na.action = NULL,
+  ...,
+  strata,
+  prior = normal(),
+  prior_covariance = decov(),
+  prior_PD = FALSE,
   algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+  adapt_delta = NULL,
+  QR = FALSE,
+  sparse = FALSE
+)
 }
 \arguments{
 \item{formula, data, subset, na.action}{Same as for \code{\link[lme4]{glmer}},

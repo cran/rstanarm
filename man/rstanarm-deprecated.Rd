@@ -5,8 +5,11 @@
 \alias{prior_options}
 \title{Deprecated functions}
 \usage{
-prior_options(prior_scale_for_dispersion = 5, min_prior_scale = 1e-12,
-  scaled = TRUE)
+prior_options(
+  prior_scale_for_dispersion = 5,
+  min_prior_scale = 1e-12,
+  scaled = TRUE
+)
 }
 \arguments{
 \item{prior_scale_for_dispersion, min_prior_scale, scaled}{Arguments to 

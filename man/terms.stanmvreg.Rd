@@ -4,8 +4,7 @@
 \alias{terms.stanmvreg}
 \title{terms method for stanmvreg objects}
 \usage{
-\method{terms}{stanmvreg}(x, fixed.only = TRUE, random.only = FALSE,
-  m = NULL, ...)
+\method{terms}{stanmvreg}(x, fixed.only = TRUE, random.only = FALSE, m = NULL, ...)
 }
 \arguments{
 \item{x, fixed.only, random.only, ...}{See lme4:::terms.merMod.}

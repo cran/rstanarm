@@ -6,31 +6,75 @@
 \alias{stan_glm.fit}
 \title{Bayesian generalized linear models via Stan}
 \usage{
-stan_glm(formula, family = gaussian(), data, weights, subset,
-  na.action = NULL, offset = NULL, model = TRUE, x = FALSE,
-  y = TRUE, contrasts = NULL, ..., prior = normal(),
-  prior_intercept = normal(), prior_aux = exponential(),
-  prior_PD = FALSE, algorithm = c("sampling", "optimizing",
-  "meanfield", "fullrank"), mean_PPD = algorithm != "optimizing",
-  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+stan_glm(
+  formula,
+  family = gaussian(),
+  data,
+  weights,
+  subset,
+  na.action = NULL,
+  offset = NULL,
+  model = TRUE,
+  x = FALSE,
+  y = TRUE,
+  contrasts = NULL,
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_aux = exponential(),
+  prior_PD = FALSE,
+  algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
+  mean_PPD = algorithm != "optimizing",
+  adapt_delta = NULL,
+  QR = FALSE,
+  sparse = FALSE
+)
 
-stan_glm.nb(formula, data, weights, subset, na.action = NULL,
-  offset = NULL, model = TRUE, x = FALSE, y = TRUE,
-  contrasts = NULL, link = "log", ..., prior = normal(),
-  prior_intercept = normal(), prior_aux = exponential(),
-  prior_PD = FALSE, algorithm = c("sampling", "optimizing",
-  "meanfield", "fullrank"), mean_PPD = algorithm != "optimizing",
-  adapt_delta = NULL, QR = FALSE)
+stan_glm.nb(
+  formula,
+  data,
+  weights,
+  subset,
+  na.action = NULL,
+  offset = NULL,
+  model = TRUE,
+  x = FALSE,
+  y = TRUE,
+  contrasts = NULL,
+  link = "log",
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_aux = exponential(),
+  prior_PD = FALSE,
+  algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
+  mean_PPD = algorithm != "optimizing",
+  adapt_delta = NULL,
+  QR = FALSE
+)
 
-stan_glm.fit(x, y, weights = rep(1, NROW(y)), offset = rep(0, NROW(y)),
-  family = gaussian(), ..., prior = normal(),
-  prior_intercept = normal(), prior_aux = exponential(),
-  prior_smooth = exponential(autoscale = FALSE), prior_ops = NULL,
-  group = list(), prior_PD = FALSE, algorithm = c("sampling",
-  "optimizing", "meanfield", "fullrank"), mean_PPD = algorithm !=
-  "optimizing", adapt_delta = NULL, QR = FALSE, sparse = FALSE,
+stan_glm.fit(
+  x,
+  y,
+  weights = rep(1, NROW(y)),
+  offset = rep(0, NROW(y)),
+  family = gaussian(),
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_aux = exponential(),
+  prior_smooth = exponential(autoscale = FALSE),
+  prior_ops = NULL,
+  group = list(),
+  prior_PD = FALSE,
+  algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
+  mean_PPD = algorithm != "optimizing",
+  adapt_delta = NULL,
+  QR = FALSE,
+  sparse = FALSE,
   importance_resampling = algorithm != "sampling",
-  keep_every = algorithm != "sampling")
+  keep_every = algorithm != "sampling"
+)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[stats]{glm}}, 
@@ -251,7 +295,8 @@ fit <- stan_glm(
   data = mtcars, 
   QR = TRUE,
   # for speed of example only (default is "sampling")
-  algorithm = "fullrank" 
+  algorithm = "fullrank",
+  refresh = 0 
  ) 
                 
 plot(fit, prob = 0.5)
@@ -268,6 +313,7 @@ fit2 <- stan_glm(
   family = binomial(link = "logit"), 
   prior_intercept = normal(0, 10),
   QR = TRUE,
+  refresh = 0,
   # for speed of example only
   chains = 2, iter = 200 
 )
@@ -293,6 +339,7 @@ fit3 <- stan_glm(
   data = count_data, 
   family = poisson(link="log"),
   prior = normal(0, 2, autoscale = FALSE),
+  refresh = 0,
   # for speed of example only
   chains = 2, iter = 250 
 ) 
@@ -312,7 +359,8 @@ fit4 <- stan_glm(
   lot1 ~ log_u, 
   data = clotting, 
   family = Gamma(link="log"),
-  iter = 500 # for speed of example only 
+  iter = 500, # for speed of example only
+  refresh = 0
  ) 
 print(fit4, digits = 2)
 
@@ -327,9 +375,14 @@ bayesplot::bayesplot_grid(
 
 
 ### Negative binomial regression
-fit6 <- stan_glm.nb(Days ~ Sex/(Age + Eth*Lrn), data = MASS::quine, 
-                    link = "log", prior_aux = exponential(1.5),
-                    chains = 2, iter = 200) # for speed of example only
+fit6 <- stan_glm.nb(
+  Days ~ Sex/(Age + Eth*Lrn), 
+  data = MASS::quine, 
+  link = "log", 
+  prior_aux = exponential(1.5),
+  chains = 2, iter = 200, # for speed of example only
+  refresh = 0
+) 
 
 prior_summary(fit6)
 bayesplot::color_scheme_set("brightblue")

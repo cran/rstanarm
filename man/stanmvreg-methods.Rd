@@ -23,13 +23,11 @@
 
 \method{se}{stanmvreg}(object, m = NULL, ...)
 
-\method{formula}{stanmvreg}(x, fixed.only = FALSE, random.only = FALSE,
-  m = NULL, ...)
+\method{formula}{stanmvreg}(x, fixed.only = FALSE, random.only = FALSE, m = NULL, ...)
 
 \method{update}{stanmvreg}(object, formula., ..., evaluate = TRUE)
 
-\method{update}{stanjm}(object, formulaLong., formulaEvent., ...,
-  evaluate = TRUE)
+\method{update}{stanjm}(object, formulaLong., formulaEvent., ..., evaluate = TRUE)
 
 \method{fixef}{stanmvreg}(object, m = NULL, remove_stub = TRUE, ...)
 

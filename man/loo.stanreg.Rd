@@ -13,19 +13,21 @@
 \alias{compare_models}
 \title{Information criteria and cross-validation}
 \usage{
-\method{loo}{stanreg}(x, ..., cores = getOption("mc.cores", 1),
-  save_psis = FALSE, k_threshold = NULL)
+\method{loo}{stanreg}(
+  x,
+  ...,
+  cores = getOption("mc.cores", 1),
+  save_psis = FALSE,
+  k_threshold = NULL
+)
 
 \method{waic}{stanreg}(x, ...)
 
-\method{loo_compare}{stanreg}(x, ..., criterion = c("loo", "kfold",
-  "waic"), detail = FALSE)
+\method{loo_compare}{stanreg}(x, ..., criterion = c("loo", "kfold", "waic"), detail = FALSE)
 
-\method{loo_compare}{stanreg_list}(x, ..., criterion = c("loo", "kfold",
-  "waic"), detail = FALSE)
+\method{loo_compare}{stanreg_list}(x, ..., criterion = c("loo", "kfold", "waic"), detail = FALSE)
 
-\method{loo_model_weights}{stanreg_list}(x, ...,
-  cores = getOption("mc.cores", 1), k_threshold = NULL)
+\method{loo_model_weights}{stanreg_list}(x, ..., cores = getOption("mc.cores", 1), k_threshold = NULL)
 
 compare_models(..., loos = list(), detail = FALSE)
 }
@@ -169,8 +171,8 @@ For models fit using MCMC, compute approximate leave-one-out
 
 \examples{
 \donttest{
-fit1 <- stan_glm(mpg ~ wt, data = mtcars)
-fit2 <- stan_glm(mpg ~ wt + cyl, data = mtcars)
+fit1 <- stan_glm(mpg ~ wt, data = mtcars, refresh = 0)
+fit2 <- stan_glm(mpg ~ wt + cyl, data = mtcars, refresh = 0)
 
 # (for bigger models use as many cores as possible)
 loo1 <- loo(fit1, cores = 2)
@@ -201,7 +203,7 @@ loo_compare(fit1, fit2, criterion = "waic")
 model_list <- stanreg_list(fit1, fit2, model_names = c("Fewer predictors", "More predictors"))
 loo_compare(model_list)
 
-fit3 <- stan_glm(mpg ~ disp * as.factor(cyl), data = mtcars)
+fit3 <- stan_glm(mpg ~ disp * as.factor(cyl), data = mtcars, refresh = 0)
 loo3 <- loo(fit3, cores = 2, k_threshold = 0.7)
 loo_compare(loo1, loo2, loo3)
 

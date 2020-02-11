@@ -30,7 +30,13 @@ Compute a Bayesian version of R-squared or LOO-adjusted R-squared for
 regression models.
 }
 \examples{
-fit <- stan_glm(mpg ~ wt + cyl, data = mtcars, QR = TRUE, chains = 2)
+fit <- stan_glm(
+  mpg ~ wt + cyl, 
+  data = mtcars, 
+  QR = TRUE, 
+  chains = 2, 
+  refresh = 0
+)
 rsq <- bayes_R2(fit)
 print(median(rsq))
 hist(rsq)

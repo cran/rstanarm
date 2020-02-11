@@ -4,9 +4,17 @@
 \alias{ps_check}
 \title{Graphical checks of the estimated survival function}
 \usage{
-ps_check(object, check = "survival", limits = c("ci", "none"),
-  draws = NULL, seed = NULL, xlab = NULL, ylab = NULL,
-  ci_geom_args = NULL, ...)
+ps_check(
+  object,
+  check = "survival",
+  limits = c("ci", "none"),
+  draws = NULL,
+  seed = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  ci_geom_args = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{A fitted model object returned by the 

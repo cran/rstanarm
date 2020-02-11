@@ -23,11 +23,16 @@ student_t(df = 1, location = 0, scale = NULL, autoscale = TRUE)
 
 cauchy(location = 0, scale = NULL, autoscale = TRUE)
 
-hs(df = 1, global_df = 1, global_scale = 0.01, slab_df = 4,
-  slab_scale = 2.5)
+hs(df = 1, global_df = 1, global_scale = 0.01, slab_df = 4, slab_scale = 2.5)
 
-hs_plus(df1 = 1, df2 = 1, global_df = 1, global_scale = 0.01,
-  slab_df = 4, slab_scale = 2.5)
+hs_plus(
+  df1 = 1,
+  df2 = 1,
+  global_df = 1,
+  global_scale = 0.01,
+  slab_df = 4,
+  slab_scale = 2.5
+)
 
 laplace(location = 0, scale = NULL, autoscale = TRUE)
 

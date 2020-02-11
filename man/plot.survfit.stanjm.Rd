@@ -5,9 +5,16 @@
 \alias{plot_stack_jm}
 \title{Plot the estimated subject-specific or marginal survival function}
 \usage{
-\method{plot}{survfit.stanjm}(x, ids = NULL, limits = c("ci", "none"),
-  xlab = NULL, ylab = NULL, facet_scales = "free",
-  ci_geom_args = NULL, ...)
+\method{plot}{survfit.stanjm}(
+  x,
+  ids = NULL,
+  limits = c("ci", "none"),
+  xlab = NULL,
+  ylab = NULL,
+  facet_scales = "free",
+  ci_geom_args = NULL,
+  ...
+)
 
 plot_stack_jm(yplot, survplot)
 }

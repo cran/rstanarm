@@ -4,8 +4,13 @@
 \alias{predict.stanreg}
 \title{Predict method for stanreg objects}
 \usage{
-\method{predict}{stanreg}(object, ..., newdata = NULL, type = c("link",
-  "response"), se.fit = FALSE)
+\method{predict}{stanreg}(
+  object,
+  ...,
+  newdata = NULL,
+  type = c("link", "response"),
+  se.fit = FALSE
+)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

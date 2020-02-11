@@ -6,29 +6,65 @@
 \alias{stan_glmer.nb}
 \title{Bayesian generalized linear models with group-specific terms via Stan}
 \usage{
-stan_glmer(formula, data = NULL, family = gaussian, subset, weights,
-  na.action = getOption("na.action", "na.omit"), offset,
-  contrasts = NULL, ..., prior = normal(),
-  prior_intercept = normal(), prior_aux = exponential(),
-  prior_covariance = decov(), prior_PD = FALSE,
+stan_glmer(
+  formula,
+  data = NULL,
+  family = gaussian,
+  subset,
+  weights,
+  na.action = getOption("na.action", "na.omit"),
+  offset,
+  contrasts = NULL,
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_aux = exponential(),
+  prior_covariance = decov(),
+  prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+  adapt_delta = NULL,
+  QR = FALSE,
+  sparse = FALSE
+)
 
-stan_lmer(formula, data = NULL, subset, weights,
-  na.action = getOption("na.action", "na.omit"), offset,
-  contrasts = NULL, ..., prior = normal(),
-  prior_intercept = normal(), prior_aux = exponential(),
-  prior_covariance = decov(), prior_PD = FALSE,
+stan_lmer(
+  formula,
+  data = NULL,
+  subset,
+  weights,
+  na.action = getOption("na.action", "na.omit"),
+  offset,
+  contrasts = NULL,
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_aux = exponential(),
+  prior_covariance = decov(),
+  prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE)
+  adapt_delta = NULL,
+  QR = FALSE
+)
 
-stan_glmer.nb(formula, data = NULL, subset, weights,
-  na.action = getOption("na.action", "na.omit"), offset,
-  contrasts = NULL, link = "log", ..., prior = normal(),
-  prior_intercept = normal(), prior_aux = exponential(),
-  prior_covariance = decov(), prior_PD = FALSE,
+stan_glmer.nb(
+  formula,
+  data = NULL,
+  subset,
+  weights,
+  na.action = getOption("na.action", "na.omit"),
+  offset,
+  contrasts = NULL,
+  link = "log",
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_aux = exponential(),
+  prior_covariance = decov(),
+  prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE)
+  adapt_delta = NULL,
+  QR = FALSE
+)
 }
 \arguments{
 \item{formula, data}{Same as for \code{\link[lme4]{glmer}}. \emph{We

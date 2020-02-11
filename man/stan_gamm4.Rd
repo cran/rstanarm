@@ -6,16 +6,38 @@
 \title{Bayesian generalized linear additive models with optional group-specific
 terms via Stan}
 \usage{
-stan_gamm4(formula, random = NULL, family = gaussian(), data,
-  weights = NULL, subset = NULL, na.action, knots = NULL,
-  drop.unused.levels = TRUE, ..., prior = normal(),
-  prior_intercept = normal(), prior_smooth = exponential(autoscale =
-  FALSE), prior_aux = exponential(), prior_covariance = decov(),
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, QR = FALSE, sparse = FALSE)
+stan_gamm4(
+  formula,
+  random = NULL,
+  family = gaussian(),
+  data,
+  weights = NULL,
+  subset = NULL,
+  na.action,
+  knots = NULL,
+  drop.unused.levels = TRUE,
+  ...,
+  prior = normal(),
+  prior_intercept = normal(),
+  prior_smooth = exponential(autoscale = FALSE),
+  prior_aux = exponential(),
+  prior_covariance = decov(),
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL,
+  QR = FALSE,
+  sparse = FALSE
+)
 
-plot_nonlinear(x, smooths, ..., prob = 0.9, facet_args = list(),
-  alpha = 1, size = 0.75)
+plot_nonlinear(
+  x,
+  smooths,
+  ...,
+  prob = 0.9,
+  facet_args = list(),
+  alpha = 1,
+  size = 0.75
+)
 }
 \arguments{
 \item{formula, random, family, data, knots, drop.unused.levels}{Same as for 

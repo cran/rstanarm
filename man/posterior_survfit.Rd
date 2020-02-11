@@ -4,11 +4,24 @@
 \alias{posterior_survfit}
 \title{Estimate subject-specific or standardised survival probabilities}
 \usage{
-posterior_survfit(object, newdataLong = NULL, newdataEvent = NULL,
-  extrapolate = TRUE, control = list(), condition = NULL,
-  last_time = NULL, prob = 0.95, ids, times = NULL,
-  standardise = FALSE, dynamic = TRUE, scale = 1.5, draws = NULL,
-  seed = NULL, ...)
+posterior_survfit(
+  object,
+  newdataLong = NULL,
+  newdataEvent = NULL,
+  extrapolate = TRUE,
+  control = list(),
+  condition = NULL,
+  last_time = NULL,
+  prob = 0.95,
+  ids,
+  times = NULL,
+  standardise = FALSE,
+  dynamic = TRUE,
+  scale = 1.5,
+  draws = NULL,
+  seed = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{A fitted model object returned by the 

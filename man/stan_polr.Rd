@@ -5,20 +5,42 @@
 \alias{stan_polr.fit}
 \title{Bayesian ordinal regression models via Stan}
 \usage{
-stan_polr(formula, data, weights, ..., subset,
-  na.action = getOption("na.action", "na.omit"), contrasts = NULL,
-  model = TRUE, method = c("logistic", "probit", "loglog", "cloglog",
-  "cauchit"), prior = R2(stop("'location' must be specified")),
-  prior_counts = dirichlet(1), shape = NULL, rate = NULL,
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, do_residuals = NULL)
-
-stan_polr.fit(x, y, wt = NULL, offset = NULL, method = c("logistic",
-  "probit", "loglog", "cloglog", "cauchit"), ...,
+stan_polr(
+  formula,
+  data,
+  weights,
+  ...,
+  subset,
+  na.action = getOption("na.action", "na.omit"),
+  contrasts = NULL,
+  model = TRUE,
+  method = c("logistic", "probit", "loglog", "cloglog", "cauchit"),
   prior = R2(stop("'location' must be specified")),
-  prior_counts = dirichlet(1), shape = NULL, rate = NULL,
-  prior_PD = FALSE, algorithm = c("sampling", "meanfield", "fullrank"),
-  adapt_delta = NULL, do_residuals = algorithm == "sampling")
+  prior_counts = dirichlet(1),
+  shape = NULL,
+  rate = NULL,
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL,
+  do_residuals = NULL
+)
+
+stan_polr.fit(
+  x,
+  y,
+  wt = NULL,
+  offset = NULL,
+  method = c("logistic", "probit", "loglog", "cloglog", "cauchit"),
+  ...,
+  prior = R2(stop("'location' must be specified")),
+  prior_counts = dirichlet(1),
+  shape = NULL,
+  rate = NULL,
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL,
+  do_residuals = algorithm == "sampling"
+)
 }
 \arguments{
 \item{formula, data, subset}{Same as \code{\link[MASS]{polr}}, 

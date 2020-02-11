@@ -5,9 +5,15 @@
 \alias{launch_shinystan}
 \title{Using the ShinyStan GUI with rstanarm models}
 \usage{
-\method{launch_shinystan}{stanreg}(object, ppd = TRUE, seed = 1234,
-  model_name = NULL, note = NULL,
-  rstudio = getOption("shinystan.rstudio"), ...)
+\method{launch_shinystan}{stanreg}(
+  object,
+  ppd = TRUE,
+  seed = 1234,
+  model_name = NULL,
+  note = NULL,
+  rstudio = getOption("shinystan.rstudio"),
+  ...
+)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

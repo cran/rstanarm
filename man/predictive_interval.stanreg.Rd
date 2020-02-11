@@ -6,9 +6,17 @@
 \alias{predictive_interval.ppd}
 \title{Predictive intervals}
 \usage{
-\method{predictive_interval}{stanreg}(object, prob = 0.9,
-  newdata = NULL, draws = NULL, re.form = NULL, fun = NULL,
-  seed = NULL, offset = NULL, ...)
+\method{predictive_interval}{stanreg}(
+  object,
+  prob = 0.9,
+  newdata = NULL,
+  draws = NULL,
+  re.form = NULL,
+  fun = NULL,
+  seed = NULL,
+  offset = NULL,
+  ...
+)
 
 \method{predictive_interval}{ppd}(object, prob = 0.9, ...)
 }

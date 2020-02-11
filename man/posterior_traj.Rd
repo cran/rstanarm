@@ -4,11 +4,25 @@
 \alias{posterior_traj}
 \title{Estimate the subject-specific or marginal longitudinal trajectory}
 \usage{
-posterior_traj(object, m = 1, newdata = NULL, newdataLong = NULL,
-  newdataEvent = NULL, interpolate = TRUE, extrapolate = FALSE,
-  control = list(), last_time = NULL, prob = 0.95, ids,
-  dynamic = TRUE, scale = 1.5, draws = NULL, seed = NULL,
-  return_matrix = FALSE, ...)
+posterior_traj(
+  object,
+  m = 1,
+  newdata = NULL,
+  newdataLong = NULL,
+  newdataEvent = NULL,
+  interpolate = TRUE,
+  extrapolate = FALSE,
+  control = list(),
+  last_time = NULL,
+  prob = 0.95,
+  ids,
+  dynamic = TRUE,
+  scale = 1.5,
+  draws = NULL,
+  seed = NULL,
+  return_matrix = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{A fitted model object returned by the 

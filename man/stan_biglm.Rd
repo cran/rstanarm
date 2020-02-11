@@ -5,16 +5,37 @@
 \alias{stan_biglm.fit}
 \title{Bayesian regularized linear but big models via Stan}
 \usage{
-stan_biglm(biglm, xbar, ybar, s_y, ...,
+stan_biglm(
+  biglm,
+  xbar,
+  ybar,
+  s_y,
+  ...,
   prior = R2(stop("'location' must be specified")),
-  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank"), adapt_delta = NULL)
+  prior_intercept = NULL,
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank"),
+  adapt_delta = NULL
+)
 
-stan_biglm.fit(b, R, SSR, N, xbar, ybar, s_y, has_intercept = TRUE, ...,
+stan_biglm.fit(
+  b,
+  R,
+  SSR,
+  N,
+  xbar,
+  ybar,
+  s_y,
+  has_intercept = TRUE,
+  ...,
   prior = R2(stop("'location' must be specified")),
-  prior_intercept = NULL, prior_PD = FALSE, algorithm = c("sampling",
-  "meanfield", "fullrank", "optimizing"), adapt_delta = NULL,
-  importance_resampling = TRUE, keep_every = 1)
+  prior_intercept = NULL,
+  prior_PD = FALSE,
+  algorithm = c("sampling", "meanfield", "fullrank", "optimizing"),
+  adapt_delta = NULL,
+  importance_resampling = TRUE,
+  keep_every = 1
+)
 }
 \arguments{
 \item{biglm}{The list output by \code{\link[biglm]{biglm}} in the \pkg{biglm}

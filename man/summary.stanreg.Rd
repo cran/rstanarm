@@ -8,19 +8,22 @@
 \alias{print.summary.stanmvreg}
 \title{Summary method for stanreg objects}
 \usage{
-\method{summary}{stanreg}(object, pars = NULL, regex_pars = NULL,
-  probs = c(0.1, 0.5, 0.9), ..., digits = 1)
+\method{summary}{stanreg}(
+  object,
+  pars = NULL,
+  regex_pars = NULL,
+  probs = c(0.1, 0.5, 0.9),
+  ...,
+  digits = 1
+)
 
-\method{print}{summary.stanreg}(x, digits = max(1, attr(x,
-  "print.digits")), ...)
+\method{print}{summary.stanreg}(x, digits = max(1, attr(x, "print.digits")), ...)
 
 \method{as.data.frame}{summary.stanreg}(x, ...)
 
-\method{summary}{stanmvreg}(object, pars = NULL, regex_pars = NULL,
-  probs = NULL, ..., digits = 3)
+\method{summary}{stanmvreg}(object, pars = NULL, regex_pars = NULL, probs = NULL, ..., digits = 3)
 
-\method{print}{summary.stanmvreg}(x, digits = max(1, attr(x,
-  "print.digits")), ...)
+\method{print}{summary.stanmvreg}(x, digits = max(1, attr(x, "print.digits")), ...)
 }
 \arguments{
 \item{object}{A fitted model object returned by one of the 

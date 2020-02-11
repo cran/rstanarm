@@ -4,8 +4,7 @@
 \alias{plot.stanreg}
 \title{Plot method for stanreg objects}
 \usage{
-\method{plot}{stanreg}(x, plotfun = "intervals", pars = NULL,
-  regex_pars = NULL, ...)
+\method{plot}{stanreg}(x, plotfun = "intervals", pars = NULL, regex_pars = NULL, ...)
 }
 \arguments{
 \item{x}{A fitted model object returned by one of the 
@@ -59,7 +58,7 @@ plot(fit) # same as plot(fit, "intervals"), plot(fit, "mcmc_intervals")
 
 p <- plot(fit, pars = "size", regex_pars = "period",
           prob = 0.5, prob_outer = 0.9)
-p + ggplot2::ggtitle("Posterior medians \\n with 50\% and 90\% intervals")
+p + ggplot2::ggtitle("Posterior medians \n with 50\% and 90\% intervals")
 
 # Shaded areas under densities
 bayesplot::color_scheme_set("brightblue")
