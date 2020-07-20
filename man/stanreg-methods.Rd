@@ -106,7 +106,7 @@ The \code{se} function returns standard errors based on
 }
 \item{\code{confint}}{
 For models fit using optimization, confidence intervals are returned via a 
-call to \code{\link[stats]{confint.default}}. If \code{algorithm} is 
+call to \code{\link[stats:confint]{confint.default}}. If \code{algorithm} is 
 \code{"sampling"}, \code{"meanfield"}, or \code{"fullrank"}, the
 \code{confint} will throw an error because the
 \code{\link{posterior_interval}} function should be used to compute Bayesian 

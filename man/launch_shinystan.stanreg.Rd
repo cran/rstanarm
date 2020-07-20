@@ -26,7 +26,7 @@ although for very large objects it can be convenient to set it to
 time consuming. If \code{ppd} is \code{TRUE} then graphical posterior 
 predictive checks are available when ShinyStan is launched.}
 
-\item{seed}{Passed to \code{\link[rstanarm]{pp_check}} (\pkg{rstanarm}) if 
+\item{seed}{Passed to \link[=pp_check]{pp_check} if 
 \code{ppd} is \code{TRUE}.}
 
 \item{model_name, note}{Optional arguments passed to

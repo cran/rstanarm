@@ -45,7 +45,7 @@ draws is the size of the posterior sample.}
 of the plotted interval limits. They should be supplied as a named list.}
 
 \item{...}{Optional arguments passed to 
-\code{\link[ggplot2]{geom_line}} and used to control features
+\code{\link[ggplot2:geom_path]{geom_line}} and used to control features
 of the plotted trajectory.}
 }
 \value{

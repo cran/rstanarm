@@ -30,7 +30,7 @@ functions that accept a \code{regex_pars} argument ignore it for models fit
 using optimization.}
 
 \item{condition}{Same as the \code{condition} argument to 
-\code{\link[bayesplot]{mcmc_pairs}} except the \emph{default is different}
+\code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}} except the \emph{default is different}
 for \pkg{rstanarm} models. By default, the \code{mcmc_pairs} function in
 the \pkg{bayesplot} package plots some of the Markov chains (half, in the
 case of an even number of chains) in the panels above the diagonal and the
@@ -42,9 +42,10 @@ diagonal will contain realizations that are below the median
 \code{accept_stat__} and the plots above the diagonal will contain 
 realizations that are above the median \code{accept_stat__}. To change this
 behavior see the documentation of the \code{condition} argument at 
-\code{\link[bayesplot]{mcmc_pairs}}.}
+\code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}}.}
 
-\item{...}{Optional arguments passed to \code{\link[bayesplot]{mcmc_pairs}}. 
+\item{...}{Optional arguments passed to 
+\code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}}. 
 The \code{np}, \code{lp}, and \code{max_treedepth} arguments to 
 \code{mcmc_pairs} are handled automatically by \pkg{rstanarm} and do not 
 need to be specified by the user in \code{...}. The arguments that can be 
@@ -52,10 +53,10 @@ specified in \code{...} include \code{transformations}, \code{diag_fun},
 \code{off_diag_fun}, \code{diag_args}, \code{off_diag_args},
 and \code{np_style}. These arguments are
 documented thoroughly on the help page for
-\code{\link[bayesplot]{mcmc_pairs}}.}
+\code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}}.}
 }
 \description{
-Interface to \pkg{bayesplot}'s \code{\link[bayesplot]{mcmc_pairs}} function 
+Interface to \pkg{bayesplot}'s \code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}} function 
 for use with \pkg{rstanarm} models. Be careful not to specify too
 many parameters to include or the plot will be both hard to read and slow to
 render.

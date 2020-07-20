@@ -23,7 +23,7 @@ suitable; see the \strong{See Also} section below.
 }
 \note{
 The \code{\link{stan_biglm}} function is an exception. It returns a 
-  \link[rstan]{stanfit} object rather than a stanreg object.
+  \link[rstan:stanfit-class]{stanfit} object rather than a stanreg object.
 }
 \section{Elements for \code{stanreg} objects}{
    

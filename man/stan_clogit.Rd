@@ -11,7 +11,7 @@ stan_clogit(
   na.action = NULL,
   ...,
   strata,
-  prior = normal(),
+  prior = normal(autoscale = TRUE),
   prior_covariance = decov(),
   prior_PD = FALSE,
   algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
@@ -29,11 +29,12 @@ functions (including \code{update}, \code{loo}, \code{kfold}) are not
 guaranteed to work properly.}
 
 \item{...}{Further arguments passed to the function in the \pkg{rstan} 
-package (\code{\link[rstan]{sampling}}, \code{\link[rstan]{vb}}, or 
-\code{\link[rstan]{optimizing}}), corresponding to the estimation method 
-named by \code{algorithm}. For example, if \code{algorithm} is
-\code{"sampling"} it is possibly to specify \code{iter}, \code{chains},
-\code{cores}, \code{refresh}, etc.}
+package (\code{\link[rstan:stanmodel-method-sampling]{sampling}}, 
+\code{\link[rstan:stanmodel-method-vb]{vb}}, or 
+\code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
+corresponding to the estimation method named by \code{algorithm}. For example, 
+if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
+\code{chains}, \code{cores}, \code{refresh}, etc.}
 
 \item{strata}{A factor indicating the groups in the data where the number of 
 successes (possibly one) is fixed by the research design. It may be useful 
@@ -41,11 +42,16 @@ to use \code{\link{interaction}} or \code{\link[survival]{strata}} to
 create this factor. However, the \code{strata} argument must not rely on
 any object besides the \code{data} \code{\link{data.frame}}.}
 
-\item{prior}{The prior distribution for the regression coefficients. 
-\code{prior} should be a call to one of the various functions provided by 
-\pkg{rstanarm} for specifying priors. The subset of these functions that 
-can be used for the prior on the coefficients can be grouped into several 
-"families":
+\item{prior}{The prior distribution for the (non-hierarchical) regression
+coefficients.
+ 
+The default priors are described in the vignette 
+\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+Distributions for rstanarm Models}}.
+If not using the default, \code{prior} should be a call to one of the
+various functions provided by \pkg{rstanarm} for specifying priors. The
+subset of these functions that can be used for the prior on the
+coefficients can be grouped into several "families":
 
 \tabular{ll}{
   \strong{Family} \tab \strong{Functions} \cr 
@@ -145,7 +151,7 @@ post <- stan_clogit(case ~ spontaneous + induced + (1 | education),
 
 nd <- dat[dat$parity > 2, c("case", "spontaneous", "induced", "education", "stratum")]
 # next line would fail without case and stratum variables                                 
-pr <- posterior_linpred(post, newdata = nd, transform = TRUE) # transform=TRUE gives probabilities
+pr <- posterior_epred(post, newdata = nd) # get predicted probabilities
 
 # not a random variable b/c probabilities add to 1 within strata
 all.equal(rep(sum(nd$case), nrow(pr)), rowSums(pr)) 

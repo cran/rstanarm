@@ -78,11 +78,12 @@ post-estimation functions (including \code{update}, \code{loo},
 on the fit.}
 
 \item{...}{Further arguments passed to the function in the \pkg{rstan} 
-package (\code{\link[rstan]{sampling}}, \code{\link[rstan]{vb}}, or 
-\code{\link[rstan]{optimizing}}), corresponding to the estimation method 
-named by \code{algorithm}. For example, if \code{algorithm} is
-\code{"sampling"} it is possibly to specify \code{iter}, \code{chains},
-\code{cores}, \code{refresh}, etc.}
+package (\code{\link[rstan:stanmodel-method-sampling]{sampling}}, 
+\code{\link[rstan:stanmodel-method-vb]{vb}}, or 
+\code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
+corresponding to the estimation method named by \code{algorithm}. For example, 
+if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
+\code{chains}, \code{cores}, \code{refresh}, etc.}
 
 \item{prior}{Must be a call to \code{\link{R2}} with its 
 \code{location} argument specified or \code{NULL}, which would
@@ -135,7 +136,7 @@ rather than \code{prior_intercept}. Regardless of how
 intercept always correspond to a parameterization without centered
 predictors (i.e., same as in \code{glm}).}
 
-\item{w}{Same as in \code{\link[stats]{lm.wfit}} but rarely specified.}
+\item{w}{Same as in \code{lm.wfit} but rarely specified.}
 }
 \value{
 A \link[=stanreg-objects]{stanreg} object is returned 
@@ -162,8 +163,8 @@ The \code{stan_lm} function is similar in syntax to the
   \code{"sampling"}). The \code{stan_lm} function has a formula-based
   interface and would usually be called by users but the \code{stan_lm.fit}
   and \code{stan_lm.wfit} functions might be called by other functions that
-  parse the data themselves and are analogous to \code{\link[stats]{lm.fit}}
-  and \code{\link[stats]{lm.wfit}} respectively.
+  parse the data themselves and are analogous to \code{lm.fit}
+  and \code{lm.wfit} respectively.
      
   In addition to estimating \code{sigma} --- the standard deviation of the
   normally-distributed errors --- this model estimates a positive parameter

@@ -10,10 +10,10 @@ stan_mvmer(
   data,
   family = gaussian,
   weights,
-  prior = normal(),
-  prior_intercept = normal(),
-  prior_aux = cauchy(0, 5),
-  prior_covariance = lkj(),
+  prior = normal(autoscale = TRUE),
+  prior_intercept = normal(autoscale = TRUE),
+  prior_aux = cauchy(0, 5, autoscale = TRUE),
+  prior_covariance = lkj(autoscale = TRUE),
   prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
   adapt_delta = NULL,
@@ -112,11 +112,12 @@ there are in the design matrix, setting \code{sparse = TRUE} may make
 the code run faster and can consume much less RAM.}
 
 \item{...}{Further arguments passed to the function in the \pkg{rstan} 
-package (\code{\link[rstan]{sampling}}, \code{\link[rstan]{vb}}, or 
-\code{\link[rstan]{optimizing}}), corresponding to the estimation method 
-named by \code{algorithm}. For example, if \code{algorithm} is
-\code{"sampling"} it is possibly to specify \code{iter}, \code{chains},
-\code{cores}, \code{refresh}, etc.}
+package (\code{\link[rstan:stanmodel-method-sampling]{sampling}}, 
+\code{\link[rstan:stanmodel-method-vb]{vb}}, or 
+\code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
+corresponding to the estimation method named by \code{algorithm}. For example, 
+if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
+\code{chains}, \code{cores}, \code{refresh}, etc.}
 }
 \value{
 A \link[=stanreg-objects]{stanmvreg} object is returned.

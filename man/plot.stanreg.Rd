@@ -11,12 +11,12 @@
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{plotfun}{A character string naming the \pkg{bayesplot} 
-\link[bayesplot]{MCMC} function to use. The default is to call
-\code{\link[bayesplot]{mcmc_intervals}}. \code{plotfun} can be specified
+\link[bayesplot:MCMC-overview]{MCMC} function to use. The default is to call
+\code{\link[bayesplot:MCMC-intervals]{mcmc_intervals}}. \code{plotfun} can be specified
 either as the full name of a \pkg{bayesplot} plotting function (e.g.
 \code{"mcmc_hist"}) or can be abbreviated to the part of the name following
 the \code{"mcmc_"} prefix (e.g. \code{"hist"}). To get the names of all
-available MCMC functions see \code{\link[bayesplot]{available_mcmc}}.}
+available MCMC functions see \code{\link[bayesplot:available_ppc]{available_mcmc}}.}
 
 \item{pars}{An optional character vector of parameter names.}
 
@@ -30,7 +30,7 @@ using optimization.}
 plot. These are described on the help pages for the individual plotting 
 functions. For example, the arguments accepted for the default
 \code{plotfun="intervals"} can be found at
-\code{\link[bayesplot]{mcmc_intervals}}.}
+\code{\link[bayesplot:MCMC-intervals]{mcmc_intervals}}.}
 }
 \value{
 Either a ggplot object that can be further customized using the
@@ -39,9 +39,9 @@ Either a ggplot object that can be further customized using the
 }
 \description{
 The \code{plot} method for \link{stanreg-objects} provides a convenient 
-interface to the \link[bayesplot]{MCMC} module in the \pkg{\link{bayesplot}} 
-package for plotting MCMC draws and diagnostics. It is also straightforward 
-to use the functions from the \pkg{bayesplot} package directly rather than 
+interface to the \link[bayesplot:MCMC-overview]{MCMC} module in the 
+\pkg{\link{bayesplot}} package for plotting MCMC draws and diagnostics. It is also 
+straightforward to use the functions from the \pkg{bayesplot} package directly rather than
 via the \code{plot} method. Examples of both methods of plotting are given
 below.
 }
@@ -160,7 +160,7 @@ Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
   \item The vignettes in the \pkg{bayesplot} package for many examples.
   \item \code{\link[bayesplot]{MCMC-overview}} (\pkg{bayesplot}) for links to
   the documentation for all the available plotting functions.
-  \item \code{\link[bayesplot]{color_scheme_set}} (\pkg{bayesplot}) to change
+  \item \code{\link[bayesplot:bayesplot-colors]{color_scheme_set}} (\pkg{bayesplot}) to change
   the color scheme used for plotting.
   \item \code{\link{pp_check}} for graphical posterior predictive checks.
   \item \code{\link{plot_nonlinear}} for models with nonlinear smooth 

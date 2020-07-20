@@ -45,7 +45,7 @@ longitudinal trajectory for more than one individual.}
 of the plotted interval limits. They should be supplied as a named list.}
 
 \item{...}{Optional arguments passed to 
-\code{\link[ggplot2]{geom_line}} and used to control features
+\code{\link[ggplot2:geom_path]{geom_line}} and used to control features
 of the plotted survival function.}
 
 \item{yplot}{An object of class \code{plot.predict.stanjm}, returned by a 

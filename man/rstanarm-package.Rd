@@ -25,7 +25,7 @@ estimation algorithms used by \pkg{rstanarm}.
 The set of models supported by \pkg{rstanarm} is large (and will continue to
 grow), but also limited enough so that it is possible to integrate them
 tightly with the \code{\link{pp_check}} function for graphical posterior
-predictive checks with \pkg{\link[bayesplot]{bayesplot}} and the
+predictive checks with \pkg{\link[bayesplot:bayesplot-package]{bayesplot}} and the
 \code{\link{posterior_predict}} function to easily estimate the effect of
 specific manipulations of predictor variables or to predict the outcome in a
 training set.
@@ -142,7 +142,7 @@ argument that can be one of the following:
  \item{\strong{Sampling} (\code{algorithm="sampling"})}{
  Uses Markov Chain Monte Carlo (MCMC) --- in particular, Hamiltonian Monte
  Carlo (HMC) with a tuned but diagonal mass matrix --- to draw from the
- posterior distribution of the parameters. See \code{\link[rstan]{sampling}}
+ posterior distribution of the parameters. See \code{\link[rstan:stanmodel-method-sampling]{sampling}}
  (\pkg{rstan}) for more details. This is the slowest but most reliable of the
  available estimation algorithms and it is \strong{the default and
  recommended algorithm for statistical inference.}
@@ -179,7 +179,7 @@ argument that can be one of the following:
  }
  \item{\strong{Optimizing} (\code{algorithm="optimizing"})}{
  Finds the posterior mode using a C++ implementation of the LBGFS algorithm.
- See \code{\link[rstan]{optimizing}} for more details. If there is no prior
+ See \code{\link[rstan:stanmodel-method-optimizing]{optimizing}} for more details. If there is no prior
  information, then this is equivalent to maximum likelihood, in which case
  there is no great reason to use the functions in the \pkg{rstanarm} package
  over the emulated functions in other packages. However, if priors are

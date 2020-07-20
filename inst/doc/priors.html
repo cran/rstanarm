@@ -8,11 +8,11 @@
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2020-02-11" />
+<meta name="date" content="2020-07-20" />
 
 <title>Prior Distributions for rstanarm Models</title>
 
@@ -117,9 +117,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -288,7 +285,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -303,14 +301,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Prior Distributions for rstanarm Models</h1>
 <h4 class="author">Jonah Gabry and Ben Goodrich</h4>
-<h4 class="date">2020-02-11</h4>
+<h4 class="date">2020-07-20</h4>
 
 
 <div id="TOC">
 <ul>
+<li><a href="#july-2020-update">July 2020 Update</a></li>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#default-weakly-informative-prior-distributions">Default (Weakly Informative) Prior Distributions</a><ul>
-<li><a href="#automatic-prior-scale-adjustments">Automatic prior scale adjustments</a></li>
+<li><a href="#default-priors-and-scale-adjustments">Default priors and scale adjustments</a></li>
 <li><a href="#disabling-prior-scale-adjustments">Disabling prior scale adjustments</a></li>
 </ul></li>
 <li><a href="#how-to-specify-flat-priors-and-why-you-typically-shouldnt">How to Specify Flat Priors (and why you typically shouldn’t)</a><ul>
@@ -328,6 +327,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(ggplot2)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(bayesplot)</a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">theme_set</span>(bayesplot<span class="op">::</span><span class="kw">theme_default</span>())</a></code></pre></div>
+<div id="july-2020-update" class="section level1">
+<h1>July 2020 Update</h1>
+<p>As of July 2020 there are a few changes to prior distributions:</p>
+<ul>
+<li><p>Except for in default priors, <code>autoscale</code> now defaults to <code>FALSE</code>. This means that when specifying custom priors you no longer need to manually set <code>autoscale=FALSE</code> every time you use a distribution.</p></li>
+<li><p>There are minor changes to the default priors on the intercept and (non-hierarchical) regression coefficients. See <strong>Default priors and scale adjustments</strong> below.</p></li>
+</ul>
+<p>We recommend the new book <a href="https://avehtari.github.io/ROS-Examples/">Regression and Other Stories</a>, which discusses the background behind the default priors in <strong>rstanarm</strong> and also provides examples of specifying non-default priors.</p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>This vignette provides an overview of how the specification of prior distributions works in the <strong>rstanarm</strong> package. It is still a work in progress and more content will be added in future versions of <strong>rstanarm</strong>. Before reading this vignette it is important to first read the <a href="rstanarm.html">How to Use the <strong>rstanarm</strong> Package</a> vignette, which provides a general overview of the package.</p>
@@ -429,15 +437,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ------
 Intercept (after predictors centered)
   Specified prior:
-    ~ normal(location = 0, scale = 10)
+    ~ normal(location = 20, scale = 2.5)
   Adjusted prior:
-    ~ normal(location = 0, scale = 60)
+    ~ normal(location = 20, scale = 15)
 
 Coefficients
   Specified prior:
     ~ normal(location = [0,0], scale = [2.5,2.5])
   Adjusted prior:
-    ~ normal(location = [0,0], scale = [15.40,15.07])
+    ~ normal(location = [0,0], scale = [15.40,30.20])
 
 Auxiliary (sigma)
   Specified prior:
@@ -449,32 +457,73 @@ See help('prior_summary.stanreg') for more details</code></pre>
 <p>Starting from the bottom up, we can see that:</p>
 <ul>
 <li><p><strong>Auxiliary</strong>: <code>sigma</code>, the error standard deviation, has a default prior that is <span class="math inline">\(\mathsf{exponential}(1)\)</span>. However, as a result of the automatic rescaling, the actual scale used was 6.03.</p></li>
-<li><p><strong>Coefficients</strong>: By default the regression coefficients (in this case the coefficients on the <code>wt</code> and <code>am</code> variables) are treated as a priori independent with normal priors centered at 0 and with scale (standard deviation) <span class="math inline">\(2.5\)</span>. Like for <code>sigma</code>, in order for the default to be weakly informative <strong>rstanarm</strong> will adjust the scales of the priors on the coefficients. As a result, the prior scales actually used were 15.40 and 15.07.</p></li>
-<li><p><strong>Intercept</strong>: For the intercept, the default prior is normal with mean <span class="math inline">\(0\)</span> and standard deviation <span class="math inline">\(10\)</span>, but in this case the standard deviation was adjusted to 60.27. There is also a note in parentheses informing you that the prior applies to the intercept after all predictors have been centered (a similar note can be found in the documentation of the <code>prior_intercept</code> argument). In many cases the value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=0\)</span> is not meaningful and it is easier to think about the value when <span class="math inline">\(x = \bar{x}\)</span>. Therefore placing a prior on the intercept after centering the predictors typically makes it easier to specify a reasonable prior for the intercept. (Note: the user does <em>not</em> need to manually center the predictors.)</p></li>
+<li><p><strong>Coefficients</strong>: By default the regression coefficients (in this case the coefficients on the <code>wt</code> and <code>am</code> variables) are treated as a priori independent with normal priors centered at 0 and with scale (standard deviation) <span class="math inline">\(2.5\)</span>. Like for <code>sigma</code>, in order for the default to be weakly informative <strong>rstanarm</strong> will adjust the scales of the priors on the coefficients. As a result, the prior scales actually used were 15.40 and 30.20.</p></li>
+<li><p><strong>Intercept</strong>: For the intercept, the default prior is normal with mean <span class="math inline">\(0\)</span> and standard deviation <span class="math inline">\(2.5\)</span>, but in this case the standard deviation was adjusted to 15.07. There is also a note in parentheses informing you that the prior applies to the intercept after all predictors have been centered (a similar note can be found in the documentation of the <code>prior_intercept</code> argument). In many cases the value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=0\)</span> is not meaningful and it is easier to think about the value when <span class="math inline">\(x = \bar{x}\)</span>. Therefore placing a prior on the intercept after centering the predictors typically makes it easier to specify a reasonable prior for the intercept. (Note: the user does <em>not</em> need to manually center the predictors.)</p></li>
 </ul>
 <p>To disable the centering of the predictors, you need to omit the intercept from the model <code>formula</code> and include a column of ones as a predictor (which cannot be named <code>&quot;(Intercept)&quot;</code> in the <code>data.frame</code>). Then you can specify a prior “coefficient” for the column of ones.</p>
 <p>The next two subsections describe how the rescaling works and how to easily disable it if desired.</p>
-<div id="automatic-prior-scale-adjustments" class="section level3">
-<h3>Automatic prior scale adjustments</h3>
-<p>For distributions that take an <code>autoscale</code> argument (see <code>help(&quot;priors&quot;)</code> for a list), if <code>autoscale</code> is left at <code>TRUE</code> (the default) then, in certain cases, the prior scales will be adjusted internally by <strong>rstanarm</strong>.</p>
-<p>First, if the <em>outcome</em> <span class="math inline">\(y\)</span> is Gaussian, the prior scales for the intercept, coefficients, and error standard deviation are multiplied by a factor of <span class="math inline">\(\mathrm{sd}(y)\)</span>.</p>
-<p>Additionally (not only for Gaussian models), if the <code>QR</code> argument to the model fitting function (e.g. <code>stan_glm</code>) is <code>FALSE</code> (the default) then:</p>
-<ul>
-<li>For a predictor <span class="math inline">\(x\)</span> with only one value nothing is changed.</li>
-<li>For a predictor <span class="math inline">\(x\)</span> with exactly two unique values, we take the user-specified (or default) scale(s) for the selected priors and divide by the range of <span class="math inline">\(x\)</span>.</li>
-<li>For a predictor <span class="math inline">\(x\)</span> with more than two unique values, we divide the prior scale(s) by <span class="math inline">\(\mathrm{sd}(x)\)</span>.</li>
-</ul>
+<div id="default-priors-and-scale-adjustments" class="section level3">
+<h3>Default priors and scale adjustments</h3>
+<p>Automatic scale adjustments happen in two cases:</p>
+<ol style="list-style-type: decimal">
+<li>When the default priors are used.</li>
+<li>When the user sets <code>autoscale=TRUE</code> when specifying their own prior (e.g., <code>normal(0, 3, autoscale=TRUE)</code>). See <code>help(&quot;priors&quot;)</code> for a list of distributions to see which have an <code>autoscale</code> argument.</li>
+</ol>
+<p>Here we describe how the default priors work for the intercept, regression coefficients, and (if applicable) auxiliary parameters. Autoscaling when not using default priors works analogously (if <code>autoscale=TRUE</code>).</p>
+<p>Assume we have outcome <span class="math inline">\(y\)</span> and predictors <span class="math inline">\(x_1,\ldots,x_k\)</span> and our model has linear predictor</p>
+<p><span class="math display">\[
+\alpha + \beta_1 x_1 + \dots + \beta_K x_K.
+\]</span></p>
+<div id="regression-coefficients" class="section level4">
+<h4>Regression coefficients</h4>
+<p>The default prior on regression coefficients <span class="math inline">\(\beta_k\)</span> is</p>
+<p><span class="math display">\[
+\beta_k \sim \mathsf{Normal}(0, \, 2.5 \cdot s_y/s_x)
+\]</span> where <span class="math inline">\(s_x = \text{sd}(x)\)</span> and <span class="math display">\[ 
+s_y =
+\begin{cases}
+\text{sd}(y) &amp; \text{if } \:\: {\tt family=gaussian(link)}, \\
+1 &amp; \text{otherwise}.
+\end{cases}
+\]</span></p>
+<p>This corresponds to <code>prior = normal(0, 2.5, autoscale = TRUE)</code> in <strong>rstanarm</strong> code.</p>
+</div>
+<div id="intercept" class="section level4">
+<h4>Intercept</h4>
+<p>The intercept is assigned a prior indirectly. The <code>prior_intercept</code> argument refers to the intercept after all predictors have been centered (internally by <strong>rstanarm</strong>). That is, instead of placing the prior on the expected value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=0\)</span>, we place a prior on the expected value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x = \bar{x}\)</span>. The default prior for this centered intercept, say <span class="math inline">\(\alpha_c\)</span>, is</p>
+<p><span class="math display">\[
+\alpha_c \sim \mathsf{Normal}(m_y, \, 2.5 \cdot s_y)
+\]</span> where</p>
+<p><span class="math display">\[
+m_y =
+\begin{cases}
+\bar{y} &amp; \text{if } \:\: {\tt family=gaussian(link=&quot;identity&quot;)}, \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]</span> and <span class="math inline">\(s_y\)</span> is the same as above (either 1 or <span class="math inline">\(\text{sd(y)}\)</span>).</p>
+</div>
+<div id="auxiliary-parameters" class="section level4">
+<h4>Auxiliary parameters</h4>
+<p>The default prior on the auxiliary parameter (residual standard deviation for Gaussian, shape for gamma, reciprocal dispersion for negative binomial, etc.) is an exponential distribution with rate <span class="math inline">\(1/s_y\)</span></p>
+<p><span class="math display">\[
+\text{aux} \sim \mathsf{Exponential}(1/s_y)
+\]</span> where <span class="math inline">\(s_y\)</span> is the same as above (either 1 or <span class="math inline">\(\text{sd(y)}\)</span>).</p>
+<p>This corresponds to <code>prior_aux = exponential(1, autoscale=TRUE)</code> in <strong>rstanarm</strong> code.</p>
+</div>
+<div id="note-on-data-based-priors" class="section level4">
+<h4>Note on data-based priors</h4>
 <p>Because the scaling is based on the scales of the predictors (and possibly the outcome) these are technically data-dependent priors. However, since these priors are quite wide (and in most cases rather conservative), the amount of information used is weak and mainly takes into account the order of magnitude of the variables. This enables <strong>rstanarm</strong> to offer defaults that are reasonable for many models.</p>
+</div>
 </div>
 <div id="disabling-prior-scale-adjustments" class="section level3">
 <h3>Disabling prior scale adjustments</h3>
-<p>To disable automatic rescaling simply set the <code>autoscale</code> argument to to <code>FALSE</code>. For example:</p>
+<p>To disable automatic rescaling simply specify a prior other than the default. <strong>rstanarm</strong> versions up to and including version <code>2.19.3</code> used to require you to explicitly set the <code>autoscale</code> argument to <code>FALSE</code>, but now autoscaling only happens by default for the default priors. To use autoscaling with manually specified priors you have to set <code>autoscale = TRUE</code>. For example, this prior specification will not include any autoscaling:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">test_no_autoscale &lt;-</a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="st">  </span><span class="kw">update</span>(</a>
 <a class="sourceLine" id="cb5-3" title="3">    default_prior_test,</a>
-<a class="sourceLine" id="cb5-4" title="4">    <span class="dt">prior =</span> <span class="kw">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dt">autoscale =</span> <span class="ot">FALSE</span>),</a>
-<a class="sourceLine" id="cb5-5" title="5">    <span class="dt">prior_intercept =</span> <span class="kw">student_t</span>(<span class="dv">4</span>, <span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">autoscale =</span> <span class="ot">FALSE</span>),</a>
-<a class="sourceLine" id="cb5-6" title="6">    <span class="dt">prior_aux =</span> <span class="kw">cauchy</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dt">autoscale =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb5-4" title="4">    <span class="dt">prior =</span> <span class="kw">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>),</a>
+<a class="sourceLine" id="cb5-5" title="5">    <span class="dt">prior_intercept =</span> <span class="kw">student_t</span>(<span class="dv">4</span>, <span class="dv">0</span>, <span class="dv">10</span>),</a>
+<a class="sourceLine" id="cb5-6" title="6">    <span class="dt">prior_aux =</span> <span class="kw">cauchy</span>(<span class="dv">0</span>, <span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb5-7" title="7">  )</a></code></pre></div>
 <p>We can verify that the prior scales weren’t adjusted by checking <code>prior_summary</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">prior_summary</span>(test_no_autoscale)</a></code></pre></div>
@@ -490,7 +539,6 @@ Auxiliary (sigma)
  ~ half-cauchy(location = 0, scale = 3)
 ------
 See help('prior_summary.stanreg') for more details</code></pre>
-<p>Disabling prior scale adjustments is usually unnecessary but is useful for when more informative prior information is available. There is an example of specifying an informative prior later in this vignette.</p>
 <p><br></p>
 </div>
 </div>
@@ -531,8 +579,8 @@ See help('prior_summary.stanreg') for more details</code></pre>
 <pre><code>
 SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 2.1e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+Chain 1: Gradient evaluation took 1.4e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -549,15 +597,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.025068 seconds (Warm-up)
-Chain 1:                0.024947 seconds (Sampling)
-Chain 1:                0.050015 seconds (Total)
+Chain 1:  Elapsed Time: 0.027785 seconds (Warm-up)
+Chain 1:                0.026759 seconds (Sampling)
+Chain 1:                0.054544 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 1e-05 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
+Chain 2: Gradient evaluation took 1.5e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -574,15 +622,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.024851 seconds (Warm-up)
-Chain 2:                0.022671 seconds (Sampling)
-Chain 2:                0.047522 seconds (Total)
+Chain 2:  Elapsed Time: 0.028918 seconds (Warm-up)
+Chain 2:                0.027943 seconds (Sampling)
+Chain 2:                0.056861 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 1.4e-05 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+Chain 3: Gradient evaluation took 1.1e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -599,15 +647,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 0.023996 seconds (Warm-up)
-Chain 3:                0.022737 seconds (Sampling)
-Chain 3:                0.046733 seconds (Total)
+Chain 3:  Elapsed Time: 0.026017 seconds (Warm-up)
+Chain 3:                0.027757 seconds (Sampling)
+Chain 3:                0.053774 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 1.1e-05 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+Chain 4: Gradient evaluation took 9e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.09 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -624,9 +672,9 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 0.024081 seconds (Warm-up)
-Chain 4:                0.023747 seconds (Sampling)
-Chain 4:                0.047828 seconds (Total)
+Chain 4:  Elapsed Time: 0.028635 seconds (Warm-up)
+Chain 4:                0.029052 seconds (Sampling)
+Chain 4:                0.057687 seconds (Total)
 Chain 4: </code></pre>
 <p>In this case we let <strong>rstanarm</strong> use the default priors for the intercept and error standard deviation (we could change that if we wanted), but the coefficient on the <code>wt</code> variable will have a flat prior. To double check that indeed a flat prior was used for the coefficient on <code>wt</code> we can call <code>prior_summary</code>:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">prior_summary</span>(flat_prior_test)</a></code></pre></div>
@@ -634,9 +682,9 @@ Chain 4: </code></pre>
 ------
 Intercept (after predictors centered)
   Specified prior:
-    ~ normal(location = 0, scale = 10)
+    ~ normal(location = 20, scale = 2.5)
   Adjusted prior:
-    ~ normal(location = 0, scale = 60)
+    ~ normal(location = 20, scale = 15)
 
 Coefficients
  ~ flat
@@ -661,7 +709,7 @@ See help('prior_summary.stanreg') for more details</code></pre>
 \right),
 \]</span> which sets the prior means at the midpoints of the intervals and then allows for some wiggle room on either side. If the data are highly informative about the parameter values (enough to overwhelm the prior) then this prior will yield similar results to a non-informative prior. But as the amount of data and/or the signal-to-noise ratio decrease, using a more informative prior becomes increasingly important.</p>
 <p>If the variables <code>y</code>, <code>x1</code>, and <code>x2</code> are in the data frame <code>dat</code> then this model can be specified as</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">my_prior &lt;-<span class="st"> </span><span class="kw">normal</span>(<span class="dt">location =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">10</span>, <span class="dv">0</span>), <span class="dt">scale =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="dt">autoscale =</span> <span class="ot">FALSE</span>)</a>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">my_prior &lt;-<span class="st"> </span><span class="kw">normal</span>(<span class="dt">location =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">10</span>, <span class="dv">0</span>), <span class="dt">scale =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb17-2" title="2"><span class="kw">stan_glm</span>(y <span class="op">~</span><span class="st"> </span>x1 <span class="op">+</span><span class="st"> </span>x2, <span class="dt">data =</span> dat, <span class="dt">prior =</span> my_prior)</a></code></pre></div>
 <p>We left the priors for the intercept and error standard deviation at their defaults, but informative priors can be specified for those parameters in an analogous manner.</p>
 </div>

@@ -9,7 +9,7 @@
 \arguments{
 \item{formula, ...}{See \code{\link[stats]{model.frame}}.}
 
-\item{fixed.only}{See \code{\link[lme4]{model.frame.merMod}}.}
+\item{fixed.only}{See \code{\link[lme4:merMod-class]{model.frame.merMod}}.}
 
 \item{m}{Integer specifying the number or name of the submodel}
 }

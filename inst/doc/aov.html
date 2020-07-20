@@ -8,11 +8,11 @@
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2020-02-11" />
+<meta name="date" content="2020-07-19" />
 
 <title>Estimating ANOVA Models with rstanarm</title>
 
@@ -117,9 +117,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -288,7 +285,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -303,7 +301,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Estimating ANOVA Models with rstanarm</h1>
 <h4 class="author">Jonah Gabry and Ben Goodrich</h4>
-<h4 class="date">2020-02-11</h4>
+<h4 class="date">2020-07-19</h4>
 
 
 <div id="TOC">
@@ -369,10 +367,10 @@ sourceCereal:typeLow
  predictors:   4
 ------
                      Median MAD_SD
-(Intercept)           98.9    4.5 
-sourceCereal         -12.9    6.3 
-typeLow              -18.8    6.2 
-sourceCereal:typeLow  16.9    9.0 
+(Intercept)           98.8    4.7 
+sourceCereal         -12.7    6.4 
+typeLow              -18.7    6.3 
+sourceCereal:typeLow  16.8    8.7 
 
 Auxiliary parameter(s):
               Median MAD_SD
@@ -382,9 +380,9 @@ sigma         14.7    1.7
 
 ANOVA-like table:
                     Median MAD_SD
-Mean Sq source      563.7  439.9 
-Mean Sq type        989.0  589.7 
-Mean Sq source:type 714.8  700.9 
+Mean Sq source      545.4  426.3 
+Mean Sq type        968.9  585.5 
+Mean Sq source:type 709.8  688.4 
 
 ------
 * For help interpreting the printed output see ?print.stanreg

@@ -33,9 +33,9 @@ fr2 <- function(x) format(round(x, 2), nsmall = 2)
 test_no_autoscale <-
   update(
     default_prior_test,
-    prior = normal(0, 5, autoscale = FALSE),
-    prior_intercept = student_t(4, 0, 10, autoscale = FALSE),
-    prior_aux = cauchy(0, 3, autoscale = FALSE)
+    prior = normal(0, 5),
+    prior_intercept = student_t(4, 0, 10),
+    prior_aux = cauchy(0, 3)
   )
 
 ## ---- no-autoscale-prior-summary, eval = TRUE---------------------------------
@@ -67,6 +67,6 @@ flat_prior_test <- stan_glm(mpg ~ wt, data = mtcars, prior = NULL)
 prior_summary(flat_prior_test)
 
 ## ---- eval=FALSE--------------------------------------------------------------
-#  my_prior <- normal(location = c(-10, 0), scale = c(5, 2), autoscale = FALSE)
+#  my_prior <- normal(location = c(-10, 0), scale = c(5, 2))
 #  stan_glm(y ~ x1 + x2, data = dat, prior = my_prior)
 

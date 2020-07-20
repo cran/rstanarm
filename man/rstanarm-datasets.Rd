@@ -13,7 +13,8 @@
 \alias{pbcLong}
 \alias{pbcSurv}
 \title{Datasets for rstanarm examples}
-\format{\describe{
+\format{
+\describe{
 \item{\code{bball1970}}{
 Data on hits and at-bats from the 1970 Major League Baseball season for 18
 players.
@@ -158,7 +159,8 @@ in community organizations
 \item \code{educ} Years of education (head of household)
 }
 }
-}}
+}
+}
 \description{
 Small datasets for use in \pkg{rstanarm} examples and vignettes.
 }

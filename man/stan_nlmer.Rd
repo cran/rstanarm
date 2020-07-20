@@ -13,8 +13,8 @@ stan_nlmer(
   offset,
   contrasts = NULL,
   ...,
-  prior = normal(),
-  prior_aux = exponential(),
+  prior = normal(autoscale = TRUE),
+  prior_aux = exponential(autoscale = TRUE),
   prior_covariance = decov(),
   prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
@@ -36,17 +36,23 @@ properly.}
 specified.}
 
 \item{...}{Further arguments passed to the function in the \pkg{rstan} 
-package (\code{\link[rstan]{sampling}}, \code{\link[rstan]{vb}}, or 
-\code{\link[rstan]{optimizing}}), corresponding to the estimation method 
-named by \code{algorithm}. For example, if \code{algorithm} is
-\code{"sampling"} it is possibly to specify \code{iter}, \code{chains},
-\code{cores}, \code{refresh}, etc.}
+package (\code{\link[rstan:stanmodel-method-sampling]{sampling}}, 
+\code{\link[rstan:stanmodel-method-vb]{vb}}, or 
+\code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
+corresponding to the estimation method named by \code{algorithm}. For example, 
+if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
+\code{chains}, \code{cores}, \code{refresh}, etc.}
 
-\item{prior}{The prior distribution for the regression coefficients. 
-\code{prior} should be a call to one of the various functions provided by 
-\pkg{rstanarm} for specifying priors. The subset of these functions that 
-can be used for the prior on the coefficients can be grouped into several 
-"families":
+\item{prior}{The prior distribution for the (non-hierarchical) regression
+coefficients.
+ 
+The default priors are described in the vignette 
+\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+Distributions for rstanarm Models}}.
+If not using the default, \code{prior} should be a call to one of the
+various functions provided by \pkg{rstanarm} for specifying priors. The
+subset of these functions that can be used for the prior on the
+coefficients can be grouped into several "families":
 
 \tabular{ll}{
   \strong{Family} \tab \strong{Functions} \cr 
@@ -78,21 +84,24 @@ depending on the \code{family}. For Gaussian models \code{prior_aux}
 controls \code{"sigma"}, the error 
 standard deviation. For negative binomial models \code{prior_aux} controls 
 \code{"reciprocal_dispersion"}, which is similar to the 
-\code{"size"} parameter of \code{\link[stats]{rnbinom}}:
+\code{"size"} parameter of \code{\link[stats:NegBinomial]{rnbinom}}:
 smaller values of \code{"reciprocal_dispersion"} correspond to 
 greater dispersion. For gamma models \code{prior_aux} sets the prior on 
 to the \code{"shape"} parameter (see e.g., 
-\code{\link[stats]{rgamma}}), and for inverse-Gaussian models it is the 
+\code{\link[stats:GammaDist]{rgamma}}), and for inverse-Gaussian models it is the 
 so-called \code{"lambda"} parameter (which is essentially the reciprocal of
 a scale parameter). Binomial and Poisson models do not have auxiliary 
-parameters. 
+parameters.
 
-\code{prior_aux} can be a call to \code{exponential} to 
-use an exponential distribution, or \code{normal}, \code{student_t} or 
-\code{cauchy}, which results in a half-normal, half-t, or half-Cauchy 
-prior. See \code{\link{priors}} for details on these functions. To omit a 
-prior ---i.e., to use a flat (improper) uniform prior--- set 
-\code{prior_aux} to \code{NULL}.}
+The default prior is described in the vignette 
+\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+Distributions for rstanarm Models}}.
+If not using the default, \code{prior_aux} can be a call to
+\code{exponential} to use an exponential distribution, or \code{normal},
+\code{student_t} or \code{cauchy}, which results in a half-normal, half-t,
+or half-Cauchy prior. See \code{\link{priors}} for details on these
+functions. To omit a prior ---i.e., to use a flat (improper) uniform
+prior--- set \code{prior_aux} to \code{NULL}.}
 
 \item{prior_covariance}{Cannot be \code{NULL}; see \code{\link{decov}} for
 more information about the default arguments.}

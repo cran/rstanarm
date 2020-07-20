@@ -15,13 +15,15 @@
 \alias{lkj}
 \alias{dirichlet}
 \alias{R2}
+\alias{default_prior_intercept}
+\alias{default_prior_coef}
 \title{Prior distributions and options}
 \usage{
-normal(location = 0, scale = NULL, autoscale = TRUE)
+normal(location = 0, scale = NULL, autoscale = FALSE)
 
-student_t(df = 1, location = 0, scale = NULL, autoscale = TRUE)
+student_t(df = 1, location = 0, scale = NULL, autoscale = FALSE)
 
-cauchy(location = 0, scale = NULL, autoscale = TRUE)
+cauchy(location = 0, scale = NULL, autoscale = FALSE)
 
 hs(df = 1, global_df = 1, global_scale = 0.01, slab_df = 4, slab_scale = 2.5)
 
@@ -34,13 +36,13 @@ hs_plus(
   slab_scale = 2.5
 )
 
-laplace(location = 0, scale = NULL, autoscale = TRUE)
+laplace(location = 0, scale = NULL, autoscale = FALSE)
 
-lasso(df = 1, location = 0, scale = NULL, autoscale = TRUE)
+lasso(df = 1, location = 0, scale = NULL, autoscale = FALSE)
 
 product_normal(df = 2, location = 0, scale = 1)
 
-exponential(rate = 1, autoscale = TRUE)
+exponential(rate = 1, autoscale = FALSE)
 
 decov(regularization = 1, concentration = 1, shape = 1, scale = 1)
 
@@ -49,6 +51,10 @@ lkj(regularization = 1, scale = 10, df = 1, autoscale = TRUE)
 dirichlet(concentration = 1)
 
 R2(location = NULL, what = c("mode", "mean", "median", "log"))
+
+default_prior_intercept(family)
+
+default_prior_coef(family)
 }
 \arguments{
 \item{location}{Prior location. In most cases, this is the prior mean, but
@@ -64,18 +70,17 @@ value of the \code{what} argument (see the \emph{R2 family} section in
 \item{scale}{Prior scale. The default depends on the family (see
 \strong{Details}).}
 
-\item{autoscale}{A logical scalar, defaulting to \code{TRUE}. If \code{TRUE} 
-then the scales of the priors on the intercept and regression coefficients 
-may be additionally modified internally by \pkg{rstanarm} in the following 
-cases. First, for Gaussian models only, the prior scales for the intercept, 
-coefficients, and the auxiliary parameter \code{sigma} (error standard 
-deviation) are multiplied by \code{sd(y)}. Additionally --- not only for 
-Gaussian models --- if the \code{QR} argument to the model fitting function
-(e.g. \code{stan_glm}) is \code{FALSE} then: for a predictor with only one 
-value nothing is changed; for a predictor \code{x} with exactly two unique 
-values, we take the user-specified (or default) scale(s) for the selected 
-priors and divide by the range of \code{x}; for a predictor \code{x} with 
-more than two unique values, we divide the prior scale(s) by \code{sd(x)}.}
+\item{autoscale}{If \code{TRUE} then the scales of the priors on the
+intercept and regression coefficients may be additionally modified
+internally by \pkg{rstanarm} in the following cases. First, for Gaussian
+models only, the prior scales for the intercept, coefficients, and the
+auxiliary parameter \code{sigma} (error standard deviation) are multiplied
+by \code{sd(y)}. Additionally --- not only for Gaussian models --- if the
+\code{QR} argument to the model fitting function (e.g. \code{stan_glm}) is
+\code{FALSE} then we also divide the prior scale(s) by \code{sd(x)}.
+Prior autoscaling is also discussed in the vignette 
+\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+Distributions for rstanarm Models}}}
 
 \item{df, df1, df2}{Prior degrees of freedom. The default is \eqn{1} for 
 \code{student_t}, in which case it is equivalent to \code{cauchy}. For the 
@@ -114,6 +119,8 @@ under a Beta distribution. If the number of predictors is less than
 or equal to two, the mode of this Beta distribution does not exist
 and an error will prompt the user to specify another choice for
 \code{what}.}
+
+\item{family}{Not currently used.}
 }
 \value{
 A named list to be used internally by the \pkg{rstanarm} model
@@ -127,7 +134,7 @@ The functions described on this page are used to specify the
   
   The default priors used in the various \pkg{rstanarm} modeling functions
   are intended to be \emph{weakly informative} in that they provide moderate
-  regularlization and help stabilize computation. For many applications the
+  regularization and help stabilize computation. For many applications the
   defaults will perform well, but prudent use of more informative priors is
   encouraged. Uniform prior distributions are possible (e.g. by setting
   \code{\link{stan_glm}}'s \code{prior} argument to \code{NULL}) but, unless
@@ -138,10 +145,11 @@ The functions described on this page are used to specify the
   More information on priors is available in the vignette
   \href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
   Distributions for rstanarm Models}} as well as the vignettes for the
-  various modeling functions. In particular, for details on the 
-  priors used for multilevel models see the vignette
+  various modeling functions. For details on the 
+  priors used for multilevel models in particular see the vignette
   \href{http://mc-stan.org/rstanarm/articles/glmer.html}{\emph{Estimating
-  Generalized (Non-)Linear Models with Group-Specific Terms with rstanarm}}.
+  Generalized (Non-)Linear Models with Group-Specific Terms with rstanarm}}
+  and also the \strong{Covariance matrices} section lower down on this page.
 }
 \details{
 The details depend on the family of the prior being used:
@@ -163,12 +171,11 @@ The details depend on the family of the prior being used:
   approaches the normal distribution and if the degrees of freedom are one,
   then the Student t distribution is the Cauchy distribution.
   
-  If \code{scale} is not specified it will default to \eqn{10} for the
-  intercept and \eqn{2.5} for the other coefficients, unless the probit link
-  function is used, in which case these defaults are scaled by a factor of 
-  \code{dnorm(0)/dlogis(0)}, which is roughly \eqn{1.6}.
+  If \code{scale} is not specified it will default to \eqn{2.5}, unless the
+  probit link function is used, in which case these defaults are scaled by a
+  factor of \code{dnorm(0)/dlogis(0)}, which is roughly \eqn{1.6}.
   
-  If the \code{autoscale} argument is \code{TRUE} (the default), then the 
+  If the \code{autoscale} argument is \code{TRUE}, then the 
   scales will be further adjusted as described above in the documentation of 
   the \code{autoscale} argument in the \strong{Arguments} section.
 }
@@ -233,7 +240,7 @@ The details depend on the family of the prior being used:
   
   It is also common in supervised learning to standardize the predictors 
   before training the model. We do not recommend doing so. Instead, it is
-  better to specify \code{autoscale = TRUE} (the default value), which 
+  better to specify \code{autoscale = TRUE}, which 
   will adjust the scales of the priors according to the dispersion in the
   variables. See the documentation of the \code{autoscale} argument above 
   and also the \code{\link{prior_summary}} page for more information.

@@ -3,11 +3,23 @@
 \name{posterior_linpred.stanreg}
 \alias{posterior_linpred.stanreg}
 \alias{posterior_linpred}
-\title{Posterior distribution of the linear predictor}
+\alias{posterior_epred}
+\alias{posterior_epred.stanreg}
+\title{Posterior distribution of the (possibly transformed) linear predictor}
 \usage{
 \method{posterior_linpred}{stanreg}(
   object,
   transform = FALSE,
+  newdata = NULL,
+  draws = NULL,
+  re.form = NULL,
+  offset = NULL,
+  XZ = FALSE,
+  ...
+)
+
+\method{posterior_epred}{stanreg}(
+  object,
   newdata = NULL,
   draws = NULL,
   re.form = NULL,
@@ -21,8 +33,10 @@
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{transform}{Should the linear predictor be transformed using the
-inverse-link function? The default is \code{FALSE}, in which case the
-untransformed linear predictor is returned.}
+inverse-link function? The default is \code{FALSE}. This argument is still
+allowed but not recommended because the \code{posterior_epred} function now
+provides the equivalent of \code{posterior_linpred(..., transform=TRUE)}.
+See \strong{Examples}.}
 
 \item{newdata, draws, re.form, offset}{Same as for \code{\link{posterior_predict}}.}
 
@@ -40,11 +54,20 @@ The default is to return a \code{draws} by \code{nrow(newdata)}
   is set to \code{TRUE} (see the \code{XZ} argument description above).
 }
 \description{
-Extract the posterior draws of the linear predictor, possibly transformed by 
-the inverse-link function. This function is occasionally useful, but it 
-should be used sparingly. Inference and model checking should generally be 
-carried out using the posterior predictive distribution (i.e., using 
+Extract the posterior draws of the linear predictor, possibly transformed by
+the inverse-link function. This function is occasionally useful, but it
+should be used sparingly: inference and model checking should generally be
+carried out using the posterior predictive distribution (i.e., using
 \code{\link{posterior_predict}}).
+}
+\details{
+The \code{posterior_linpred} function returns the posterior
+  distribution of the linear predictor, while the \code{posterior_epred}
+  function returns the posterior distribution of the conditional expectation.
+  In the special case of a Gaussian likelihood with an identity link
+  function, these two concepts are the same. The \code{posterior_epred}
+  function is a less noisy way to obtain expectations over the output of
+  \code{\link{posterior_predict}}.
 }
 \note{
 For models estimated with \code{\link{stan_clogit}}, the number of 
@@ -64,11 +87,12 @@ linpred <- posterior_linpred(example_model)
 colMeans(linpred)
 
 # probabilities
-probs <- posterior_linpred(example_model, transform = TRUE)
+# same as posterior_linpred(example_model, transform = TRUE)
+probs <- posterior_epred(example_model) 
 colMeans(probs)
 
 # not conditioning on any group-level parameters
-probs2 <- posterior_linpred(example_model, transform = TRUE, re.form = NA)
+probs2 <- posterior_epred(example_model, re.form = NA)
 apply(probs2, 2, median)
 
 }

@@ -19,7 +19,7 @@ regression models.}
 \item{...}{Currently ignored.}
 
 \item{re.form}{For models with group-level terms, \code{re.form} is
-passed to \code{\link{posterior_linpred}} if specified.}
+passed to \code{\link{posterior_epred}} if specified.}
 }
 \value{
 A vector of R-squared values with length equal to the posterior

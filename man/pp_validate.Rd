@@ -81,6 +81,6 @@ Cook, S., Gelman, A., and Rubin, D.
 \code{\link{posterior_predict}} to draw from the posterior predictive
 distribution.
 
-\code{\link[bayesplot]{color_scheme_set}} to change the color scheme of the
+\code{\link[bayesplot:bayesplot-colors]{color_scheme_set}} to change the color scheme of the
 plot.
 }

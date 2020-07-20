@@ -21,14 +21,14 @@ stan_jm(
   qnodes = 15,
   init = "prefit",
   weights,
-  priorLong = normal(),
-  priorLong_intercept = normal(),
-  priorLong_aux = cauchy(0, 5),
-  priorEvent = normal(),
-  priorEvent_intercept = normal(),
-  priorEvent_aux = cauchy(),
-  priorEvent_assoc = normal(),
-  prior_covariance = lkj(),
+  priorLong = normal(autoscale = TRUE),
+  priorLong_intercept = normal(autoscale = TRUE),
+  priorLong_aux = cauchy(0, 5, autoscale = TRUE),
+  priorEvent = normal(autoscale = TRUE),
+  priorEvent_intercept = normal(autoscale = TRUE),
+  priorEvent_aux = cauchy(autoscale = TRUE),
+  priorEvent_assoc = normal(autoscale = TRUE),
+  prior_covariance = lkj(autoscale = TRUE),
   prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
   adapt_delta = NULL,
@@ -249,11 +249,11 @@ depending on the \code{family}. For Gaussian models \code{priorLong_aux}
 controls \code{"sigma"}, the error 
 standard deviation. For negative binomial models \code{priorLong_aux} controls 
 \code{"reciprocal_dispersion"}, which is similar to the 
-\code{"size"} parameter of \code{\link[stats]{rnbinom}}:
+\code{"size"} parameter of \code{\link[stats:NegBinomial]{rnbinom}}:
 smaller values of \code{"reciprocal_dispersion"} correspond to 
 greater dispersion. For gamma models \code{priorLong_aux} sets the prior on 
 to the \code{"shape"} parameter (see e.g., 
-\code{\link[stats]{rgamma}}), and for inverse-Gaussian models it is the 
+\code{\link[stats:GammaDist]{rgamma}}), and for inverse-Gaussian models it is the 
 so-called \code{"lambda"} parameter (which is essentially the reciprocal of
 a scale parameter). Binomial and Poisson models do not have auxiliary 
 parameters. 
@@ -323,11 +323,12 @@ there are in the design matrix, setting \code{sparse = TRUE} may make
 the code run faster and can consume much less RAM.}
 
 \item{...}{Further arguments passed to the function in the \pkg{rstan} 
-package (\code{\link[rstan]{sampling}}, \code{\link[rstan]{vb}}, or 
-\code{\link[rstan]{optimizing}}), corresponding to the estimation method 
-named by \code{algorithm}. For example, if \code{algorithm} is
-\code{"sampling"} it is possibly to specify \code{iter}, \code{chains},
-\code{cores}, \code{refresh}, etc.}
+package (\code{\link[rstan:stanmodel-method-sampling]{sampling}}, 
+\code{\link[rstan:stanmodel-method-vb]{vb}}, or 
+\code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
+corresponding to the estimation method named by \code{algorithm}. For example, 
+if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
+\code{chains}, \code{cores}, \code{refresh}, etc.}
 }
 \value{
 A \link[=stanreg-objects]{stanjm} object is returned.
@@ -481,6 +482,8 @@ The \code{stan_jm} function can be used to fit a joint model (also
 }
 \examples{
 \donttest{
+if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
+
 #####
 # Univariate joint model, with association structure based on the 
 # current value of the linear predictor
@@ -588,6 +591,7 @@ mv3 <- stan_jm(
         family = list(binomial, gaussian),
         time_var = "year", 
         chains = 1, cores = 1, seed = 12345, iter = 1000)
+}
 }
 
 }

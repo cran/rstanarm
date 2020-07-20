@@ -24,8 +24,8 @@ posterior_vs_prior(object, ...)
 
 \item{...}{The S3 generic uses \code{...} to pass arguments to any defined 
 methods. For the method for stanreg objects, \code{...} is for arguments
-(other than \code{color}) passed to \code{\link[ggplot2]{geom_pointrange}}
-to control the appearance of the plotted intervals.}
+(other than \code{color}) passed to \code{geom_pointrange} in the \pkg{ggplot2}
+package to control the appearance of the plotted intervals.}
 
 \item{pars}{An optional character vector specifying a subset of parameters to
 display. Parameters can be specified by name or several shortcuts can be 
@@ -73,8 +73,8 @@ the posterior another, and \code{"none"} to use no color. Except when
 \code{\link[ggplot2]{aes}}thetic and it is therefore also possible to
 change the default colors by adding one of the various discrete color
 scales available in \code{ggplot2} 
-(\code{\link[ggplot2]{scale_color_manual}}, 
-\code{\link[ggplot2]{scale_color_brewer}}, etc.). See Examples.}
+(\code{\link[ggplot2:scale_manual]{scale_color_manual}}, 
+\code{scale_colour_brewer}, etc.). See Examples.}
 
 \item{group_by_parameter}{Should estimates be grouped together by parameter
 (\code{TRUE}) or by posterior and prior (\code{FALSE}, the default)?}

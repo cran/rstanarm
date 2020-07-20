@@ -17,10 +17,10 @@ stan_gamm4(
   knots = NULL,
   drop.unused.levels = TRUE,
   ...,
-  prior = normal(),
-  prior_intercept = normal(),
+  prior = default_prior_coef(family),
+  prior_intercept = default_prior_intercept(family),
   prior_smooth = exponential(autoscale = FALSE),
-  prior_aux = exponential(),
+  prior_aux = exponential(autoscale = TRUE),
   prior_covariance = decov(),
   prior_PD = FALSE,
   algorithm = c("sampling", "meanfield", "fullrank"),
@@ -49,16 +49,21 @@ a data frame) many post-estimation functions (including \code{update},
 \item{subset, weights, na.action}{Same as \code{\link[stats]{glm}}, 
 but rarely specified.}
 
-\item{...}{Further arguments passed to \code{\link[rstan]{sampling}} (e.g. 
+\item{...}{Further arguments passed to \code{\link[rstan:stanmodel-method-sampling]{sampling}} (e.g. 
 \code{iter}, \code{chains}, \code{cores}, etc.) or to
-\code{\link[rstan]{vb}} (if \code{algorithm} is \code{"meanfield"} or
+\code{\link[rstan:stanmodel-method-vb]{vb}} (if \code{algorithm} is \code{"meanfield"} or
 \code{"fullrank"}).}
 
-\item{prior}{The prior distribution for the regression coefficients. 
-\code{prior} should be a call to one of the various functions provided by 
-\pkg{rstanarm} for specifying priors. The subset of these functions that 
-can be used for the prior on the coefficients can be grouped into several 
-"families":
+\item{prior}{The prior distribution for the (non-hierarchical) regression
+coefficients.
+ 
+The default priors are described in the vignette 
+\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+Distributions for rstanarm Models}}.
+If not using the default, \code{prior} should be a call to one of the
+various functions provided by \pkg{rstanarm} for specifying priors. The
+subset of these functions that can be used for the prior on the
+coefficients can be grouped into several "families":
 
 \tabular{ll}{
   \strong{Family} \tab \strong{Functions} \cr 
@@ -84,25 +89,32 @@ scales of the predictors. See the \link[=priors]{priors help page} and the
 \code{\link{prior_summary}} function for a summary of the priors used for a
 particular model.}
 
-\item{prior_intercept}{The prior distribution for the intercept. 
-\code{prior_intercept} can be a call to \code{normal}, \code{student_t} or 
-\code{cauchy}. See the \link[=priors]{priors help page} for details on 
-these functions. To omit a prior on the intercept ---i.e., to use a flat
-(improper) uniform prior--- \code{prior_intercept} can be set to
-\code{NULL}.
+\item{prior_intercept}{The prior distribution for the intercept (after
+  centering all predictors, see note below).
 
-\strong{Note:} If using a dense representation of the design matrix
----i.e., if the \code{sparse} argument is left at its default value of
-\code{FALSE}--- then the prior distribution for the intercept is set so it
-applies to the value \emph{when all predictors are centered}. If you prefer
-to specify a prior on the intercept without the predictors being
-auto-centered, then you have to omit the intercept from the
-\code{\link[stats]{formula}} and include a column of ones as a predictor,
-in which case some element of \code{prior} specifies the prior on it,
-rather than \code{prior_intercept}. Regardless of how
-\code{prior_intercept} is specified, the reported \emph{estimates} of the
-intercept always correspond to a parameterization without centered
-predictors (i.e., same as in \code{glm}).}
+  The default prior is described in the vignette 
+  \href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+  Distributions for rstanarm Models}}.
+  If not using the default, \code{prior_intercept} can be a call to
+  \code{normal}, \code{student_t} or \code{cauchy}. See the
+  \link[=priors]{priors help page} for details on these functions. To omit a
+  prior on the intercept ---i.e., to use a flat (improper) uniform prior---
+  \code{prior_intercept} can be set to \code{NULL}.
+  
+  \strong{Note:} If using a dense representation of the design matrix
+  ---i.e., if the \code{sparse} argument is left at its default value of
+  \code{FALSE}--- then the prior distribution for the intercept is set so it
+  applies to the value \emph{when all predictors are centered} (you don't
+  need to manually center them). This is explained further in
+  [Prior Distributions for rstanarm Models](https://mc-stan.org/rstanarm/articles/priors.html)
+  If you prefer to specify a prior on the intercept without the predictors
+  being auto-centered, then you have to omit the intercept from the
+  \code{\link[stats]{formula}} and include a column of ones as a predictor,
+  in which case some element of \code{prior} specifies the prior on it,
+  rather than \code{prior_intercept}. Regardless of how
+  \code{prior_intercept} is specified, the reported \emph{estimates} of the
+  intercept always correspond to a parameterization without centered
+  predictors (i.e., same as in \code{glm}).}
 
 \item{prior_smooth}{The prior distribution for the hyperparameters in GAMs,
 with lower values yielding less flexible smooth functions.
@@ -122,21 +134,24 @@ depending on the \code{family}. For Gaussian models \code{prior_aux}
 controls \code{"sigma"}, the error 
 standard deviation. For negative binomial models \code{prior_aux} controls 
 \code{"reciprocal_dispersion"}, which is similar to the 
-\code{"size"} parameter of \code{\link[stats]{rnbinom}}:
+\code{"size"} parameter of \code{\link[stats:NegBinomial]{rnbinom}}:
 smaller values of \code{"reciprocal_dispersion"} correspond to 
 greater dispersion. For gamma models \code{prior_aux} sets the prior on 
 to the \code{"shape"} parameter (see e.g., 
-\code{\link[stats]{rgamma}}), and for inverse-Gaussian models it is the 
+\code{\link[stats:GammaDist]{rgamma}}), and for inverse-Gaussian models it is the 
 so-called \code{"lambda"} parameter (which is essentially the reciprocal of
 a scale parameter). Binomial and Poisson models do not have auxiliary 
-parameters. 
+parameters.
 
-\code{prior_aux} can be a call to \code{exponential} to 
-use an exponential distribution, or \code{normal}, \code{student_t} or 
-\code{cauchy}, which results in a half-normal, half-t, or half-Cauchy 
-prior. See \code{\link{priors}} for details on these functions. To omit a 
-prior ---i.e., to use a flat (improper) uniform prior--- set 
-\code{prior_aux} to \code{NULL}.}
+The default prior is described in the vignette 
+\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+Distributions for rstanarm Models}}.
+If not using the default, \code{prior_aux} can be a call to
+\code{exponential} to use an exponential distribution, or \code{normal},
+\code{student_t} or \code{cauchy}, which results in a half-normal, half-t,
+or half-Cauchy prior. See \code{\link{priors}} for details on these
+functions. To omit a prior ---i.e., to use a flat (improper) uniform
+prior--- set \code{prior_aux} to \code{NULL}.}
 
 \item{prior_covariance}{Cannot be \code{NULL}; see \code{\link{decov}} for
 more information about the default arguments.}
@@ -239,7 +254,7 @@ The \code{stan_gamm4} function is similar in syntax to
   (credible intervals) rather than confidence intervals and the inner line
   is the posterior median of the function rather than the function implied
   by a point estimate. To change the colors used in the plot see 
-  \code{\link[bayesplot]{color_scheme_set}}.
+  \code{\link[bayesplot:bayesplot-colors]{color_scheme_set}}.
 }
 \examples{
 # from example(gamm4, package = "gamm4"), prefixing gamm4() call with stan_
@@ -250,7 +265,7 @@ dat$fac <- fac <- as.factor(sample(1:20, 400, replace = TRUE))
 dat$y <- dat$y + model.matrix(~ fac - 1) \%*\% rnorm(20) * .5
 
 br <- stan_gamm4(y ~ s(x0) + x1 + s(x2), data = dat, random = ~ (1 | fac), 
-                 chains = 1, iter = 200) # for example speed
+                 chains = 1, iter = 500) # for example speed
 print(br)
 plot_nonlinear(br)
 plot_nonlinear(br, smooths = "s(x0)", alpha = 2/3)

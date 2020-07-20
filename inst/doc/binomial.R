@@ -29,7 +29,7 @@ ggplot(wells, aes(x = dist100, y = ..density.., fill = switch == 1)) +
   scale_fill_manual(values = c("gray30", "skyblue"))
 
 ## ---- binom-arsenic-mcmc, results="hide"--------------------------------------
-t_prior <- student_t(df = 7, location = 0, scale = 2.5, autoscale = FALSE)
+t_prior <- student_t(df = 7, location = 0, scale = 2.5)
 fit1 <- stan_glm(switch ~ dist100, data = wells, 
                  family = binomial(link = "logit"), 
                  prior = t_prior, prior_intercept = t_prior,  
