@@ -30,6 +30,7 @@ Compute a Bayesian version of R-squared or LOO-adjusted R-squared for
 regression models.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 fit <- stan_glm(
   mpg ~ wt + cyl, 
   data = mtcars, 
@@ -49,13 +50,12 @@ if (!exists("example_model")) example(example_model)
 print(example_model)
 median(bayes_R2(example_model))
 median(bayes_R2(example_model, re.form = NA)) # exclude group-level
-
+}
 }
 \references{
 Andrew Gelman, Ben Goodrich, Jonah Gabry, and Aki Vehtari (2018). R-squared
 for Bayesian regression models. \emph{The American Statistician}, to appear.
-DOI: 10.1080/00031305.2018.1549100.
-(\href{https://doi.org/10.1080/00031305.2018.1549100}{Journal},
-\href{http://www.stat.columbia.edu/~gelman/research/published/bayes_R2_v3.pdf}{Preprint},
+\doi{10.1080/00031305.2018.1549100}
+(\href{http://www.stat.columbia.edu/~gelman/research/published/bayes_R2_v3.pdf}{Preprint},
 \href{https://avehtari.github.io/bayes_R2/bayes_R2.html}{Notebook})
 }

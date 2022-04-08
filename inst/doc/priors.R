@@ -18,18 +18,18 @@ library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
 
-## ---- default-prior-1, results="hide", eval = TRUE----------------------------
+## ---- default-prior-1, results="hide"-----------------------------------------
 library("rstanarm")
 default_prior_test <- stan_glm(mpg ~ wt + am, data = mtcars, chains = 1)
 
-## ---- default-prior-summary, eval = TRUE--------------------------------------
+## ---- default-prior-summary---------------------------------------------------
 prior_summary(default_prior_test)
 
-## ---- echo=FALSE, eval = TRUE-------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 priors <- prior_summary(default_prior_test)
 fr2 <- function(x) format(round(x, 2), nsmall = 2)
 
-## ---- no-autoscale, results="hide", eval = TRUE-------------------------------
+## ---- no-autoscale, results="hide"--------------------------------------------
 test_no_autoscale <-
   update(
     default_prior_test,
@@ -38,14 +38,14 @@ test_no_autoscale <-
     prior_aux = cauchy(0, 3)
   )
 
-## ---- no-autoscale-prior-summary, eval = TRUE---------------------------------
+## ---- no-autoscale-prior-summary----------------------------------------------
 prior_summary(test_no_autoscale)
 
-## ---- eval = TRUE-------------------------------------------------------------
+## -----------------------------------------------------------------------------
 p <- 1 - 2 * pnorm(-250, mean = 0, sd = 500)
 print(paste("Pr(-250 < theta < 250) =", round(p, 2)))
 
-## ---- fig.cap="_There is much more probability mass outside the interval (-250, 250)._", eval = TRUE----
+## ---- fig.cap="_There is much more probability mass outside the interval (-250, 250)._"----
 theta <- rnorm(1e5, mean = 0, sd = 500)
 p_approx <- mean(abs(theta) < 250)
 print(paste("Pr(-250 < theta < 250) =", round(p_approx, 2)))
@@ -57,13 +57,13 @@ ggplot(d, aes(x = theta, fill = clr)) +
   scale_y_continuous(name = "", labels = NULL, expand = c(0,0)) + 
   scale_x_continuous(name = expression(theta), breaks = c(-1000, -250, 250, 1000))
 
-## ---- flat-prior-1, echo=FALSE, results="hide", eval = TRUE-------------------
+## ---- flat-prior-1, echo=FALSE, results="hide"--------------------------------
 flat_prior_test <- stan_glm(mpg ~ wt, data = mtcars, prior = NULL, iter = 10, chains = 1)
 
-## ---- flat-prior-2, eval=FALSE, eval = TRUE-----------------------------------
-flat_prior_test <- stan_glm(mpg ~ wt, data = mtcars, prior = NULL)
+## ---- flat-prior-2, eval=FALSE------------------------------------------------
+#  flat_prior_test <- stan_glm(mpg ~ wt, data = mtcars, prior = NULL)
 
-## ---- flat-prior-summary, eval = TRUE-----------------------------------------
+## ---- flat-prior-summary------------------------------------------------------
 prior_summary(flat_prior_test)
 
 ## ---- eval=FALSE--------------------------------------------------------------

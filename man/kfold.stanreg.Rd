@@ -73,6 +73,7 @@ equivalent to exact leave-one-out cross-validation (to which
 \code{\link[=loo.stanreg]{loo}} is an efficient approximation).
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
 fit1 <- stan_glm(mpg ~ wt, data = mtcars, refresh = 0)
 fit2 <- stan_glm(mpg ~ wt + cyl, data = mtcars, refresh = 0)
@@ -95,7 +96,7 @@ table(cyl = mtcars$cyl, fold = folds_cyl)
 kfold4 <- kfold(fit4, folds = folds_cyl, cores = 2)
 print(kfold4)
 }
-
+}
 # Example code demonstrating the different ways to specify the number 
 # of cores and how the cores are used
 # 
@@ -118,10 +119,9 @@ Vehtari, A., Gelman, A., and Gabry, J. (2017). Practical
   Bayesian model evaluation using leave-one-out cross-validation and WAIC.
   \emph{Statistics and Computing}. 27(5), 1413--1432.
   doi:10.1007/s11222-016-9696-4. arXiv preprint:
-  \url{http://arxiv.org/abs/1507.04544/}
+  \url{https://arxiv.org/abs/1507.04544}
 
   Yao, Y., Vehtari, A., Simpson, D., and Gelman, A. (2018) Using
   stacking to average Bayesian predictive distributions. \emph{Bayesian
-  Analysis}, advance publication,  doi:10.1214/17-BA1091.
-  (\href{https://projecteuclid.org/euclid.ba/1516093227}{online}).
+  Analysis}, advance publication,  \doi{10.1214/17-BA1091}.
 }

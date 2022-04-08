@@ -91,6 +91,7 @@ If this is the case with one of your models you may be able to speed up
 }
 
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \dontrun{
 if (!exists("example_model")) example(example_model) 
 
@@ -110,13 +111,12 @@ if (interactive()) launch_shinystan(sso)
 sso <- shinystan::as.shinystan(example_model, ppd = FALSE)
 if (interactive()) launch_shinystan(sso)
 }
-
+}
 }
 \references{
 Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
   Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
   Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
-  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
   \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
   \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 

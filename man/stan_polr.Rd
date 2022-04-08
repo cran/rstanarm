@@ -57,8 +57,13 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 
 \item{method}{One of 'logistic', 'probit', 'loglog', 'cloglog' or 'cauchit',
 but can be abbreviated. See \code{\link[MASS]{polr}} for more details.}
@@ -122,7 +127,7 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
   stanfit object) is returned if \code{stan_polr.fit} is called directly.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Bayesian inference for ordinal (or binary) regression models under a
 proportional odds assumption.
 }
@@ -176,7 +181,7 @@ The \code{stan_polr} function is similar in syntax to
   property.
 }
 \examples{
-if (!grepl("^sparc",  R.version$platform)) {
+if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
  fit <- stan_polr(tobgp ~ agegp, data = esoph, method = "probit",
           prior = R2(0.2, "mean"), init_r = 0.1, seed = 12345,
           algorithm = "fullrank") # for speed only
@@ -194,5 +199,5 @@ Nagler, J., (1994). Scobit: An Alternative Estimator to Logit and Probit.
 \code{\link[MASS]{polr}}.
 
 The vignette for \code{stan_polr}.
-  \url{http://mc-stan.org/rstanarm/articles/}
+  \url{https://mc-stan.org/rstanarm/articles/}
 }

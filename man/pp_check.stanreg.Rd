@@ -61,6 +61,7 @@ For binomial data, plots of \eqn{y} and \eqn{y^{rep}}{yrep} show the
   plots.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 fit <- stan_glmer(
   mpg ~ wt + am + (1|cyl), 
   data = mtcars, 
@@ -122,6 +123,7 @@ pp_check(fit2, plotfun = "bars_grouped", group = esoph$agegp,
          nreps = 500, prob = 0.5)
 }
 }
+}
 \references{
 Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari,
   A., and Rubin, D. B. (2013). \emph{Bayesian Data Analysis.} Chapman & Hall/CRC
@@ -130,7 +132,6 @@ Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari,
 Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
   Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
   Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
-  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
   \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
   \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 }

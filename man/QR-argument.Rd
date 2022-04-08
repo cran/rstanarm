@@ -38,7 +38,7 @@ The \code{QR} argument is a logical scalar defaulting to
   
   For more details see the Stan case study 
   \emph{The QR Decomposition For Regression Models} at 
-  \url{http://mc-stan.org/users/documentation/case-studies/qr_regression.html}.
+  \url{https://mc-stan.org/users/documentation/case-studies/qr_regression.html}.
 }
 \references{
 Stan Development Team. \emph{Stan Modeling Language Users Guide and

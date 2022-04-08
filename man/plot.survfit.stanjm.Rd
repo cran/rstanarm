@@ -83,6 +83,7 @@ survival function and combines them into a single figure. This is most
 easily understood by running the \strong{Examples} below.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
   # Run example model if not already loaded
   if (!exists("example_jm")) example(example_jm)
@@ -125,7 +126,8 @@ easily understood by running the \strong{Examples} below.
                           control = list(epoints = 20))
   plot(ps2)   
 }
-   
+}
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
   if (!exists("example_jm")) example(example_jm)
   ps1 <- posterior_survfit(example_jm, ids = c(7,13,15))
@@ -134,7 +136,7 @@ easily understood by running the \strong{Examples} below.
   plot_traj <- plot(pt1, vline = TRUE, plot_observed = TRUE)
   plot_stack_jm(plot_traj, plot_surv)
 }
- 
+}
 }
 \seealso{
 \code{\link{posterior_survfit}}, \code{\link{plot_stack_jm}},

@@ -97,7 +97,7 @@ rescaling or the use of the \code{QR} argument (see the documentation for the
 these special cases).
 }
 \examples{
-
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \dontrun{
 if (!exists("example_model")) example(example_model)
 # display non-varying (i.e. not group-level) coefficients
@@ -147,13 +147,12 @@ fit_polr <- stan_polr(tobgp ~ agegp, data = esoph, method = "probit",
 # flip the x and y axes
 gg_polr + ggplot2::coord_flip()
 }
-
+}
 }
 \references{
 Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
   Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
   Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
-  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
   \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
   \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 }

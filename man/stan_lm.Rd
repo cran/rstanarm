@@ -82,8 +82,13 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 
 \item{prior}{Must be a call to \code{\link{R2}} with its 
 \code{location} argument specified or \code{NULL}, which would
@@ -146,7 +151,7 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
   stanfit object) is returned if \code{stan_lm.fit or stan_lm.wfit} is called directly.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Bayesian inference for linear modeling with regularizing priors on the model
 parameters that are driven by prior beliefs about \eqn{R^2}, the proportion
 of variance in the outcome attributable to the predictors. See
@@ -186,6 +191,7 @@ The \code{stan_lm} function is similar in syntax to the
   addition to the output printed for \code{stan_lm} models.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
 op <- options(contrasts = c("contr.helmert", "contr.poly"))
 fit_aov <- stan_aov(yield ~ block + N*P*K, data = npk,
@@ -193,13 +199,14 @@ fit_aov <- stan_aov(yield ~ block + N*P*K, data = npk,
 options(op)
 print(fit_aov)
 }
-            
+}
+if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
 (fit <- stan_lm(mpg ~ wt + qsec + am, data = mtcars, prior = R2(0.75), 
                 # the next line is only to make the example go fast enough
                 chains = 1, iter = 300, seed = 12345, refresh = 0))
 plot(fit, "hist", pars = c("wt", "am", "qsec", "sigma"), 
      transformations = list(sigma = "log"))
-
+}
 }
 \references{
 Lewandowski, D., Kurowicka D., and Joe, H. (2009). Generating random
@@ -209,7 +216,7 @@ correlation matrices based on vines and extended onion method.
 \seealso{
 The vignettes for \code{stan_lm} and \code{stan_aov}, which have more
 thorough descriptions and examples.
-\url{http://mc-stan.org/rstanarm/articles/}
+\url{https://mc-stan.org/rstanarm/articles/}
 
 Also see \code{\link{stan_glm}}, which --- if \code{family =
 gaussian(link="identity")} --- also estimates a linear model with

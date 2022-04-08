@@ -91,5 +91,5 @@ overview:
 }
 
 \seealso{
-\url{http://mc-stan.org/rstanarm/}
+\url{https://mc-stan.org/rstanarm/}
 }

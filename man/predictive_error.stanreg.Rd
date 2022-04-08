@@ -3,6 +3,7 @@
 \name{predictive_error.stanreg}
 \alias{predictive_error.stanreg}
 \alias{predictive_error}
+\alias{predictive_error.matrix}
 \alias{predictive_error.ppd}
 \title{In-sample or out-of-sample predictive errors}
 \usage{
@@ -16,12 +17,14 @@
   ...
 )
 
+\method{predictive_error}{matrix}(object, y, ...)
+
 \method{predictive_error}{ppd}(object, y, ...)
 }
 \arguments{
 \item{object}{Either a fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions (a \link[=stanreg-objects]{stanreg 
-object}) or, for the \code{"ppd"} method, a matrix of draws from the 
+object}) or, for the matrix method, a matrix of draws from the 
 posterior predictive distribution returned by 
 \code{\link{posterior_predict}}.}
 
@@ -31,7 +34,7 @@ posterior predictive distribution returned by
 
 \item{...}{Currently ignored.}
 
-\item{y}{For the \code{"ppd"} method only, a vector of \eqn{y} values the 
+\item{y}{For the matrix method only, a vector of \eqn{y} values the 
 same length as the number of columns in the matrix used as \code{object}. 
 The method for stanreg objects takes \code{y} directly from the fitted 
 model object.}
@@ -45,9 +48,8 @@ This is a convenience function for computing \eqn{y - y^{rep}}{y - yrep}
 (in-sample, for observed \eqn{y}) or \eqn{y - \tilde{y}}{y - ytilde} 
 (out-of-sample, for new or held-out \eqn{y}). The method for stanreg objects 
 calls \code{\link{posterior_predict}} internally, whereas the method for
-objects with class \code{"ppd"} accepts the matrix returned by 
-\code{posterior_predict} as input and can be used to avoid multiple calls to 
-\code{posterior_predict}.
+matrices accepts the matrix returned by \code{posterior_predict} as input and
+can be used to avoid multiple calls to \code{posterior_predict}.
 }
 \note{
 The \strong{Note} section in \code{\link{posterior_predict}} about 
@@ -62,6 +64,7 @@ The \strong{Note} section in \code{\link{posterior_predict}} about
   computing the error.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 if (!exists("example_model")) example(example_model)
 err1 <- predictive_error(example_model, draws = 50)
 hist(err1)
@@ -76,14 +79,14 @@ nd <- data.frame(
 )
 err2 <- predictive_error(example_model, newdata = nd, draws = 10, seed = 1234)
 
-# stanreg vs ppd methods
+# stanreg vs matrix methods
 fit <- stan_glm(mpg ~ wt, data = mtcars, iter = 300)
 preds <- posterior_predict(fit, seed = 123)
 all.equal(
   predictive_error(fit, seed = 123),
   predictive_error(preds, y = fit$y)
 )
-
+}
 }
 \seealso{
 \code{\link[=posterior_predict.stanreg]{posterior_predict}} to draw

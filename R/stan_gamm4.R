@@ -19,7 +19,7 @@
 #' Bayesian generalized linear additive models with optional group-specific
 #' terms via Stan
 #' 
-#' \if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+#' \if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 #' Bayesian inference for GAMMs with flexible priors.
 #' 
 #' @export
@@ -99,9 +99,10 @@
 #' \url{https://www.jstatsoft.org/article/view/v014i14}
 #' 
 #' @seealso The vignette for \code{stan_glmer}, which also discusses
-#'   \code{stan_gamm4}. \url{http://mc-stan.org/rstanarm/articles/}
+#'   \code{stan_gamm4}. \url{https://mc-stan.org/rstanarm/articles/}
 #' 
 #' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 #' # from example(gamm4, package = "gamm4"), prefixing gamm4() call with stan_
 #' \donttest{
 #' dat <- mgcv::gamSim(1, n = 400, scale = 2) ## simulate 4 term additive truth
@@ -115,7 +116,7 @@
 #' plot_nonlinear(br)
 #' plot_nonlinear(br, smooths = "s(x0)", alpha = 2/3)
 #' }
-#' 
+#' }
 stan_gamm4 <-
   function(formula,
            random = NULL,
@@ -140,6 +141,10 @@ stan_gamm4 <-
     
   data <- validate_data(data, if_missing = list())
   family <- validate_family(family)
+  
+  if (length(mgcv::interpret.gam(formula)$smooth.spec) == 0) {
+    stop("Formula must have at least one smooth term to use stan_gamm4.", call. = FALSE)
+  }
   
   if (!is.null(random)) {
     fake.formula <- as.character(mgcv::interpret.gam(formula)$fake.formula)

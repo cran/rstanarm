@@ -806,6 +806,9 @@ validate_newdata <- function(object, newdata = NULL, m = NULL) {
   
   # drop other classes (e.g. 'tbl_df', 'tbl')
   newdata <- as.data.frame(newdata)
+  if (nrow(newdata) == 0) {
+    stop("If 'newdata' is specified it must have more than 0 rows.", call. = FALSE)
+  }
   
   # only check for NAs in used variables
   vars <- all.vars(formula(object, m = m))
@@ -814,7 +817,9 @@ validate_newdata <- function(object, newdata = NULL, m = NULL) {
     stop("NAs are not allowed in 'newdata'.", call. = FALSE)
   }
   
-  newdata <- drop_redundant_dims(newdata)
+  if (ncol(newdata) > 0) {
+    newdata <- drop_redundant_dims(newdata)
+  }
   return(newdata)
 }
 
@@ -1713,15 +1718,6 @@ stop2 <- function(...) {
   stop(..., call. = FALSE)
 }
 
-warning2 <- function(...) {
-  warning(..., call. = FALSE)
-}
-
-SW <- function(expr) {
-  # just a short form for suppressWarnings
-  base::suppressWarnings(expr)
-}
-
 is_null <- function(x) {
   # check if an object is NULL
   is.null(x) || ifelse(is.vector(x), all(sapply(x, is.null)), FALSE)
@@ -1734,23 +1730,4 @@ rm_null <- function(x, recursive = TRUE) {
     x <- lapply(x, function(x) if (is.list(x)) rm_null(x) else x)
   }
   x
-}
-
-isFALSE <- function(x) {
-  identical(FALSE, x)
-}
-
-is_equal <- function(x, y, ...) {
-  isTRUE(all.equal(x, y, ...))
-}
-
-is_like_factor <- function(x) {
-  # check if x behaves like a factor in design matrices
-  is.factor(x) || is.character(x) || is.logical(x)
-}
-
-# @param x numeric vector
-log_sum_exp <- function(x) {
-  max_x <- max(x)
-  max_x + log(sum(exp(x - max_x)))
 }

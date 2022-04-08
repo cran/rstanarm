@@ -93,7 +93,7 @@ to pass to \code{stan_glmer} (except \code{family}).}
 coefficients.
  
 The default priors are described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior} should be a call to one of the
 various functions provided by \pkg{rstanarm} for specifying priors. The
@@ -128,7 +128,7 @@ particular model.}
   centering all predictors, see note below).
 
   The default prior is described in the vignette 
-  \href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+  \href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
   Distributions for rstanarm Models}}.
   If not using the default, \code{prior_intercept} can be a call to
   \code{normal}, \code{student_t} or \code{cauchy}. See the
@@ -167,7 +167,7 @@ a scale parameter). Binomial and Poisson models do not have auxiliary
 parameters.
 
 The default prior is described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior_aux} can be a call to
 \code{exponential} to use an exponential distribution, or \code{normal},
@@ -228,7 +228,7 @@ A list with classes \code{stanreg}, \code{glm}, \code{lm},
   one row and one column (in which case it is just the group-level variance).
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Bayesian inference for GLMs with group-specific coefficients that have 
 unknown covariance matrices with flexible priors.
 }
@@ -250,10 +250,11 @@ The \code{stan_glmer} function is similar in syntax to
   \link{neg_binomial_2}(link)}.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 # see help(example_model) for details on the model below
 if (!exists("example_model")) example(example_model) 
 print(example_model, digits = 1)
-
+}
 }
 \references{
 Gelman, A. and Hill, J. (2007). \emph{Data Analysis Using
@@ -270,5 +271,5 @@ User-friendly Bayesian regression modeling: A tutorial with rstanarm and shinyst
 \code{\link[lme4]{glmer}}.
 
 The vignette for \code{stan_glmer} and the \emph{Hierarchical 
-  Partial Pooling} vignette. \url{http://mc-stan.org/rstanarm/articles/}
+  Partial Pooling} vignette. \url{https://mc-stan.org/rstanarm/articles/}
 }

@@ -19,7 +19,7 @@
 #' Bayesian multivariate generalized linear models with correlated 
 #' group-specific terms via Stan
 #' 
-#' \if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+#' \if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 #' Bayesian inference for multivariate GLMs with group-specific coefficients 
 #' that are assumed to be correlated across the GLM submodels.
 #' 
@@ -99,6 +99,7 @@
 #'   \code{\link{posterior_predict}}, \code{\link{posterior_interval}}.
 #'    
 #' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
 #' \donttest{
 #' #####
 #' # A multivariate GLM with two submodels. For the grouping factor 'id', the 
@@ -127,7 +128,7 @@
 #'         family = list(binomial, gaussian),
 #'         chains = 1, cores = 1, seed = 12345, iter = 1000)
 #' }
-#' 
+#' }
 stan_mvmer <- function(formula, data, family = gaussian, weights,				          
                        prior = normal(autoscale=TRUE), prior_intercept = normal(autoscale=TRUE), 
                        prior_aux = cauchy(0, 5, autoscale=TRUE),

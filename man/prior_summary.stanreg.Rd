@@ -93,6 +93,7 @@ conditioning on the outcome) and then plotting the parameters.
 }
 
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 if (!exists("example_model")) example(example_model) 
 prior_summary(example_model)
 
@@ -113,7 +114,7 @@ prior_summary(fit)
 fit2 <- update(fit, prior = normal(0, c(2.5, 4), autoscale=FALSE), 
                prior_intercept = normal(0, 5, autoscale=FALSE))
 prior_summary(fit2)
-
+}
 }
 \seealso{
 The \link[=priors]{priors help page} and the \emph{Prior

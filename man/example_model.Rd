@@ -18,12 +18,14 @@ Calling \code{example("example_model")} will run the model in the
 A model for use in \pkg{rstanarm} examples.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 example_model <- 
   stan_glmer(cbind(incidence, size - incidence) ~ size + period + (1|herd),
              data = lme4::cbpp, family = binomial, QR = TRUE,
              # this next line is only to keep the example small in size!
              chains = 2, cores = 1, seed = 12345, iter = 1000, refresh = 0)
 example_model
+}
 }
 \seealso{
 \code{\link[lme4]{cbpp}} for a description of the data.

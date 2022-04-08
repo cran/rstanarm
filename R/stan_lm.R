@@ -17,7 +17,7 @@
 
 #' Bayesian regularized linear models via Stan
 #' 
-#' \if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+#' \if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 #' Bayesian inference for linear modeling with regularizing priors on the model
 #' parameters that are driven by prior beliefs about \eqn{R^2}, the proportion
 #' of variance in the outcome attributable to the predictors. See
@@ -108,7 +108,7 @@
 #' @seealso 
 #' The vignettes for \code{stan_lm} and \code{stan_aov}, which have more
 #' thorough descriptions and examples.
-#' \url{http://mc-stan.org/rstanarm/articles/}
+#' \url{https://mc-stan.org/rstanarm/articles/}
 #' 
 #' Also see \code{\link{stan_glm}}, which --- if \code{family =
 #' gaussian(link="identity")} --- also estimates a linear model with
@@ -116,12 +116,13 @@
 #'   
 #'   
 #' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
 #' (fit <- stan_lm(mpg ~ wt + qsec + am, data = mtcars, prior = R2(0.75), 
 #'                 # the next line is only to make the example go fast enough
 #'                 chains = 1, iter = 300, seed = 12345, refresh = 0))
 #' plot(fit, "hist", pars = c("wt", "am", "qsec", "sigma"), 
 #'      transformations = list(sigma = "log"))
-#' 
+#' }
 stan_lm <- function(formula, data, subset, weights, na.action,
                     model = TRUE, x = FALSE, y = FALSE, 
                     singular.ok = TRUE, contrasts = NULL, offset, ...,

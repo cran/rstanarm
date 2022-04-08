@@ -44,6 +44,7 @@ multivariate Gaussian sampling distribution of the parameters or the
 variational approximation to the posterior distribution.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
 if (!exists("example_model")) example(example_model)
 # Extract posterior sample after MCMC
@@ -72,7 +73,7 @@ draws <- as.data.frame(fit2, pars = "wt")
 print(colnames(draws))
 print(nrow(draws)) # 1000 draws are taken
 }
-
+}
 }
 \seealso{
 \code{\link{stanreg-methods}}

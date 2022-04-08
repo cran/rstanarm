@@ -1,26 +1,69 @@
-# rstanarm 2.21.1
-
-* Consistent with [Regression and Other Stories](https://statmodeling.stat.columbia.edu/2020/07/08/regression-and-other-stories-is-available/)
-
-### Backwards incompatible changes
-
-* `autoscale` argument to various prior functions not defaults to `FALSE`, although 
-  by default `normal` is now called with `autoscale = TRUE` in `stan_glm`, `stan_glmer`, etc.
-* The default prior on the intercept is different than it was in rstanarm <= 2.19.3
-  for `stan_glm`, `stan_glmer`, etc.
-* `stan_jm` is not available for 32bit Windows
-
-### New functions
-
-* `posterior_epred` returns the posterior distribution of the conditional expectation,
-  which is previously accomplished via `posterior_linpred` with `transform = TRUE`
-* `predict` produces predictions in more cases where it previously threw errors
+# Items for next release
 
 ### Bug fixes
 
-* `singular.ok` now rules out singular design matrices in `stan_lm`
-* `newdata` now works when the family was `mgcv::betar`
-* now works better with `data.table`s
+* Fix bug where `loo()` with `k_threshold` argument specified would error if the model formula was a string instead of a formula object. (#454)
+
+* Fix bug where `loo()` with `k_threshold` argument specified would error for
+models fit with `stan_polr()`. (#450)
+
+* Fix bug where `stan_aov()` would use the wrong `singular.ok` logic. (#448)
+
+* Fix bug where contrasts info was dropped when subsetting the model matrix in
+`stan_glm()`. (#459)
+
+* Fix bug where `stan_glmer()` would error if `prior_aux=NULL`. (#482)
+
+* `posterior_predict()` and `posterior_epred()` don't error  with `newdata` for 
+intercept only models by allowing data frames with 0 columns and multiple rows. (#492)
+
+### New features
+
+* New vignette on AB testing. (#409)
+
+* `stan_jm()` gains an offset term for the longitudinal submodel. (#415, @pamelanluna)
+
+* Effective number of parameters are computed for K-fold CV not just LOO CV. (#462)
+
+* `stan_clogit()` now allows outcome variable to be a factor. (#520)
+
+# rstanarm 2.21.1
+
+* Compatible with rstan v2.21.1
+* Consistent with new book [Regression and Other Stories](https://statmodeling.stat.columbia.edu/2020/07/08/regression-and-other-stories-is-available/)
+
+### Backwards incompatible changes
+
+* `stan_jm()` is not available for 32bit Windows
+
+* Some improvements to prior distributions, as described in detail in the
+vignette *Prior Distributions for rstanarm Models* and book 
+*Regression and Other Stories*. These changes shouldn't cause any existing code
+to error, but default priors have changed in some cases:
+  - default prior on intercept is still Gaussian but the way the location and 
+    scale are determined has been updated (#432)
+  - `autoscale` argument to functions like `normal()`, `student_t()`, etc., 
+    now defaults to `FALSE` except when used by default priors (default
+    priors still do autoscalinng). This makes it simpler to specify non-default
+    priors. (#432)
+  
+### Bug fixes
+
+* Fixed error in `kfold()` for `stan_gamm4()` models that used `random` argument (#435)
+* Fixed error in `posterior_predict()` and `posterior_linpred()` when using `newdata` with `family = mgcv::betar` (#406, #407)
+* `singular.ok` now rules out singular design matrices in `stan_lm()` (#402)
+* Fix a potential error when `data` is a `data.table` object (#434, @danschrage)
+
+### New functions
+
+* New method `posterior_epred()` returns the posterior distribution of the
+conditional expectation, which is equivalent to (and may eventually entirely
+replace) setting argument `transform=TRUE` with `posterior_linpred()`. (#432)
+
+* Added convenience functions `logit()` and `invlogit()` that are just wrappers
+for `qlogis()` and `plogis()`. These were previously provided by the `arm`
+package. (#432)
+
 
 # rstanarm 2.19.3
 
@@ -57,7 +100,7 @@ with identical (not just up to rng noise) results. (Thanks to @mcol)
 to @avehtari and @VMatthijs)
 
 * `compare_models()` is deprecated in favor of `loo_compare()` to keep up 
-with the loo package ([loo::loo_compare()](http://mc-stan.org/loo/reference/loo_compare))
+with the loo package ([loo::loo_compare()](https://mc-stan.org/loo/reference/loo_compare))
 
 * The `kfold()` method now has a `cores` argument and parallelizes by fold
 rather than by Markov chain (unless otherwise specified), which should be much

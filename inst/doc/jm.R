@@ -58,6 +58,8 @@ mod1 <- stan_jm(formulaLong = logBili ~ sex + trt + year + (year | id),
                 chains = 1, refresh = 2000, seed = 12345)
 
 ## ----print, echo = FALSE------------------------------------------------------
+alpha_mod1 <- as.data.frame(mod1)[["Assoc|Long1|etavalue"]]
+alpha_median <- round(median(alpha_mod1), 3)
 print(mod1)
 
 ## ----summary------------------------------------------------------------------

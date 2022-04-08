@@ -81,6 +81,7 @@ whether or not the user wants to see extrapolation of the longitudinal
 trajectory beyond the last observation time).
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
   # Run example model if not already loaded
   if (!exists("example_jm")) example(example_jm)
@@ -112,6 +113,7 @@ trajectory beyond the last observation time).
   plot1 + 
     ggplot2::theme(strip.background = ggplot2::element_blank()) +
     ggplot2::labs(title = "Some plotted longitudinal trajectories")
+}
 }
 }
 \seealso{

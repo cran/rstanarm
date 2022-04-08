@@ -129,7 +129,7 @@
 #' \item \code{y} Number of roaches caught
 #' \item \code{roach1} Pretreatment number of roaches
 #' \item \code{treatment} Treatment indicator
-#' \item \code{senior} Indicator for only eldery residents in building
+#' \item \code{senior} Indicator for only elderly residents in building
 #' \item \code{exposure2} Number of days for which the roach traps were used
 #' }
 #' }
@@ -171,13 +171,13 @@
 #' 
 #' @references 
 #' Carpenter, B. (2009) Bayesian estimators for the beta-binomial model of
-#' batting ability. \url{http://lingpipe-blog.com/2009/09/23/}
+#' batting ability. \url{https://lingpipe-blog.com/2009/09/23/}
 #' 
 #' Efron, B. and Morris, C. (1975) Data analysis using Stein's estimator and its
 #' generalizations. \emph{Journal of the American Statistical Association}
 #' \strong{70}(350), 311--319.
 #' 
-#' @templateVar armRef \url{http://stat.columbia.edu/~gelman/arm/}
+#' @templateVar armRef \url{https://stat.columbia.edu/~gelman/arm/}
 #' @template reference-gelman-hill
 #' 
 #' @references
@@ -190,7 +190,8 @@
 #' Therneau, T. and Grambsch, P. (2000) \emph{Modeling Survival Data: Extending 
 #' the Cox Model}. Springer-Verlag, New York, US.
 #' 
-#' @examples 
+#' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 #' # Using 'kidiq' dataset 
 #' fit <- stan_lm(kid_score ~ mom_hs * mom_iq, data = kidiq, 
 #'                prior = R2(location = 0.30, what = "mean"),
@@ -202,5 +203,5 @@
 #' pp_check(fit, plotfun = "stat_grouped", stat = "median", 
 #'          group = factor(kidiq$mom_hs, labels = c("No HS", "HS")))
 #' }
-#' 
+#' }
 NULL

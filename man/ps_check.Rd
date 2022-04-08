@@ -58,6 +58,7 @@ from the posterior predictive distribution of the fitted joint model, and then
 overlays the Kaplan-Meier curve based on the observed data.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
 if (!exists("example_jm")) example(example_jm)
 # Compare estimated survival function to Kaplan-Meier curve
@@ -66,6 +67,7 @@ ps +
  ggplot2::scale_color_manual(values = c("red", "black")) + # change colors
  ggplot2::scale_size_manual(values = c(0.5, 3)) + # change line sizes 
  ggplot2::scale_fill_manual(values = c(NA, NA)) # remove fill
+}
 }
 }
 \seealso{

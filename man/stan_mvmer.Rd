@@ -116,14 +116,19 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 }
 \value{
 A \link[=stanreg-objects]{stanmvreg} object is returned.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Bayesian inference for multivariate GLMs with group-specific coefficients 
 that are assumed to be correlated across the GLM submodels.
 }
@@ -145,6 +150,7 @@ The \code{stan_mvmer} function can be used to fit a multivariate
   the regression coefficients and the intercept and auxiliary parameters.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
 \donttest{
 #####
 # A multivariate GLM with two submodels. For the grouping factor 'id', the 
@@ -173,7 +179,7 @@ f2 <- stan_mvmer(
         family = list(binomial, gaussian),
         chains = 1, cores = 1, seed = 12345, iter = 1000)
 }
-
+}
 }
 \seealso{
 \code{\link{stan_glmer}}, \code{\link{stan_jm}},

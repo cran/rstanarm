@@ -9,6 +9,7 @@ stan_clogit(
   data,
   subset,
   na.action = NULL,
+  contrasts = NULL,
   ...,
   strata,
   prior = normal(autoscale = TRUE),
@@ -21,7 +22,7 @@ stan_clogit(
 )
 }
 \arguments{
-\item{formula, data, subset, na.action}{Same as for \code{\link[lme4]{glmer}},
+\item{formula, data, subset, na.action, contrasts}{Same as for \code{\link[lme4]{glmer}},
 except that any global intercept included in the formula will be dropped.
 \emph{We strongly advise against omitting the \code{data} argument}. Unless
 \code{data} is specified (and is a data frame) many post-estimation
@@ -33,8 +34,13 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 
 \item{strata}{A factor indicating the groups in the data where the number of 
 successes (possibly one) is fixed by the research design. It may be useful 
@@ -46,7 +52,7 @@ any object besides the \code{data} \code{\link{data.frame}}.}
 coefficients.
  
 The default priors are described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior} should be a call to one of the
 various functions provided by \pkg{rstanarm} for specifying priors. The
@@ -120,7 +126,7 @@ A \link[=stanreg-objects]{stanreg} object is returned
 for \code{stan_clogit}.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 A model for case-control studies with optional prior distributions for the
 coefficients, intercept, and auxiliary parameters.
 }
@@ -141,6 +147,7 @@ The \code{stan_clogit} function is mostly similar in syntax to
   to estimate such deviations in the intercept.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 dat <- infert[order(infert$stratum), ] # order by strata
 post <- stan_clogit(case ~ spontaneous + induced + (1 | education), 
                     strata = stratum,
@@ -155,7 +162,7 @@ pr <- posterior_epred(post, newdata = nd) # get predicted probabilities
 
 # not a random variable b/c probabilities add to 1 within strata
 all.equal(rep(sum(nd$case), nrow(pr)), rowSums(pr)) 
-            
+}
 }
 \seealso{
 \code{\link{stanreg-methods}} and 
@@ -163,5 +170,5 @@ all.equal(rep(sum(nd$case), nrow(pr)), rowSums(pr))
 
 The vignette for Bernoulli and binomial models, which has more
   details on using \code{stan_clogit}.
-  \url{http://mc-stan.org/rstanarm/articles/}
+  \url{https://mc-stan.org/rstanarm/articles/}
 }

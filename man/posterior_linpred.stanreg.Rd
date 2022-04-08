@@ -79,6 +79,7 @@ For models estimated with \code{\link{stan_clogit}}, the number of
   condition on this outcome in the new data.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 if (!exists("example_model")) example(example_model)
 print(family(example_model))
 
@@ -94,7 +95,7 @@ colMeans(probs)
 # not conditioning on any group-level parameters
 probs2 <- posterior_epred(example_model, re.form = NA)
 apply(probs2, 2, median)
-
+}
 }
 \seealso{
 \code{\link{posterior_predict}} to draw from the posterior 

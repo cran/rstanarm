@@ -82,7 +82,8 @@
 #'     of the plots.
 #' }
 #' 
-#' @examples 
+#' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 #' fit <- stan_glmer(
 #'   mpg ~ wt + am + (1|cyl), 
 #'   data = mtcars, 
@@ -143,6 +144,7 @@
 #' pp_check(fit2, plotfun = "bars", nreps = 500, prob = 0.5)
 #' pp_check(fit2, plotfun = "bars_grouped", group = esoph$agegp, 
 #'          nreps = 500, prob = 0.5)
+#' }
 #' }
 pp_check.stanreg <-
   function(object,
@@ -335,13 +337,16 @@ is_binomial_ppc <- function(object, ...) {
   switch(fun,
     # DISTRIBUTIONS
     "dens_overlay" = nreps %ORifNULL% 50,
+    "dens_overlay_grouped" = nreps %ORifNULL% 50,
     "ecdf_overlay" = nreps %ORifNULL% 50,
+    "ecdf_overlay_grouped" = nreps %ORifNULL% 50,
     "hist" = nreps %ORifNULL% 8,
     "dens" = nreps %ORifNULL% 8,
     "boxplot" = nreps %ORifNULL% 8,
     "freqpoly" = nreps %ORifNULL% 8,
     "freqpoly_grouped" = nreps %ORifNULL% 3,
     "violin_grouped" = nreps, # NULL ok
+    "km_overlay" = nreps %ORifNULL% 50,
     
     # PREDICTIVE ERRORS
     "error_binned" = nreps %ORifNULL% 3,

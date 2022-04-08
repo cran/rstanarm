@@ -58,7 +58,7 @@ but rarely specified.}
 coefficients.
  
 The default priors are described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior} should be a call to one of the
 various functions provided by \pkg{rstanarm} for specifying priors. The
@@ -93,7 +93,7 @@ particular model.}
   centering all predictors, see note below).
 
   The default prior is described in the vignette 
-  \href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+  \href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
   Distributions for rstanarm Models}}.
   If not using the default, \code{prior_intercept} can be a call to
   \code{normal}, \code{student_t} or \code{cauchy}. See the
@@ -144,7 +144,7 @@ a scale parameter). Binomial and Poisson models do not have auxiliary
 parameters.
 
 The default prior is described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior_aux} can be a call to
 \code{exponential} to use an exponential distribution, or \code{normal},
@@ -212,7 +212,7 @@ for \code{stan_gamm4}.
 \code{plot_nonlinear} returns a ggplot object.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Bayesian inference for GAMMs with flexible priors.
 }
 \details{
@@ -257,6 +257,7 @@ The \code{stan_gamm4} function is similar in syntax to
   \code{\link[bayesplot:bayesplot-colors]{color_scheme_set}}.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 # from example(gamm4, package = "gamm4"), prefixing gamm4() call with stan_
 \donttest{
 dat <- mgcv::gamSim(1, n = 400, scale = 2) ## simulate 4 term additive truth
@@ -270,7 +271,7 @@ print(br)
 plot_nonlinear(br)
 plot_nonlinear(br, smooths = "s(x0)", alpha = 2/3)
 }
-
+}
 }
 \references{
 Crainiceanu, C., Ruppert D., and Wand, M. (2005). Bayesian analysis for 
@@ -283,5 +284,5 @@ Software}. \strong{14}(14), 1--22.
 \code{\link[gamm4]{gamm4}}.
 
 The vignette for \code{stan_glmer}, which also discusses
-  \code{stan_gamm4}. \url{http://mc-stan.org/rstanarm/articles/}
+  \code{stan_gamm4}. \url{https://mc-stan.org/rstanarm/articles/}
 }

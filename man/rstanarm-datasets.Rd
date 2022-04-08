@@ -121,7 +121,7 @@ Source: Gelman and Hill (2007)
 \item \code{y} Number of roaches caught
 \item \code{roach1} Pretreatment number of roaches
 \item \code{treatment} Treatment indicator
-\item \code{senior} Indicator for only eldery residents in building
+\item \code{senior} Indicator for only elderly residents in building
 \item \code{exposure2} Number of days for which the roach traps were used
 }
 }
@@ -165,6 +165,7 @@ in community organizations
 Small datasets for use in \pkg{rstanarm} examples and vignettes.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 # Using 'kidiq' dataset 
 fit <- stan_lm(kid_score ~ mom_hs * mom_iq, data = kidiq, 
                prior = R2(location = 0.30, what = "mean"),
@@ -176,11 +177,11 @@ bayesplot::color_scheme_set("brightblue")
 pp_check(fit, plotfun = "stat_grouped", stat = "median", 
          group = factor(kidiq$mom_hs, labels = c("No HS", "HS")))
 }
-
+}
 }
 \references{
 Carpenter, B. (2009) Bayesian estimators for the beta-binomial model of
-batting ability. \url{http://lingpipe-blog.com/2009/09/23/}
+batting ability. \url{https://lingpipe-blog.com/2009/09/23/}
 
 Efron, B. and Morris, C. (1975) Data analysis using Stein's estimator and its
 generalizations. \emph{Journal of the American Statistical Association}
@@ -188,7 +189,7 @@ generalizations. \emph{Journal of the American Statistical Association}
 
 Gelman, A. and Hill, J. (2007). \emph{Data Analysis Using
   Regression and Multilevel/Hierarchical Models.} Cambridge University Press,
-  Cambridge, UK. \url{http://stat.columbia.edu/~gelman/arm/}
+  Cambridge, UK. \url{https://stat.columbia.edu/~gelman/arm/}
 
 Spiegelhalter, D., Thomas, A., Best, N., & Gilks, W. (1996) BUGS 0.5 
 Examples. MRC Biostatistics Unit, Institute of Public health, Cambridge, UK.

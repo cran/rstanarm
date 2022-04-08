@@ -105,6 +105,7 @@ data, computational issues, etc.).
 }
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 if (!exists("example_model")) example(example_model) 
 summary(example_model, probs = c(0.1, 0.9))
 
@@ -117,7 +118,7 @@ summary(example_model, pars = c("alpha", "beta"))
 # Only show parameters varying by group
 summary(example_model, pars = "varying")
 as.data.frame(summary(example_model, pars = "varying"))
-
+}
 }
 \seealso{
 \code{\link{prior_summary}} to extract or print a summary of the 

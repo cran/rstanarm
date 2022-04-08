@@ -18,7 +18,7 @@
 \item{x}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
-\item{pars}{An optional character vetor of parameter names. All parameters 
+\item{pars}{An optional character vector of parameter names. All parameters 
 are included by default, but for models with more than just a few 
 parameters it may be far too many to visualize on a small computer screen 
 and also may require substantial computing time.}
@@ -56,12 +56,13 @@ documented thoroughly on the help page for
 \code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}}.}
 }
 \description{
-Interface to \pkg{bayesplot}'s \code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}} function 
-for use with \pkg{rstanarm} models. Be careful not to specify too
-many parameters to include or the plot will be both hard to read and slow to
-render.
+Interface to \pkg{bayesplot}'s
+\code{\link[bayesplot:MCMC-scatterplots]{mcmc_pairs}} function for use with
+\pkg{rstanarm} models. Be careful not to specify too many parameters to
+include or the plot will be both hard to read and slow to render.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
 if (!exists("example_model")) example(example_model)
 
@@ -71,15 +72,6 @@ bayesplot::color_scheme_set("purple")
 # above the diagonal. default is to split by accept_stat__.
 pairs(example_model, pars = c("(Intercept)", "log-posterior"))
 
-pairs(
-  example_model, 
-  regex_pars = "herd:[2,7,9]", 
-  diag_fun = "dens",
-  off_diag_fun = "hex"
-)
-}
-
-\donttest{
 # for demonstration purposes, intentionally fit a model that
 # will (almost certainly) have some divergences
 fit <- stan_glm(
@@ -93,13 +85,13 @@ fit <- stan_glm(
 
 pairs(fit, pars = c("wt", "sigma", "log-posterior"))
 
-pairs(
-  fit, 
-  pars = c("wt", "sigma", "log-posterior"), 
-  transformations = list(sigma = "log"), # show log(sigma) instead of sigma
-  off_diag_fun = "hex" # use hexagonal heatmaps instead of scatterplots
-)
-
+# requires hexbin package
+# pairs(
+# fit, 
+#   pars = c("wt", "sigma", "log-posterior"), 
+#   transformations = list(sigma = "log"), # show log(sigma) instead of sigma
+#  off_diag_fun = "hex" # use hexagonal heatmaps instead of scatterplots
+# )
 
 bayesplot::color_scheme_set("brightblue")
 pairs(
@@ -118,5 +110,5 @@ pairs(
 )
 
 }
-
+}
 }

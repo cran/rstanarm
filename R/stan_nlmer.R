@@ -17,7 +17,7 @@
 
 #' Bayesian nonlinear models with group-specific terms via Stan
 #' 
-#' \if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+#' \if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 #' Bayesian inference for NLMMs with group-specific coefficients that have 
 #' unknown covariance matrices with flexible priors.
 #'
@@ -66,9 +66,10 @@
 #'   
 #'   
 #' @seealso The vignette for \code{stan_glmer}, which also discusses 
-#'   \code{stan_nlmer} models. \url{http://mc-stan.org/rstanarm/articles/}
+#'   \code{stan_nlmer} models. \url{https://mc-stan.org/rstanarm/articles/}
 #'   
 #' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
 #' \donttest{
 #' data("Orange", package = "datasets")
 #' Orange$circumference <- Orange$circumference / 100
@@ -83,6 +84,7 @@
 #' print(fit)
 #' posterior_interval(fit)
 #' plot(fit, regex_pars = "b\\[")
+#' }
 #' }
 #' @importFrom lme4 nlformula
 #' @importFrom stats getInitial

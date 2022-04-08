@@ -79,7 +79,7 @@ by \code{sd(y)}. Additionally --- not only for Gaussian models --- if the
 \code{QR} argument to the model fitting function (e.g. \code{stan_glm}) is
 \code{FALSE} then we also divide the prior scale(s) by \code{sd(x)}.
 Prior autoscaling is also discussed in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}}
 
 \item{df, df1, df2}{Prior degrees of freedom. The default is \eqn{1} for 
@@ -143,11 +143,11 @@ The functions described on this page are used to specify the
   plausible ones.
   
   More information on priors is available in the vignette
-  \href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+  \href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
   Distributions for rstanarm Models}} as well as the vignettes for the
   various modeling functions. For details on the 
   priors used for multilevel models in particular see the vignette
-  \href{http://mc-stan.org/rstanarm/articles/glmer.html}{\emph{Estimating
+  \href{https://mc-stan.org/rstanarm/articles/glmer.html}{\emph{Estimating
   Generalized (Non-)Linear Models with Group-Specific Terms with rstanarm}}
   and also the \strong{Covariance matrices} section lower down on this page.
 }
@@ -316,7 +316,7 @@ The details depend on the family of the prior being used:
   \item \code{lkj(regularization, scale, df)}
   }
   (Also see vignette for \code{stan_glmer}, 
-  \href{http://mc-stan.org/rstanarm/articles/glmer.html}{\emph{Estimating
+  \href{https://mc-stan.org/rstanarm/articles/glmer.html}{\emph{Estimating
   Generalized (Non-)Linear Models with Group-Specific Terms with rstanarm}})
   
   Covariance matrices are decomposed into correlation matrices and 
@@ -427,6 +427,7 @@ The details depend on the family of the prior being used:
 }
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 fmla <- mpg ~ wt + qsec + drat + am
 
 # Draw from prior predictive distribution (by setting prior_PD = TRUE)
@@ -482,12 +483,12 @@ compare_priors(scale = 5, xlim = c(-20,20))
 # If you use a prior like normal(0, 1000) to be "non-informative" you are 
 # actually saying that a coefficient value of e.g. -500 is quite plausible
 compare_priors(scale = 1000, xlim = c(-1000,1000))
-
+}
 }
 \references{
 Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari,
   A., and Rubin, D. B. (2013). \emph{Bayesian Data Analysis.} Chapman & Hall/CRC
-  Press, London, third edition. \url{http://stat.columbia.edu/~gelman/book/}
+  Press, London, third edition. \url{https://stat.columbia.edu/~gelman/book/}
 
 Gelman, A., Jakulin, A., Pittau, M. G., and Su, Y. (2008). A weakly
 informative default prior distribution for logistic and other regression

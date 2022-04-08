@@ -24,7 +24,7 @@ stan_glm(
   prior_aux = exponential(autoscale = TRUE),
   prior_PD = FALSE,
   algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
-  mean_PPD = algorithm != "optimizing",
+  mean_PPD = algorithm != "optimizing" && !prior_PD,
   adapt_delta = NULL,
   QR = FALSE,
   sparse = FALSE
@@ -68,7 +68,7 @@ stan_glm.fit(
   group = list(),
   prior_PD = FALSE,
   algorithm = c("sampling", "optimizing", "meanfield", "fullrank"),
-  mean_PPD = algorithm != "optimizing",
+  mean_PPD = algorithm != "optimizing" && !prior_PD,
   adapt_delta = NULL,
   QR = FALSE,
   sparse = FALSE,
@@ -107,14 +107,19 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 
 \item{prior}{The prior distribution for the (non-hierarchical) regression
 coefficients.
  
 The default priors are described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior} should be a call to one of the
 various functions provided by \pkg{rstanarm} for specifying priors. The
@@ -149,7 +154,7 @@ particular model.}
   centering all predictors, see note below).
 
   The default prior is described in the vignette 
-  \href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+  \href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
   Distributions for rstanarm Models}}.
   If not using the default, \code{prior_intercept} can be a call to
   \code{normal}, \code{student_t} or \code{cauchy}. See the
@@ -188,7 +193,7 @@ a scale parameter). Binomial and Poisson models do not have auxiliary
 parameters.
 
 The default prior is described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior_aux} can be a call to
 \code{exponential} to use an exponential distribution, or \code{normal},
@@ -285,7 +290,7 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
   stanfit object) is returned if \code{stan_glm.fit} is called directly.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Generalized linear modeling with optional prior distributions for the
 coefficients, intercept, and auxiliary parameters.
 }
@@ -303,7 +308,7 @@ The \code{stan_glm} function is similar in syntax to
   \link{neg_binomial_2}(link)}.
 }
 \examples{
-if (!grepl("^sparc",  R.version$platform)) {
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 ### Linear regression
 mtcars$mpg10 <- mtcars$mpg / 10
 fit <- stan_glm(
@@ -318,7 +323,6 @@ fit <- stan_glm(
 plot(fit, prob = 0.5)
 plot(fit, prob = 0.5, pars = "beta")
 plot(fit, "hist", pars = "sigma")
-}
 \donttest{
 ### Logistic regression
 head(wells)
@@ -409,7 +413,7 @@ pp_check(fit6, plotfun = "hist", nreps = 5) # ?bayesplot::ppc_hist
 posterior_interval(fit6, pars = "reciprocal_dispersion", prob = 0.8)
 plot(fit6, "areas", pars = "reciprocal_dispersion", prob = 0.8)
 }
-
+}
 }
 \references{
 Gelman, A. and Hill, J. (2007). \emph{Data Analysis Using
@@ -426,5 +430,5 @@ User-friendly Bayesian regression modeling: A tutorial with rstanarm and shinyst
 \code{\link[stats]{glm}}.
 
 The various vignettes for \code{stan_glm} at
-  \url{http://mc-stan.org/rstanarm/articles/}.
+  \url{https://mc-stan.org/rstanarm/articles/}.
 }

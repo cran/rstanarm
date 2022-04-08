@@ -63,5 +63,5 @@ argument that can be one of the following:
 }
 
 \seealso{
-\url{http://mc-stan.org/rstanarm/}
+\url{https://mc-stan.org/rstanarm/}
 }

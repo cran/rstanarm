@@ -17,7 +17,7 @@
 
 #' Bayesian generalized linear models with group-specific terms via Stan
 #' 
-#' \if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+#' \if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 #' Bayesian inference for GLMs with group-specific coefficients that have 
 #' unknown covariance matrices with flexible priors.
 #' 
@@ -84,13 +84,14 @@
 #' 
 #' 
 #' @seealso The vignette for \code{stan_glmer} and the \emph{Hierarchical 
-#'   Partial Pooling} vignette. \url{http://mc-stan.org/rstanarm/articles/}
+#'   Partial Pooling} vignette. \url{https://mc-stan.org/rstanarm/articles/}
 #'    
 #' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 #' # see help(example_model) for details on the model below
 #' if (!exists("example_model")) example(example_model) 
 #' print(example_model, digits = 1)
-#' 
+#' }
 #' @importFrom lme4 glFormula
 #' @importFrom Matrix Matrix t
 stan_glmer <- 
@@ -149,12 +150,7 @@ stan_glmer <-
     y <- cbind(y1, y0 = weights - y1)
     weights <- double(0)
   }
-  if (is.null(prior)) 
-    prior <- list()
-  if (is.null(prior_intercept)) 
-    prior_intercept <- list()
-  if (is.null(prior_aux)) 
-    prior_aux <- list()
+  
   if (is.null(prior_covariance))
     stop("'prior_covariance' can't be NULL.", call. = FALSE)
   group <- glmod$reTrms

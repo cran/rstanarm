@@ -77,6 +77,9 @@ print.stanreg <- function(x, digits = 1, detail = TRUE, ...) {
                c("stan_glm", "stan_glm.nb", "stan_lm", "stan_aov"))) {
       cat("\n predictors:  ", length(coef(x)))
     }
+    if (!is.null(x$call$subset)) {
+      cat("\n subset:      ", deparse(x$call$subset))
+    }
   
     cat("\n------\n")
   }
@@ -346,6 +349,7 @@ print.stanmvreg <- function(x, digits = 3, ...) {
 #'   priors used for a particular model.
 #' 
 #' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 #' if (!exists("example_model")) example(example_model) 
 #' summary(example_model, probs = c(0.1, 0.9))
 #' 
@@ -358,7 +362,7 @@ print.stanmvreg <- function(x, digits = 3, ...) {
 #' # Only show parameters varying by group
 #' summary(example_model, pars = "varying")
 #' as.data.frame(summary(example_model, pars = "varying"))
-#' 
+#' }
 #' @importMethodsFrom rstan summary
 summary.stanreg <- function(object,
                             pars = NULL,
@@ -458,6 +462,9 @@ print.summary.stanreg <-
     cat("\n observations:", atts$nobs)
     if (!is.null(atts$npreds)) {
       cat("\n predictors:  ", atts$npreds)
+    }
+    if (!is.null(atts$call$subset)) {
+      cat("\n subset:      ", deparse(atts$call$subset))
     }
     if (!is.null(atts$ngrps)) {
       cat("\n groups:      ", paste0(names(atts$ngrps), " (", 

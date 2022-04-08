@@ -213,6 +213,7 @@ Note that if any variables were transformed (e.g. rescaled) in the data
   \emph{not} if transformations were specified inside the model formula.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
   # Run example model if not already loaded
   if (!exists("example_jm")) example(example_jm)
@@ -269,7 +270,7 @@ Note that if any variables were transformed (e.g. rescaled) in the data
                            times = 0, extrapolate = TRUE)
   plot(ps4)
 }
- 
+}
 }
 \references{
 Rizopoulos, D. (2011). Dynamic predictions and prospective accuracy in 

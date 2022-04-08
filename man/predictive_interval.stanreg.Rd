@@ -3,6 +3,7 @@
 \name{predictive_interval.stanreg}
 \alias{predictive_interval.stanreg}
 \alias{predictive_interval}
+\alias{predictive_interval.matrix}
 \alias{predictive_interval.ppd}
 \title{Predictive intervals}
 \usage{
@@ -18,12 +19,14 @@
   ...
 )
 
+\method{predictive_interval}{matrix}(object, prob = 0.9, ...)
+
 \method{predictive_interval}{ppd}(object, prob = 0.9, ...)
 }
 \arguments{
 \item{object}{Either a fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions (a \link[=stanreg-objects]{stanreg 
-object}) or, for the \code{"ppd"} method, a matrix of draws from the 
+object}) or, for the matrix method, a matrix of draws from the 
 posterior predictive distribution returned by 
 \code{\link{posterior_predict}}.}
 
@@ -48,27 +51,28 @@ A matrix with two columns and as many rows as are in \code{newdata}.
   \code{"5\%"} and \code{"95\%"}, respectively.
 }
 \description{
-For models fit using MCMC (\code{algorithm="sampling"}) or one of the 
-variational approximations (\code{"meanfield"} or \code{"fullrank"}), the 
-\code{predictive_interval} function computes Bayesian predictive intervals. 
+For models fit using MCMC (\code{algorithm="sampling"}) or one of the
+variational approximations (\code{"meanfield"} or \code{"fullrank"}), the
+\code{predictive_interval} function computes Bayesian predictive intervals.
 The method for stanreg objects calls \code{\link{posterior_predict}}
-internally, whereas the method for objects of class \code{"ppd"} accepts the
-matrix returned by \code{posterior_predict} as input and can be used to avoid
-multiple calls to \code{posterior_predict}.
+internally, whereas the method for matrices accepts the matrix returned by
+\code{posterior_predict} as input and can be used to avoid multiple calls to
+\code{posterior_predict}.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 fit <- stan_glm(mpg ~ wt, data = mtcars, iter = 300)
 predictive_interval(fit)
 predictive_interval(fit, newdata = data.frame(wt = range(mtcars$wt)), 
                     prob = 0.5)
 
-# stanreg vs ppd methods
+# stanreg vs matrix methods
 preds <- posterior_predict(fit, seed = 123)
 all.equal(
   predictive_interval(fit, seed = 123),
   predictive_interval(preds)
 )
-
+}
 }
 \seealso{
 \code{\link{predictive_error}}, \code{\link{posterior_predict}}, 

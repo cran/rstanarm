@@ -7,7 +7,7 @@
 \title{Applied Regression Modeling via RStan}
 \description{
 \if{html}{
-   \figure{stanlogo.png}{options: width="50px" alt="http://mc-stan.org/about/logo/"}
+   \figure{stanlogo.png}{options: width="50" alt="https://mc-stan.org/about/logo/"}
    \emph{Stan Development Team}
 }
 
@@ -43,7 +43,7 @@ about the entire process.
 \section{Prior distributions}{
 
 See \link[=priors]{priors help page} and the vignette
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior Distributions for rstanarm Models}}
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior Distributions for rstanarm Models}}
 for an overview of the various choices the user can make for prior
 distributions. The package vignettes for the modeling functions also provide
 examples of using many of the available priors as well as more detailed
@@ -197,11 +197,11 @@ mixed-Effects models using lme4. \emph{Journal of Statistical Software}.
 
 Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari,
   A., and Rubin, D. B. (2013). \emph{Bayesian Data Analysis.} Chapman & Hall/CRC
-  Press, London, third edition. \url{http://stat.columbia.edu/~gelman/book/}
+  Press, London, third edition. \url{https://stat.columbia.edu/~gelman/book/}
 
 Gelman, A. and Hill, J. (2007). \emph{Data Analysis Using
   Regression and Multilevel/Hierarchical Models.} Cambridge University Press,
-  Cambridge, UK. \url{http://stat.columbia.edu/~gelman/arm/}
+  Cambridge, UK. \url{https://stat.columbia.edu/~gelman/arm/}
 
 Stan Development Team. \emph{Stan Modeling Language Users Guide and
 Reference Manual.} \url{https://mc-stan.org/users/documentation/}.
@@ -210,17 +210,15 @@ Vehtari, A., Gelman, A., and Gabry, J. (2017). Practical
   Bayesian model evaluation using leave-one-out cross-validation and WAIC.
   \emph{Statistics and Computing}. 27(5), 1413--1432.
   doi:10.1007/s11222-016-9696-4. arXiv preprint:
-  \url{http://arxiv.org/abs/1507.04544/}
+  \url{https://arxiv.org/abs/1507.04544}
 
   Yao, Y., Vehtari, A., Simpson, D., and Gelman, A. (2018) Using
   stacking to average Bayesian predictive distributions. \emph{Bayesian
-  Analysis}, advance publication,  doi:10.1214/17-BA1091.
-  (\href{https://projecteuclid.org/euclid.ba/1516093227}{online}).
+  Analysis}, advance publication,  \doi{10.1214/17-BA1091}.
 
 Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
   Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
   Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
-  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
   \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
   \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 
@@ -231,11 +229,11 @@ User-friendly Bayesian regression modeling: A tutorial with rstanarm and shinyst
 }
 \seealso{
 \itemize{
-  \item \url{http://mc-stan.org/} for more information on the Stan C++
+  \item \url{https://mc-stan.org/} for more information on the Stan C++
   package used by \pkg{rstanarm} for model fitting.
   \item \url{https://github.com/stan-dev/rstanarm/issues/} to submit a bug
   report or feature request.
-  \item \url{http://discourse.mc-stan.org} to ask a
+  \item \url{https://discourse.mc-stan.org} to ask a
   question about \pkg{rstanarm} on the Stan-users forum.
 }
 }

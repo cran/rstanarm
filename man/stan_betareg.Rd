@@ -82,14 +82,19 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 
 \item{prior}{The prior distribution for the (non-hierarchical) regression
 coefficients.
  
 The default priors are described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior} should be a call to one of the
 various functions provided by \pkg{rstanarm} for specifying priors. The
@@ -124,7 +129,7 @@ particular model.}
   centering all predictors, see note below).
 
   The default prior is described in the vignette 
-  \href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+  \href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
   Distributions for rstanarm Models}}.
   If not using the default, \code{prior_intercept} can be a call to
   \code{normal}, \code{student_t} or \code{cauchy}. See the
@@ -200,7 +205,7 @@ A \link[=stanfit-class]{stanfit} object (or a slightly modified
   stanfit object) is returned if \code{stan_betareg.fit} is called directly.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Beta regression modeling with optional prior distributions for the 
 coefficients, intercept, and auxiliary parameter \code{phi} (if applicable).
 }
@@ -215,6 +220,7 @@ The \code{stan_betareg} function is similar in syntax to
   latter directly.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 ### Simulated data
 N <- 200
 x <- rnorm(N, 2, 1)
@@ -232,7 +238,7 @@ fit <- stan_betareg(
   algorithm = "optimizing" # just for speed of example
  ) 
 print(fit, digits = 2)
-
+}
 }
 \references{
 Ferrari, SLP and Cribari-Neto, F (2004). Beta regression for 
@@ -244,5 +250,5 @@ Ferrari, SLP and Cribari-Neto, F (2004). Beta regression for
 \code{\link[betareg]{betareg}}.
 
 The vignette for \code{stan_betareg}.
-  \url{http://mc-stan.org/rstanarm/articles/}
+  \url{https://mc-stan.org/rstanarm/articles/}
 }

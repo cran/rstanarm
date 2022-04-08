@@ -15,6 +15,7 @@ stan_jm(
   assoc = "etavalue",
   lag_assoc = 0,
   grp_assoc,
+  scale_assoc = NULL,
   epsilon = 1e-05,
   basehaz = c("bs", "weibull", "piecewise"),
   basehaz_ops,
@@ -47,6 +48,7 @@ Note however that the double bar (\code{||}) notation is not allowed
 when specifying the random-effects parts of the formula, and neither
 are nested grouping factors (e.g. \code{(1 | g1/g2))} or 
 \code{(1 | g1:g2)}, where \code{g1}, \code{g2} are grouping factors. 
+Offset terms can also be included in the model formula.
 For a multivariate joint model (i.e. more than one longitudinal marker) 
 this should be a list of such formula objects, with each element
 of the list providing the formula for one of the longitudinal submodels.}
@@ -130,6 +132,17 @@ and \code{grp_assoc = "sum"} would mean that the log hazard at time
 the expected values at time \emph{t} for each of the lower level 
 units (which may be for example tumor lesions) clustered within that 
 individual.}
+
+\item{scale_assoc}{A non-zero numeric value specifying an optional scaling 
+parameter for the association structure. This multiplicatively scales the 
+value/slope/auc of the longitudinal marker by \code{scale_assoc} within the 
+event submodel. When fitting a multivariate joint model, a scaling parameter 
+must be specified for each longitudinal submodel using a vector of numeric 
+values. Note that only one scaling parameter can be specified for each 
+longitudinal submodel, and it will be used for all association structure 
+types (e.g. \code{"etavalue"}, \code{"etaslope"}, \code{"etaauc"}, 
+\code{"muvalue"}, etc) that are specified for that longitudinal marker in
+the \code{assoc} argument.}
 
 \item{epsilon}{The half-width of the central difference used to numerically
 calculate the derivate when the \code{"etaslope"} association structure 
@@ -327,14 +340,19 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 }
 \value{
 A \link[=stanreg-objects]{stanjm} object is returned.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Fits a shared parameter joint model for longitudinal and time-to-event 
 (e.g. survival) data under a Bayesian framework using Stan.
 }
@@ -343,7 +361,7 @@ The \code{stan_jm} function can be used to fit a joint model (also
   known as a shared parameter model) for longitudinal and time-to-event data 
   under a Bayesian framework. The underlying
   estimation is carried out using the Bayesian C++ package Stan 
-  (\url{http://mc-stan.org/}). \cr
+  (\url{https://mc-stan.org/}). \cr
   \cr 
   The joint model may be univariate (with only one longitudinal submodel) or
   multivariate (with more than one longitudinal submodel). 
@@ -481,8 +499,8 @@ The \code{stan_jm} function can be used to fit a joint model (also
   }
 }
 \examples{
-\donttest{
 if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
+\donttest{
 
 #####
 # Univariate joint model, with association structure based on the 

@@ -40,14 +40,19 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 
 \item{prior}{The prior distribution for the (non-hierarchical) regression
 coefficients.
  
 The default priors are described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior} should be a call to one of the
 various functions provided by \pkg{rstanarm} for specifying priors. The
@@ -94,7 +99,7 @@ a scale parameter). Binomial and Poisson models do not have auxiliary
 parameters.
 
 The default prior is described in the vignette 
-\href{http://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
+\href{https://mc-stan.org/rstanarm/articles/priors.html}{\emph{Prior
 Distributions for rstanarm Models}}.
 If not using the default, \code{prior_aux} can be a call to
 \code{exponential} to use an exponential distribution, or \code{normal},
@@ -144,7 +149,7 @@ A \link[=stanreg-objects]{stanreg} object is returned
 for \code{stan_nlmer}.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 Bayesian inference for NLMMs with group-specific coefficients that have 
 unknown covariance matrices with flexible priors.
 }
@@ -167,6 +172,7 @@ The \code{stan_nlmer} function is similar in syntax to
   \code{\link[stats]{SSmicmen}}, and \code{\link[stats]{SSweibull}}.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch !="i386") {
 \donttest{
 data("Orange", package = "datasets")
 Orange$circumference <- Orange$circumference / 100
@@ -183,10 +189,11 @@ posterior_interval(fit)
 plot(fit, regex_pars = "b\\\\[")
 }
 }
+}
 \seealso{
 \code{\link{stanreg-methods}} and 
 \code{\link[lme4]{nlmer}}.
 
 The vignette for \code{stan_glmer}, which also discusses 
-  \code{stan_nlmer} models. \url{http://mc-stan.org/rstanarm/articles/}
+  \code{stan_nlmer} models. \url{https://mc-stan.org/rstanarm/articles/}
 }

@@ -181,6 +181,7 @@
 #'   \code{\link{posterior_survfit}}
 #' 
 #' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 #' \donttest{
 #'   # Run example model if not already loaded
 #'   if (!exists("example_jm")) example(example_jm)
@@ -244,6 +245,7 @@
 #'   # effects distribution, and then integrating (ie, averaging) over these. 
 #'   # Our marginal prediction will therefore capture the between-individual 
 #'   # variation associated with the random effects.
+#'   
 #'   nd <- data.frame(id = rep("new1", 11), year = (0:10 / 2))
 #'   pt7 <- posterior_traj(example_jm, newdataLong = nd, dynamic = FALSE)
 #'   head(pt7)  # note the greater width of the uncertainty interval compared 
@@ -266,11 +268,12 @@
 #'   # the fixed effect component of the model, we simply specify 're.form = NA'. 
 #'   # (We will use the same covariate values as used in the prediction for 
 #'   # example for pt5).
+#'   
 #'   pt8 <- posterior_traj(example_jm, newdataLong = nd, dynamic = FALSE, 
 #'                         re.form = NA)
 #'   head(pt8)  # note the much narrower ci, compared with pt5
 #' }
-#' 
+#' }
 posterior_traj <- function(object, m = 1, newdata = NULL, newdataLong = NULL,
                            newdataEvent = NULL, interpolate = TRUE, extrapolate = FALSE,
                            control = list(), last_time = NULL, prob = 0.95, ids, 
@@ -283,6 +286,7 @@ posterior_traj <- function(object, m = 1, newdata = NULL, newdataLong = NULL,
   id_var    <- object$id_var
   time_var  <- object$time_var
   grp_stuff <- object$grp_stuff[[m]]
+  glmod     <- object$glmod[[m]]
   if (!is.null(seed)) 
     set.seed(seed)
   if (missing(ids)) 
@@ -397,7 +401,17 @@ posterior_traj <- function(object, m = 1, newdata = NULL, newdataLong = NULL,
     }
   }
     
-  ytilde <- posterior_predict(object, newdata = newX, m = m, stanmat = stanmat, ...)
+  if (isTRUE(as.logical(glmod$has_offset))) {
+    # create a temporary data frame with a fake outcome to avoid error
+    response_name <- as.character(formula(object)[[m]])[2]
+    newX_temp <- cbind(0, newX)
+    colnames(newX_temp) <- c(response_name, colnames(newX))
+    newOffset <- model.offset(model.frame(terms(glmod), newX_temp))
+  } else {
+    newOffset <- NULL
+  }
+  
+  ytilde <- posterior_predict(object, newdata = newX, m = m, stanmat = stanmat, offset = newOffset, ...)
   if (return_matrix) {
     attr(ytilde, "mu") <- NULL # remove attribute mu
     return(ytilde) # return S * N matrix, instead of data frame 
@@ -493,7 +507,8 @@ posterior_traj <- function(object, m = 1, newdata = NULL, newdataLong = NULL,
 #' @seealso \code{\link{posterior_traj}}, \code{\link{plot_stack_jm}},
 #'   \code{\link{posterior_survfit}}, \code{\link{plot.survfit.stanjm}}   
 #'     
-#' @examples 
+#' @examples
+#' if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 #' \donttest{
 #'   # Run example model if not already loaded
 #'   if (!exists("example_jm")) example(example_jm)
@@ -525,6 +540,7 @@ posterior_traj <- function(object, m = 1, newdata = NULL, newdataLong = NULL,
 #'   plot1 + 
 #'     ggplot2::theme(strip.background = ggplot2::element_blank()) +
 #'     ggplot2::labs(title = "Some plotted longitudinal trajectories")
+#' }
 #' }
 plot.predict.stanjm <- function(x, ids = NULL, limits = c("ci", "pi", "none"), 
                                 xlab = NULL, ylab = NULL, vline = FALSE, 

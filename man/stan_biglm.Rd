@@ -55,8 +55,13 @@ package (\code{\link[rstan:stanmodel-method-sampling]{sampling}},
 \code{\link[rstan:stanmodel-method-vb]{vb}}, or 
 \code{\link[rstan:stanmodel-method-optimizing]{optimizing}}), 
 corresponding to the estimation method named by \code{algorithm}. For example, 
-if \code{algorithm} is \code{"sampling"} it is possibly to specify \code{iter}, 
-\code{chains}, \code{cores}, \code{refresh}, etc.}
+if \code{algorithm} is \code{"sampling"} it is possible to specify \code{iter}, 
+\code{chains}, \code{cores}, and other MCMC controls.  
+
+Another useful argument that can be passed to \pkg{rstan} via \code{...} is
+\code{refresh}, which specifies how often to print updates when sampling
+(i.e., show the progress every \code{refresh} iterations). \code{refresh=0}
+turns off the iteration updates.}
 
 \item{prior}{Must be a call to \code{\link{R2}} with its \code{location}
 argument specified or \code{NULL}, which would indicate a standard uniform
@@ -134,7 +139,7 @@ The output of both \code{stan_biglm} and \code{stan_biglm.fit} is an
   \code{\link{posterior_predict}} cannot be used.
 }
 \description{
-\if{html}{\figure{stanlogo.png}{options: width="25px" alt="http://mc-stan.org/about/logo/"}}
+\if{html}{\figure{stanlogo.png}{options: width="25" alt="https://mc-stan.org/about/logo/"}}
 This is the same model as with \code{\link{stan_lm}} but it utilizes the
 output from \code{\link[biglm]{biglm}} in the \pkg{biglm} package in order to
 proceed when the data is too large to fit in memory.
@@ -152,6 +157,7 @@ The \code{stan_biglm} function is intended to be used in the same
   outcome, such observations do not contribute to these statistics.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 # create inputs
 ols <- lm(mpg ~ wt + qsec + am, data = mtcars, # all row are complete so ...
           na.action = na.exclude)              # not necessary in this case
@@ -168,5 +174,5 @@ post <- stan_biglm.fit(b, R, SSR, N, xbar, ybar, s_y, prior = R2(.75),
                        # the next line is only to make the example go fast
                        chains = 1, iter = 500, seed = 12345)
 cbind(lm = b, stan_lm = rstan::get_posterior_mean(post)[13:15,]) # shrunk
-
+}
 }

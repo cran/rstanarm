@@ -170,14 +170,15 @@ For models fit using MCMC, compute approximate leave-one-out
 }
 
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 \donttest{
 fit1 <- stan_glm(mpg ~ wt, data = mtcars, refresh = 0)
 fit2 <- stan_glm(mpg ~ wt + cyl, data = mtcars, refresh = 0)
 
 # (for bigger models use as many cores as possible)
-loo1 <- loo(fit1, cores = 2)
+loo1 <- loo(fit1, cores = 1)
 print(loo1)
-loo2 <- loo(fit2, cores = 2)
+loo2 <- loo(fit2, cores = 1)
 print(loo2)
 
 # when comparing models the loo objects can be passed to loo_compare
@@ -226,31 +227,29 @@ loo_model_weights(model_list,  method = "pseudobma", BB = FALSE)
 loo_list <- list(A = loo1, B = loo2, C = loo3) # names optional (affects printing)
 loo_model_weights(loo_list)
 }
-
+}
 }
 \references{
 Vehtari, A., Gelman, A., and Gabry, J. (2017). Practical
   Bayesian model evaluation using leave-one-out cross-validation and WAIC.
   \emph{Statistics and Computing}. 27(5), 1413--1432.
   doi:10.1007/s11222-016-9696-4. arXiv preprint:
-  \url{http://arxiv.org/abs/1507.04544/}
+  \url{https://arxiv.org/abs/1507.04544}
 
   Yao, Y., Vehtari, A., Simpson, D., and Gelman, A. (2018) Using
   stacking to average Bayesian predictive distributions. \emph{Bayesian
-  Analysis}, advance publication,  doi:10.1214/17-BA1091.
-  (\href{https://projecteuclid.org/euclid.ba/1516093227}{online}).
+  Analysis}, advance publication,  \doi{10.1214/17-BA1091}.
 
 Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
   Gelman, A. (2019), Visualization in Bayesian workflow. \emph{J. R. Stat.
   Soc. A}, 182: 389-402. doi:10.1111/rssa.12378,
-  (\href{https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12378}{journal version},
   \href{https://arxiv.org/abs/1709.01449}{arXiv preprint},
   \href{https://github.com/jgabry/bayes-vis-paper}{code on GitHub})
 }
 \seealso{
 \itemize{
-  \item The new \href{http://mc-stan.org/loo/articles/}{\pkg{loo} package vignettes}
-  and various \href{http://mc-stan.org/rstanarm/articles/}{\pkg{rstanarm} vignettes}
+  \item The new \href{https://mc-stan.org/loo/articles/}{\pkg{loo} package vignettes}
+  and various \href{https://mc-stan.org/rstanarm/articles/}{\pkg{rstanarm} vignettes}
   for more examples using \code{loo} and related functions with \pkg{rstanarm} models.
   \item \code{\link[loo]{pareto-k-diagnostic}} in the \pkg{loo} package for
   more on Pareto \eqn{k} diagnostics.

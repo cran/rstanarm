@@ -25,6 +25,7 @@
   re.form = NULL,
   fun = NULL,
   seed = NULL,
+  offset = NULL,
   ...
 )
 }
@@ -75,9 +76,7 @@ indicating the submodel for which you wish to obtain predictions.}
 A \code{draws} by \code{nrow(newdata)} matrix of simulations from the
   posterior predictive distribution. Each row of the matrix is a vector of 
   predictions generated using a single draw of the model parameters from the 
-  posterior distribution. The returned matrix will also have class
-  \code{"ppd"} to indicate it contains draws from the posterior predictive
-  distribution.
+  posterior distribution.
 }
 \description{
 The posterior predictive distribution is the distribution of the outcome
@@ -113,6 +112,7 @@ For models estimated with \code{\link{stan_clogit}}, the number of
   posterior predictions will condition on this outcome in the new data.
 }
 \examples{
+if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 if (!exists("example_model")) example(example_model)
 yrep <- posterior_predict(example_model)
 table(yrep)
@@ -163,7 +163,7 @@ mtcars2$log_mpg <- log(mtcars2$mpg)
 fit <- stan_glm(log_mpg ~ wt, data = mtcars2, refresh = 0)
 ytilde <- posterior_predict(fit, fun = exp)
 }
-
+}
 }
 \seealso{
 \code{\link{pp_check}} for graphical posterior predictive checks.
