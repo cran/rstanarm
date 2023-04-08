@@ -162,7 +162,7 @@
 #' \item \code{arsenic} Arsenic level in respondent's well
 #' \item \code{dist} Distance (meters) from the respondent's house to the
 #' nearest well with safe drinking water.
-#' \item \code{association} Indicator for member(s) of household participate
+#' \item \code{assoc} Indicator for member(s) of household participate
 #' in community organizations
 #' \item \code{educ} Years of education (head of household)
 #' }
@@ -171,7 +171,7 @@
 #' 
 #' @references 
 #' Carpenter, B. (2009) Bayesian estimators for the beta-binomial model of
-#' batting ability. \url{https://lingpipe-blog.com/2009/09/23/}
+#' batting ability. \url{https://web.archive.org/web/20220618114439/https://lingpipe-blog.com/2009/09/23/}
 #' 
 #' Efron, B. and Morris, C. (1975) Data analysis using Stein's estimator and its
 #' generalizations. \emph{Journal of the American Statistical Association}

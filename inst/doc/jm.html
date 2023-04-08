@@ -12,7 +12,7 @@
 
 <meta name="author" content="Sam Brilleman" />
 
-<meta name="date" content="2022-04-08" />
+<meta name="date" content="2023-04-07" />
 
 <title>Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</title>
 
@@ -24,71 +24,18 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      a.sourceLine { display: inline-block; line-height: 1.25; }
-  a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-  a.sourceLine:empty { height: 1.2em; }
-  .sourceCode { overflow: visible; }
-  code.sourceCode { white-space: pre; position: relative; }
-  div.sourceCode { margin: 1em 0; }
-  pre.sourceCode { margin: 0; }
-  @media screen {
-  div.sourceCode { overflow: auto; }
-  }
-  @media print {
-  code.sourceCode { white-space: pre-wrap; }
-  a.sourceLine { text-indent: -1em; padding-left: 1em; }
-  }
-  pre.numberSource a.sourceLine
-    { position: relative; left: -4em; }
-  pre.numberSource a.sourceLine::before
-    { content: attr(title);
-      position: relative; left: -1em; text-align: right; vertical-align: baseline;
-      border: none; pointer-events: all; display: inline-block;
-      -webkit-touch-callout: none; -webkit-user-select: none;
-      -khtml-user-select: none; -moz-user-select: none;
-      -ms-user-select: none; user-select: none;
-      padding: 0 4px; width: 4em;
-      color: #aaaaaa;
-    }
-  pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-  div.sourceCode
-    {  }
-  @media screen {
-  a.sourceLine::before { text-decoration: underline; }
-  }
-  code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-  code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-  code span.at { color: #7d9029; } /* Attribute */
-  code span.bn { color: #40a070; } /* BaseN */
-  code span.bu { } /* BuiltIn */
-  code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-  code span.ch { color: #4070a0; } /* Char */
-  code span.cn { color: #880000; } /* Constant */
-  code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-  code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-  code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-  code span.dt { color: #902000; } /* DataType */
-  code span.dv { color: #40a070; } /* DecVal */
-  code span.er { color: #ff0000; font-weight: bold; } /* Error */
-  code span.ex { } /* Extension */
-  code span.fl { color: #40a070; } /* Float */
-  code span.fu { color: #06287e; } /* Function */
-  code span.im { } /* Import */
-  code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-  code span.op { color: #666666; } /* Operator */
-  code span.ot { color: #007020; } /* Other */
-  code span.pp { color: #bc7a00; } /* Preprocessor */
-  code span.sc { color: #4070a0; } /* SpecialChar */
-  code span.ss { color: #bb6688; } /* SpecialString */
-  code span.st { color: #4070a0; } /* String */
-  code span.va { color: #19177c; } /* Variable */
-  code span.vs { color: #4070a0; } /* VerbatimString */
-  code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
@@ -174,6 +121,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -371,7 +319,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Estimating Joint Models for Longitudinal and Time-to-Event Data with rstanarm</h1>
 <h4 class="author">Sam Brilleman</h4>
-<h4 class="date">2022-04-08</h4>
+<h4 class="date">2023-04-07</h4>
 
 
 <div id="TOC">
@@ -835,8 +783,8 @@ Please note the warmup may be much slower than later iterations!
 
 SAMPLING FOR MODEL 'jm' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000242 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.42 seconds.
+Chain 1: Gradient evaluation took 0.000345 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 3.45 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -844,9 +792,9 @@ Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
 Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 22.6376 seconds (Warm-up)
-Chain 1:                15.124 seconds (Sampling)
-Chain 1:                37.7616 seconds (Total)
+Chain 1:  Elapsed Time: 21.1151 seconds (Warm-up)
+Chain 1:                14.108 seconds (Sampling)
+Chain 1:                35.2231 seconds (Total)
 Chain 1: </code></pre>
 <p>The argument <code>refresh = 2000</code> was specified so that Stan didn’t provide us with excessive progress updates whilst fitting the model. However, if you are fitting a model that will take several minutes or hours to fit, then you may wish to request progress updates quite regularly, for example setting <code>refresh = 20</code> for every 20 iterations (by default the refresh argument is set to 1/10th of the total number of iterations).</p>
 <p>The fitted model is returned as an object of the S3 class <code>stanjm</code>. We have a variety of methods and post-estimation functions available for this class, including: <code>print</code>, <code>summary</code>, <code>plot</code>, <code>fixef</code>, <code>ranef</code>, <code>coef</code>, <code>VarCorr</code>, <code>posterior_interval</code>, <code>update</code>, and more. Here, we will examine the most basic output for the fitted joint model by typing <code>print(mod1)</code>:</p>
@@ -911,7 +859,7 @@ Model Info:
  num subjects:    40
  num events:      29 (72.5%)
  groups:          id (40)
- runtime:         0.7 mins
+ runtime:         0.6 mins
 
 Estimates:
                                                 mean     sd       2.5%  
@@ -1030,8 +978,8 @@ Please note the warmup may be much slower than later iterations!
 
 SAMPLING FOR MODEL 'jm' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000404 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 4.04 seconds.
+Chain 1: Gradient evaluation took 0.000335 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 3.35 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -1039,9 +987,9 @@ Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
 Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 38.4462 seconds (Warm-up)
-Chain 1:                35.1984 seconds (Sampling)
-Chain 1:                73.6447 seconds (Total)
+Chain 1:  Elapsed Time: 33.5765 seconds (Warm-up)
+Chain 1:                29.6606 seconds (Sampling)
+Chain 1:                63.2371 seconds (Total)
 Chain 1: </code></pre>
 <p>We can now examine the output from the fitted model, for example<br />
 </p>
@@ -1123,7 +1071,7 @@ Model Info:
  num subjects:    40
  num events:      29 (72.5%)
  groups:          id (40)
- runtime:         1.2 mins
+ runtime:         1.1 mins
 
 Estimates:
                        mean   sd     2.5%   25%    50%    75%    97.5%

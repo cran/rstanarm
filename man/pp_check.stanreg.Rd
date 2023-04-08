@@ -11,7 +11,7 @@
 \item{object}{A fitted model object returned by one of the 
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
-\item{plotfun}{A character string naming the \pkg{bayesplot} 
+\item{plotfun}{A character string naming the \pkg{bayesplot}
 \link[bayesplot:PPC-overview]{PPC} function to use. The default is to call
 \code{\link[bayesplot:PPC-distributions]{ppc_dens_overlay}}. \code{plotfun} can be specified
 either as the full name of a \pkg{bayesplot} plotting function (e.g.
@@ -19,7 +19,7 @@ either as the full name of a \pkg{bayesplot} plotting function (e.g.
 the \code{"ppc_"} prefix (e.g. \code{"hist"}). To get the names of all
 available PPC functions see \code{\link[bayesplot]{available_ppc}}.}
 
-\item{nreps}{The number of \eqn{y^{rep}}{yrep} datasets to generate from the 
+\item{nreps}{The number of \eqn{y^{rep}}{yrep} datasets to generate from the
 \link[=posterior_predict]{posterior predictive distribution} and show in
 the plots. The default depends on \code{plotfun}. For functions that plot
 each \code{yrep} dataset separately (e.g. \code{ppc_hist}), \code{nreps}
@@ -28,13 +28,13 @@ overlay many \code{yrep} datasets (e.g., \code{ppc_dens_overlay}) a larger
 number is used by default, and for other functions (e.g. \code{ppc_stat})
 the default is to set \code{nreps} equal to the posterior sample size.}
 
-\item{seed}{An optional \code{\link[=set.seed]{seed}} to pass to 
+\item{seed}{An optional \code{\link[=set.seed]{seed}} to pass to
 \code{\link{posterior_predict}}.}
 
-\item{...}{Additonal arguments passed to the \pkg{\link{bayesplot}} function 
-called. For many plotting functions \code{...} is optional, however for 
+\item{...}{Additonal arguments passed to the \pkg{\link{bayesplot}} function
+called. For many plotting functions \code{...} is optional, however for
 functions that require a \code{group} or \code{x} argument, these arguments
-should be specified in \code{...}. If specifying \code{group} and/or 
+should be specified in \code{...}. If specifying \code{group} and/or
 \code{x}, they can be provided as either strings naming variables (in which
 case they are searched for in the model frame) or as vectors containing the
 actual values of the variables. See the \strong{Examples} section, below.}
@@ -45,30 +45,30 @@ actual values of the variables. See the \strong{Examples} section, below.}
 }
 \description{
 Interface to the \link[bayesplot:PPC-overview]{PPC} (posterior predictive checking) module
-in the \pkg{\link{bayesplot}} package, providing various plots comparing the 
-observed outcome variable \eqn{y} to simulated datasets \eqn{y^{rep}}{yrep} 
-from the posterior predictive distribution. The \code{pp_check} method for 
-\link{stanreg-objects} prepares the arguments required for the specified 
-\pkg{bayesplot} PPC plotting function and then calls that function. It is 
-also straightforward to use the functions from the \pkg{bayesplot} package 
+in the \pkg{\link{bayesplot}} package, providing various plots comparing the
+observed outcome variable \eqn{y} to simulated datasets \eqn{y^{rep}}{yrep}
+from the posterior predictive distribution. The \code{pp_check} method for
+\link{stanreg-objects} prepares the arguments required for the specified
+\pkg{bayesplot} PPC plotting function and then calls that function. It is
+also straightforward to use the functions from the \pkg{bayesplot} package
 directly rather than via the \code{pp_check} method. Examples of both are
 given below.
 }
 \note{
-For binomial data, plots of \eqn{y} and \eqn{y^{rep}}{yrep} show the 
-  proportion of 'successes' rather than the raw count. Also for binomial 
+For binomial data, plots of \eqn{y} and \eqn{y^{rep}}{yrep} show the
+  proportion of 'successes' rather than the raw count. Also for binomial
   models see \code{\link[bayesplot:PPC-errors]{ppc_error_binned}} for binned residual
   plots.
 }
 \examples{
 if (.Platform$OS.type != "windows" || .Platform$r_arch != "i386") {
 fit <- stan_glmer(
-  mpg ~ wt + am + (1|cyl), 
-  data = mtcars, 
+  mpg ~ wt + am + (1|cyl),
+  data = mtcars,
   iter = 400, # iter and chains small just to keep example quick
-  chains = 2, 
+  chains = 2,
   refresh = 0
-) 
+)
 
 # Compare distribution of y to distributions of multiple yrep datasets
 pp_check(fit)
@@ -83,7 +83,7 @@ bayesplot::ppc_hist(y = mtcars$mpg, yrep = posterior_predict(fit, draws = 3))
 pp_check(fit, plotfun = "stat_grouped", stat = "median", group = "cyl")
 
 # Defining a custom test statistic
-q25 <- function(y) quantile(y, probs = 0.25) 
+q25 <- function(y) quantile(y, probs = 0.25)
 pp_check(fit, plotfun = "stat_grouped", stat = "q25", group = "cyl")
 
 # Scatterplot of two test statistics
@@ -106,20 +106,20 @@ pp_check(fit, plotfun = "intervals")
 pp_check(fit, plotfun = "intervals", x = "wt") + ggplot2::xlab("wt")
 
 # Same plot (up to RNG noise) using bayesplot package directly
-bayesplot::ppc_intervals(y = mtcars$mpg, yrep = posterior_predict(fit), 
+bayesplot::ppc_intervals(y = mtcars$mpg, yrep = posterior_predict(fit),
                          x = mtcars$wt) + ggplot2::xlab("wt")
 
 # predictive errors
 pp_check(fit, plotfun = "error_hist", nreps = 6)
-pp_check(fit, plotfun = "error_scatter_avg_vs_x", x = "wt") + 
+pp_check(fit, plotfun = "error_scatter_avg_vs_x", x = "wt") +
   ggplot2::xlab("wt")
-  
+
 # Example of a PPC for ordinal models (stan_polr)
 fit2 <- stan_polr(tobgp ~ agegp, data = esoph, method = "probit",
-                  prior = R2(0.2, "mean"), init_r = 0.1, 
+                  prior = R2(0.2, "mean"), init_r = 0.1,
                   refresh = 0)
 pp_check(fit2, plotfun = "bars", nreps = 500, prob = 0.5)
-pp_check(fit2, plotfun = "bars_grouped", group = esoph$agegp, 
+pp_check(fit2, plotfun = "bars_grouped", group = esoph$agegp,
          nreps = 500, prob = 0.5)
 }
 }
@@ -140,11 +140,11 @@ Gabry, J. , Simpson, D. , Vehtari, A. , Betancourt, M. and
   \item The vignettes in the \pkg{bayesplot} package for many examples.
     Examples of posterior predictive checks can also be found in the
     \pkg{rstanarm} vignettes and demos.
-  \item \code{\link[bayesplot]{PPC-overview}} (\pkg{bayesplot}) for links to 
+  \item \code{\link[bayesplot]{PPC-overview}} (\pkg{bayesplot}) for links to
     the documentation for all the available plotting functions.
-  \item \code{\link{posterior_predict}} for drawing from the posterior 
-    predictive distribution. 
-  \item \code{\link[bayesplot:bayesplot-colors]{color_scheme_set}} to change the color scheme 
+  \item \code{\link{posterior_predict}} for drawing from the posterior
+    predictive distribution.
+  \item \code{\link[bayesplot:bayesplot-colors]{color_scheme_set}} to change the color scheme
     of the plots.
 }
 }

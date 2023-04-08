@@ -7,10 +7,10 @@
 \method{print}{survfit.stanjm}(x, digits = 4, ...)
 }
 \arguments{
-\item{x}{An object of class \code{survfit.stanjm}, returned by a call to 
+\item{x}{An object of class \code{survfit.stanjm}, returned by a call to
 \code{\link{posterior_survfit}}.}
 
-\item{digits}{Number of digits to use for formatting the time variable and 
+\item{digits}{Number of digits to use for formatting the time variable and
 the survival probabilities.}
 
 \item{...}{Ignored.}
