@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2023-04-07" />
+<meta name="date" content="2023-09-13" />
 
 <title>Estimating ANOVA Models with rstanarm</title>
 
@@ -107,13 +107,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -319,7 +326,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Estimating ANOVA Models with rstanarm</h1>
 <h4 class="author">Jonah Gabry and Ben Goodrich</h4>
-<h4 class="date">2023-04-07</h4>
+<h4 class="date">2023-09-13</h4>
 
 
 <div id="TOC">
@@ -385,10 +392,10 @@ sourceCereal:typeLow
  predictors:   4
 ------
                      Median MAD_SD
-(Intercept)           98.9    4.6 
-sourceCereal         -12.9    6.2 
-typeLow              -18.8    6.4 
-sourceCereal:typeLow  16.9    8.4 
+(Intercept)           98.9    4.5 
+sourceCereal         -12.8    6.1 
+typeLow              -18.9    6.4 
+sourceCereal:typeLow  17.0    8.6 
 
 Auxiliary parameter(s):
               Median MAD_SD
@@ -398,9 +405,9 @@ sigma         14.7    1.7
 
 ANOVA-like table:
                     Median MAD_SD
-Mean Sq source      550.6  416.5 
-Mean Sq type        982.0  601.2 
-Mean Sq source:type 714.9  673.5 
+Mean Sq source      552.8  412.4 
+Mean Sq type        987.5  589.6 
+Mean Sq source:type 719.8  687.9 
 
 ------
 * For help interpreting the printed output see ?print.stanreg

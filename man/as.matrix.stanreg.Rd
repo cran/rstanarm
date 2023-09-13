@@ -76,5 +76,5 @@ print(nrow(draws)) # 1000 draws are taken
 }
 }
 \seealso{
-\code{\link{stanreg-methods}}
+\code{\link{stanreg-draws-formats}}, \code{\link{stanreg-methods}}
 }
