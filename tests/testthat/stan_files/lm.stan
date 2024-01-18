@@ -55,7 +55,8 @@ transformed data {
 }
 parameters {
   // must not call with init="0"
-  array[K > 1 ? J : 0] unit_vector[K] u; // primitives for coefficients
+  // https://github.com/stan-dev/rstanarm/issues/603#issuecomment-1785928224
+  array[K > 1 ? J : 0] unit_vector[K > 1 ? K : 2] u; // primitives for coefficients
   array[J * has_intercept] real z_alpha; // primitives for intercepts
   array[J] real<lower=(K > 1 ? 0 : -1), upper=1> R2; // proportions of variance explained
   vector[J * (1 - prior_PD)] log_omega; // under/overfitting factors
@@ -103,8 +104,14 @@ model {
   if (prior_dist == 1) {
     if (K > 1) 
       target += beta_lpdf(R2 | half_K, eta);
-    else 
-      target += beta_lpdf(square(R2) | half_K, eta) + sum(log(fabs(R2)));
+    else {
+      // TODO(Andrew) remove once vectorised abs available in rstan
+      array[J] real R2_abs;
+      for (j in 1:J) {
+        R2_abs[j] = abs(R2[j]);
+      }
+      target += beta_lpdf(square(R2) | half_K, eta) + sum(log(R2_abs));
+    }
   }
   // implicit: log_omega is uniform over the real line for all j
 }

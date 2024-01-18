@@ -12,7 +12,7 @@
 
 <meta name="author" content="Imad Ali" />
 
-<meta name="date" content="2023-09-13" />
+<meta name="date" content="2024-01-16" />
 
 <title>Probabilistic A/B Testing with rstanarm</title>
 
@@ -326,7 +326,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Probabilistic A/B Testing with rstanarm</h1>
 <h4 class="author">Imad Ali</h4>
-<h4 class="date">2023-09-13</h4>
+<h4 class="date">2024-01-16</h4>
 
 
 <div id="TOC">
@@ -746,19 +746,19 @@ y_{i=B} \sim &amp;\mathcal{N}(\mu_B + \beta \cdot high\_consumer_{i=B}, \sigma) 
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">coef</span>(fit_hier)</a>
 <a class="sourceLine" id="cb14-2" title="2"><span class="co">## $group</span></a>
 <a class="sourceLine" id="cb14-3" title="3"><span class="co">##   (Intercept)        hc</span></a>
-<a class="sourceLine" id="cb14-4" title="4"><span class="co">## A    2.944602 0.5633738</span></a>
-<a class="sourceLine" id="cb14-5" title="5"><span class="co">## B    4.893350 0.5633738</span></a>
+<a class="sourceLine" id="cb14-4" title="4"><span class="co">## A    2.947353 0.5641811</span></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="co">## B    4.892209 0.5641811</span></a>
 <a class="sourceLine" id="cb14-6" title="6"><span class="co">## </span></a>
 <a class="sourceLine" id="cb14-7" title="7"><span class="co">## attr(,&quot;class&quot;)</span></a>
 <a class="sourceLine" id="cb14-8" title="8"><span class="co">## [1] &quot;coef.mer&quot;</span></a>
 <a class="sourceLine" id="cb14-9" title="9"><span class="kw">fixef</span>(fit_hier)</a>
 <a class="sourceLine" id="cb14-10" title="10"><span class="co">##        hc </span></a>
-<a class="sourceLine" id="cb14-11" title="11"><span class="co">## 0.5633738</span></a>
+<a class="sourceLine" id="cb14-11" title="11"><span class="co">## 0.5641811</span></a>
 <a class="sourceLine" id="cb14-12" title="12"><span class="kw">ranef</span>(fit_hier)</a>
 <a class="sourceLine" id="cb14-13" title="13"><span class="co">## $group</span></a>
 <a class="sourceLine" id="cb14-14" title="14"><span class="co">##   (Intercept)</span></a>
-<a class="sourceLine" id="cb14-15" title="15"><span class="co">## A    2.944602</span></a>
-<a class="sourceLine" id="cb14-16" title="16"><span class="co">## B    4.893350</span></a>
+<a class="sourceLine" id="cb14-15" title="15"><span class="co">## A    2.947353</span></a>
+<a class="sourceLine" id="cb14-16" title="16"><span class="co">## B    4.892209</span></a>
 <a class="sourceLine" id="cb14-17" title="17"><span class="co">## </span></a>
 <a class="sourceLine" id="cb14-18" title="18"><span class="co">## with conditional variances for &quot;group&quot;</span></a></code></pre></div>
 <p>With this modeling approach we can perform the same inferences as we have shown above while accounting for the hierarchical nature of the data.</p>

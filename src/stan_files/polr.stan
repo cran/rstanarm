@@ -14,15 +14,15 @@ functions {
     // links in MASS::polr() are in a different order than binomial() 
     // logistic, probit, loglog, cloglog, cauchit
     if (link == 1) 
-      return (inv_logit(x));
+      return exp(log_inv_logit(x));
     else if (link == 2) 
-      return (Phi(x));
+      return exp(std_normal_lcdf(x|));
     else if (link == 3) 
-      return (gumbel_cdf(x, 0, 1));
+      return exp(gumbel_lcdf(x | 0, 1));
     else if (link == 4) 
-      return (inv_cloglog(x));
+      return inv_cloglog(x);
     else if (link == 5) 
-      return (cauchy_cdf(x, 0, 1));
+      return exp(cauchy_lcdf(x | 0, 1));
     else 
       reject("Invalid link");
     return x; // never reached
@@ -175,7 +175,9 @@ transformed data {
 }
 parameters {
   simplex[J] pi;
-  array[K > 1] unit_vector[K] u;
+  // avoid error by making unit_vector have 2 elements when K <= 1
+  // https://github.com/stan-dev/rstanarm/issues/603#issuecomment-1785928224
+  array[K > 1] unit_vector[K > 1 ? K : 2] u; 
   real<lower=(K > 1 ? 0 : -1), upper=1> R2;
   array[is_skewed] real<lower=0> alpha;
 }
