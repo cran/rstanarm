@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,7 +13,7 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
@@ -23,25 +23,25 @@ library(rstanarm)
 data(wells)
 wells$dist100 <- wells$dist / 100
 
-## ---- binom-arsenic-plot-dist100, fig.height=3--------------------------------
+## ----binom-arsenic-plot-dist100, fig.height=3---------------------------------
 ggplot(wells, aes(x = dist100, y = ..density.., fill = switch == 1)) +
   geom_histogram() + 
   scale_fill_manual(values = c("gray30", "skyblue"))
 
-## ---- binom-arsenic-mcmc, results="hide"--------------------------------------
+## ----binom-arsenic-mcmc, results="hide"---------------------------------------
 t_prior <- student_t(df = 7, location = 0, scale = 2.5)
 fit1 <- stan_glm(switch ~ dist100, data = wells, 
                  family = binomial(link = "logit"), 
                  prior = t_prior, prior_intercept = t_prior,  
                  cores = 2, seed = 12345)
 
-## ---- binom-arsenic-print, echo=FALSE-----------------------------------------
+## ----binom-arsenic-print, echo=FALSE------------------------------------------
 (coef_fit1 <- round(coef(fit1), 3))
 
-## ---- binom-arsenic-ci--------------------------------------------------------
+## ----binom-arsenic-ci---------------------------------------------------------
 round(posterior_interval(fit1, prob = 0.5), 2)
 
-## ---- binom-arsenic-plot-model------------------------------------------------
+## ----binom-arsenic-plot-model-------------------------------------------------
 # Predicted probability as a function of x
 pr_switch <- function(x, ests) plogis(ests[1] + ests[2] * x)
 # A function to slightly jitter the binary data
@@ -64,7 +64,7 @@ fit2 <- update(fit1, formula = switch ~ dist100 + arsenic)
 ## ----echo=FALSE---------------------------------------------------------------
 theme_update(legend.position = "right")
 
-## ---- binom-arsenic-plot-model2-----------------------------------------------
+## ----binom-arsenic-plot-model2------------------------------------------------
 pr_switch2 <- function(x, y, ests) plogis(ests[1] + ests[2] * x + ests[3] * y)
 grid <- expand.grid(dist100 = seq(0, 4, length.out = 100), 
                     arsenic = seq(0, 10, length.out = 100))
@@ -78,7 +78,7 @@ ggplot(grid, aes(x = dist100, y = arsenic)) +
 ## ----echo=FALSE---------------------------------------------------------------
 theme_update(legend.position = "none")
 
-## ---- binom-arsenic-plot-model2-alt-------------------------------------------
+## ----binom-arsenic-plot-model2-alt--------------------------------------------
 # Quantiles
 q_ars <- quantile(wells$dist100, seq(0, 1, 0.25))
 q_dist <- quantile(wells$arsenic, seq(0, 1, 0.25))  
@@ -97,12 +97,12 @@ for (i in 1:5) {
 bayesplot_grid(vary_dist, vary_arsenic, 
                grid_args = list(ncol = 2))
 
-## ---- binom-arsenic-loo-------------------------------------------------------
+## ----binom-arsenic-loo--------------------------------------------------------
 (loo1 <- loo(fit1))
 (loo2 <- loo(fit2))
 loo_compare(loo1, loo2)
 
-## ---- results = "hide"--------------------------------------------------------
+## ----results = "hide"---------------------------------------------------------
 post <- stan_clogit(case ~ spontaneous + induced + (1 | parity), 
                     data = infert[order(infert$stratum), ], # order necessary
                     strata = stratum, QR = TRUE, 

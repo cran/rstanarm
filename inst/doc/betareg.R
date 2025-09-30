@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,7 +13,7 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
@@ -64,7 +64,7 @@ loo1 <- loo(fit1)
 loo2 <- loo(fit2)
 loo_compare(loo1, loo2)
 
-## ---- gas-fit, results="hide"-------------------------------------------------
+## ----gas-fit, results="hide"--------------------------------------------------
 library(rstanarm)
 data("GasolineYield", package = "betareg")
 gas_fit1 <- stan_betareg(yield ~ temp + batch, data = GasolineYield, link = "logit",
@@ -75,7 +75,7 @@ gas_fit2 <- stan_betareg(yield ~ temp + batch | pressure,
 round(coef(gas_fit1), 2)
 round(coef(gas_fit2), 2)
 
-## ---- gas-print, echo=FALSE---------------------------------------------------
+## ----gas-print, echo=FALSE----------------------------------------------------
 round(coef(gas_fit1), 2)
 round(coef(gas_fit2), 2)
 
@@ -89,7 +89,7 @@ bayesplot_grid(
   grid_args = list(ncol = 2)
 )
 
-## ---- gas-loo-----------------------------------------------------------------
+## ----gas-loo------------------------------------------------------------------
 gas_loo1 <- loo(gas_fit1)
 gas_loo2 <- loo(gas_fit2)
 loo_compare(gas_loo1, gas_loo2)

@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,7 +13,7 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
@@ -35,7 +35,7 @@ post <-
   )
 post
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 print(post)
 
 ## ----lm-clouds-ate-plot-------------------------------------------------------

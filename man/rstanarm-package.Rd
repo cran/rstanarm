@@ -2,8 +2,8 @@
 % Please edit documentation in R/doc-rstanarm-package.R
 \docType{package}
 \name{rstanarm-package}
-\alias{rstanarm-package}
 \alias{rstanarm}
+\alias{rstanarm-package}
 \title{Applied Regression Modeling via RStan}
 \description{
 \if{html}{
@@ -236,4 +236,31 @@ User-friendly Bayesian regression modeling: A tutorial with rstanarm and shinyst
   \item \url{https://discourse.mc-stan.org} to ask a
   question about \pkg{rstanarm} on the Stan-users forum.
 }
+}
+\author{
+\strong{Maintainer}: Ben Goodrich \email{benjamin.goodrich@columbia.edu}
+
+Authors:
+\itemize{
+  \item Jonah Gabry \email{jsg2201@columbia.edu}
+}
+
+Other contributors:
+\itemize{
+  \item Imad Ali [contributor]
+  \item Sam Brilleman [contributor]
+  \item Jacqueline Buros Novik (R/stan_jm.R) [contributor]
+  \item AstraZeneca (R/stan_jm.R) [contributor]
+  \item Trustees of Columbia University [copyright holder]
+  \item Simon Wood (R/stan_gamm4.R) [copyright holder]
+  \item R Core Deveopment Team (R/stan_aov.R) [copyright holder]
+  \item Douglas Bates (R/pp_data.R) [copyright holder]
+  \item Martin Maechler (R/pp_data.R) [copyright holder]
+  \item Ben Bolker (R/pp_data.R) [copyright holder]
+  \item Steve Walker (R/pp_data.R) [copyright holder]
+  \item Brian Ripley (R/stan_aov.R, R/stan_polr.R) [copyright holder]
+  \item William Venables (R/stan_polr.R) [copyright holder]
+  \item Paul-Christian Burkner \email{paul.buerkner@gmail.com} (R/misc.R) [copyright holder]
+}
+
 }

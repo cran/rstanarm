@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,12 +13,12 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
 
-## ---- results = "hide"--------------------------------------------------------
+## ----results = "hide"---------------------------------------------------------
 library(rstanarm)
 data(roaches)
 roaches$roach1 <- roaches$roach1 / 100
@@ -43,17 +43,17 @@ data("Orange", package = "datasets")
 Orange$age <- Orange$age / 100
 Orange$circumference <- Orange$circumference / 100
 
-## ---- warning=TRUE------------------------------------------------------------
+## ----warning=TRUE-------------------------------------------------------------
 startvec <- c(Asym = 2, xmid = 7.25, scal = 3.5)
 library(lme4)
 nm1 <- nlmer(circumference ~ SSlogis(age, Asym, xmid, scal) ~ Asym|Tree,
              data = Orange, start = startvec)
 summary(nm1)
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 grep("^SS[[:lower:]]+", ls("package:stats"), value = TRUE)
 
-## ---- results = "hide"--------------------------------------------------------
+## ----results = "hide"---------------------------------------------------------
 post1 <- stan_nlmer(circumference ~ SSlogis(age, Asym, xmid, scal) ~ Asym|Tree,
                     data = Orange, cores = 2, seed = 12345, init_r = 0.5)
 
@@ -70,11 +70,11 @@ PPD_df <- data.frame(age = as.factor(rep(1:20, each = nrow(PPD))),
                      circumference = c(PPD))
 ggplot(PPD_df, aes(age, circumference)) + geom_boxplot()
 
-## ---- eval = FALSE------------------------------------------------------------
-#  post3 <- stan_nlmer(conc ~ SSfol(Dose, Time, lKe, lKa, lCl) ~
-#                      (0 + lKe + lKa + lCl | Subject), data = Theoph,
-#                      cores = 2, seed = 12345,
-#                      QR = TRUE, init_r = 0.25, adapt_delta = 0.999)
-#  pairs(post3, regex_pars = "^l")
-#  pairs(post3, regex_pars = "igma")
+## ----eval = FALSE-------------------------------------------------------------
+# post3 <- stan_nlmer(conc ~ SSfol(Dose, Time, lKe, lKa, lCl) ~
+#                     (0 + lKe + lKa + lCl | Subject), data = Theoph,
+#                     cores = 2, seed = 12345,
+#                     QR = TRUE, init_r = 0.25, adapt_delta = 0.999)
+# pairs(post3, regex_pars = "^l")
+# pairs(post3, regex_pars = "igma")
 

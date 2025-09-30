@@ -33,7 +33,7 @@
 \pkg{rstanarm} modeling functions. See \code{\link{stanreg-objects}}.}
 
 \item{type}{The type of expectation to compute. The options are
-\code{"mean"}, \code{"variance"}, and \code{"quantile"}.}
+\code{"mean"}, \code{"variance"}, \code{"sd"}, and \code{"quantile"}.}
 
 \item{probs}{For computing quantiles, a vector of probabilities.}
 

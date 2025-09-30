@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -21,10 +21,10 @@ theme_set(bayesplot::theme_default())
 # options(mc.cores = 4) 
 
 ## ----packages-2, eval=FALSE, message=FALSE------------------------------------
-#  library(dplyr)
-#  library(tidyr)
+# library(dplyr)
+# library(tidyr)
 
-## ---- include=FALSE, collapse=TRUE--------------------------------------------
+## ----include=FALSE, collapse=TRUE---------------------------------------------
 simulate_mrp_data <- function(n) {
   J <- c(2, 3, 7, 3, 50) # male or not, eth, age, income level, state
   poststrat <- as.data.frame(array(NA, c(prod(J), length(J)+1))) # Columns of post-strat matrix, plus one for size
@@ -127,18 +127,18 @@ simulate_mrp_data <- function(n) {
 }
 
 ## ----include=FALSE, eval=FALSE------------------------------------------------
-#  mrp_sim <- simulate_mrp_data(n=1200)
-#  save(mrp_sim, file = "mrp-files/mrp_sim.rda", version = 2)
+# mrp_sim <- simulate_mrp_data(n=1200)
+# save(mrp_sim, file = "mrp-files/mrp_sim.rda", version = 2)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  mrp_sim <- simulate_mrp_data(n=1200)
-#  str(mrp_sim)
+# mrp_sim <- simulate_mrp_data(n=1200)
+# str(mrp_sim)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 load("mrp-files/mrp_sim.rda")
 str(mrp_sim)
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 sample <- mrp_sim[["sample"]]
 rbind(head(sample), tail(sample))
 
@@ -157,75 +157,75 @@ true_popn$state <- factor(true_popn$state,levels = levels(sample$state))
 poststrat$state <- factor(poststrat$state,levels = levels(sample$state))
 
 ## ----state-and-pop-data-for-plots, eval=FALSE, include=FALSE------------------
-#  # not evaluated to avoid tidyverse dependency
-#  income_popn <- poststrat %>%
-#    group_by(income) %>%
-#    summarize(Num=sum(N)) %>%
-#    mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Income',CAT=income) %>%
-#    ungroup()
-#  income_data <- sample %>%
-#    group_by(income) %>%
-#    summarise(Num=n()) %>%
-#    mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Income',CAT=income) %>%
-#    ungroup()
-#  income<-rbind(income_data[,2:6],income_popn[,2:6])
-#  
-#  age_popn <- poststrat%>%
-#    group_by(age)%>%
-#    summarize(Num=sum(N))%>%
-#    mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Age',CAT=age)%>%
-#    ungroup()
-#  age_data <- sample%>%
-#    group_by(age)%>%
-#    summarise(Num=n())%>%
-#    mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Age',CAT=age)%>%
-#    ungroup()
-#  age <- rbind(age_data[,2:6],age_popn[,2:6] )
-#  
-#  eth_popn <- poststrat%>%
-#    group_by(eth)%>%
-#    summarize(Num=sum(N))%>%
-#    mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Ethnicity',CAT=eth)%>%
-#    ungroup()
-#  eth_data <- sample%>%
-#    group_by(eth)%>%
-#    summarise(Num=n())%>%
-#    mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Ethnicity',CAT=eth)%>%
-#    ungroup()
-#  eth<-rbind(eth_data[,2:6],eth_popn[,2:6])
-#  
-#  male_popn <- poststrat%>%
-#    group_by(male)%>%
-#    summarize(Num=sum(N))%>%
-#    mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Male',CAT=male)%>%
-#    ungroup()
-#  male_data <- sample%>%
-#    group_by(male)%>%
-#    summarise(Num=n())%>%
-#    mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Male',CAT=male)%>%
-#    ungroup()
-#  male <- rbind(male_data[,2:6],male_popn[,2:6])
-#  
-#  state_popn <- poststrat%>%
-#    group_by(state)%>%
-#    summarize(Num=sum(N))%>%
-#    mutate(PROP=Num/sum(poststrat$N),TYPE='Popn',VAR='State',CAT=state)%>%
-#    ungroup()
-#  
-#  state_plot_data <- sample%>%
-#    group_by(state)%>%
-#    summarise(Num=n())%>%
-#    mutate(PROP=Num/nrow(sample),TYPE='Sample',VAR='State',CAT=state)%>%
-#    ungroup()
-#  
-#  state_plot_data <- rbind(state_plot_data[,2:6],state_popn[,2:6])
-#  state_plot_data$TYPE <- factor(state_plot_data$TYPE, levels = c("Sample","Popn"))
-#  
-#  plot_data <- rbind(male,eth,age,income)
-#  plot_data$TYPE <- factor(plot_data$TYPE, levels = c("Sample","Popn"))
-#  
-#  save(state_plot_data, file = "mrp-files/state_plot_data.rda", version = 2)
-#  save(plot_data, file = "mrp-files/plot_data.rda", version = 2)
+# # not evaluated to avoid tidyverse dependency
+# income_popn <- poststrat %>%
+#   group_by(income) %>%
+#   summarize(Num=sum(N)) %>%
+#   mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Income',CAT=income) %>%
+#   ungroup()
+# income_data <- sample %>%
+#   group_by(income) %>%
+#   summarise(Num=n()) %>%
+#   mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Income',CAT=income) %>%
+#   ungroup()
+# income<-rbind(income_data[,2:6],income_popn[,2:6])
+# 
+# age_popn <- poststrat%>%
+#   group_by(age)%>%
+#   summarize(Num=sum(N))%>%
+#   mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Age',CAT=age)%>%
+#   ungroup()
+# age_data <- sample%>%
+#   group_by(age)%>%
+#   summarise(Num=n())%>%
+#   mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Age',CAT=age)%>%
+#   ungroup()
+# age <- rbind(age_data[,2:6],age_popn[,2:6] )
+# 
+# eth_popn <- poststrat%>%
+#   group_by(eth)%>%
+#   summarize(Num=sum(N))%>%
+#   mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Ethnicity',CAT=eth)%>%
+#   ungroup()
+# eth_data <- sample%>%
+#   group_by(eth)%>%
+#   summarise(Num=n())%>%
+#   mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Ethnicity',CAT=eth)%>%
+#   ungroup()
+# eth<-rbind(eth_data[,2:6],eth_popn[,2:6])
+# 
+# male_popn <- poststrat%>%
+#   group_by(male)%>%
+#   summarize(Num=sum(N))%>%
+#   mutate(PROP=Num/sum(Num),TYPE='Popn',VAR='Male',CAT=male)%>%
+#   ungroup()
+# male_data <- sample%>%
+#   group_by(male)%>%
+#   summarise(Num=n())%>%
+#   mutate(PROP=Num/sum(Num),TYPE='Sample',VAR='Male',CAT=male)%>%
+#   ungroup()
+# male <- rbind(male_data[,2:6],male_popn[,2:6])
+# 
+# state_popn <- poststrat%>%
+#   group_by(state)%>%
+#   summarize(Num=sum(N))%>%
+#   mutate(PROP=Num/sum(poststrat$N),TYPE='Popn',VAR='State',CAT=state)%>%
+#   ungroup()
+# 
+# state_plot_data <- sample%>%
+#   group_by(state)%>%
+#   summarise(Num=n())%>%
+#   mutate(PROP=Num/nrow(sample),TYPE='Sample',VAR='State',CAT=state)%>%
+#   ungroup()
+# 
+# state_plot_data <- rbind(state_plot_data[,2:6],state_popn[,2:6])
+# state_plot_data$TYPE <- factor(state_plot_data$TYPE, levels = c("Sample","Popn"))
+# 
+# plot_data <- rbind(male,eth,age,income)
+# plot_data$TYPE <- factor(plot_data$TYPE, levels = c("Sample","Popn"))
+# 
+# save(state_plot_data, file = "mrp-files/state_plot_data.rda", version = 2)
+# save(plot_data, file = "mrp-files/plot_data.rda", version = 2)
 
 ## ----plot-data, echo=FALSE, fig.height = 4, fig.width = 7, fig.align = "center"----
 load("mrp-files/plot_data.rda") # created in previous chunk
@@ -271,21 +271,21 @@ ggplot(data=state_plot_data, aes(x=as.factor(CAT), y=PROP, group=as.factor(TYPE)
         strip.text=element_text(size=10),
         strip.background = element_rect(fill='grey92'))
 
-## ---- eval=FALSE, echo=FALSE--------------------------------------------------
-#  # not evaluated to avoid dependency on tidyverse
-#  
-#  #Summarise
-#  summary_by_poststrat_var <- sample %>%
-#    gather(variable,category,c("income","eth","age","male")) %>%
-#    group_by(variable,category) %>%
-#    #Wald confidence interval
-#    summarise(y_mean=mean(cat_pref),y_sd=sqrt(mean(cat_pref)*(1-mean(cat_pref))/n())) %>%
-#    ungroup()
-#  summary_by_poststrat_var$variable <- as.factor(summary_by_poststrat_var$variable)
-#  levels(summary_by_poststrat_var$variable) <- list('Age'='age','Ethnicity'='eth','Income'='income','Male'='male')
-#  
-#  save(summary_by_poststrat_var, file = "mrp-files/summary_by_poststrat_var.rda",
-#       version = 2)
+## ----eval=FALSE, echo=FALSE---------------------------------------------------
+# # not evaluated to avoid dependency on tidyverse
+# 
+# #Summarise
+# summary_by_poststrat_var <- sample %>%
+#   gather(variable,category,c("income","eth","age","male")) %>%
+#   group_by(variable,category) %>%
+#   #Wald confidence interval
+#   summarise(y_mean=mean(cat_pref),y_sd=sqrt(mean(cat_pref)*(1-mean(cat_pref))/n())) %>%
+#   ungroup()
+# summary_by_poststrat_var$variable <- as.factor(summary_by_poststrat_var$variable)
+# levels(summary_by_poststrat_var$variable) <- list('Age'='age','Ethnicity'='eth','Income'='income','Male'='male')
+# 
+# save(summary_by_poststrat_var, file = "mrp-files/summary_by_poststrat_var.rda",
+#      version = 2)
 
 ## ----plot-summary-by-poststrat-var, echo=FALSE, fig.height = 4, fig.width = 7, fig.align = "center"----
 load("mrp-files/summary_by_poststrat_var.rda") # created in previous chunk
@@ -307,20 +307,20 @@ facet_wrap(~variable,scales = "free_x",nrow=1,ncol=5)+
         strip.background = element_rect(fill='grey92'))
 
 ## ----interaction-summary, eval=FALSE, echo=FALSE------------------------------
-#  # not evaluated to avoid dependency on tidyverse
-#  
-#  #Summarise
-#  interaction <- sample %>%
-#    gather(variable, category, c("age", "eth")) %>%
-#    group_by(variable, category, male) %>%
-#    summarise(y_mean = mean(cat_pref),
-#              y_sd = sqrt(mean(cat_pref) * (1 - mean(cat_pref)) / n())) %>%
-#    ungroup()
-#  
-#  #Tidy for nice facet labels
-#  interaction$variable <- as.factor(interaction$variable)
-#  levels(interaction$variable) <- list('Ethnicity' = 'eth', 'Age' = 'age')
-#  save(interaction, file = "mrp-files/interaction.rda", version = 2)
+# # not evaluated to avoid dependency on tidyverse
+# 
+# #Summarise
+# interaction <- sample %>%
+#   gather(variable, category, c("age", "eth")) %>%
+#   group_by(variable, category, male) %>%
+#   summarise(y_mean = mean(cat_pref),
+#             y_sd = sqrt(mean(cat_pref) * (1 - mean(cat_pref)) / n())) %>%
+#   ungroup()
+# 
+# #Tidy for nice facet labels
+# interaction$variable <- as.factor(interaction$variable)
+# levels(interaction$variable) <- list('Ethnicity' = 'eth', 'Age' = 'age')
+# save(interaction, file = "mrp-files/interaction.rda", version = 2)
 
 ## ----plot-interaction, echo=FALSE, fig.height = 4, fig.width = 7, fig.align = "center"----
 load("mrp-files/interaction.rda") # created in previous chunk
@@ -340,19 +340,19 @@ ggplot(data=interaction, aes(x=as.factor(category), y=y_mean, colour=as.factor(m
         strip.background = element_rect(fill='grey92'))
 
 
-## ---- eval=FALSE, echo=FALSE--------------------------------------------------
-#  # not evaluated to avoid dependency on tidyverse
-#  
-#  #Summarise by state
-#  preference_by_state <- sample %>%
-#    group_by(state) %>%
-#    summarise(y_mean = mean(cat_pref),
-#              y_sd = sqrt(mean(cat_pref) * (1 - mean(cat_pref)) / n())) %>%
-#    ungroup()
-#  
-#  save(preference_by_state, file = "mrp-files/preference_by_state.rda", version = 2)
+## ----eval=FALSE, echo=FALSE---------------------------------------------------
+# # not evaluated to avoid dependency on tidyverse
+# 
+# #Summarise by state
+# preference_by_state <- sample %>%
+#   group_by(state) %>%
+#   summarise(y_mean = mean(cat_pref),
+#             y_sd = sqrt(mean(cat_pref) * (1 - mean(cat_pref)) / n())) %>%
+#   ungroup()
+# 
+# save(preference_by_state, file = "mrp-files/preference_by_state.rda", version = 2)
 
-## ---- echo=FALSE, fig.height = 4, fig.width = 8, fig.align = "center"---------
+## ----echo=FALSE, fig.height = 4, fig.width = 8, fig.align = "center"----------
 load("mrp-files/preference_by_state.rda")
 compare <- ggplot(data=preference_by_state, aes(x=state, y=y_mean,group=1)) +
   geom_ribbon(aes(ymin=y_mean-y_sd,ymax=y_mean+y_sd,x=state),fill='lightgrey',alpha=.7)+
@@ -392,7 +392,7 @@ compare2 <- ggplot()+
 bayesplot_grid(compare,compare2, 
                grid_args = list(nrow=1, widths = c(8,1)))
 
-## ---- message=FALSE, warning=FALSE, results='hide'----------------------------
+## ----message=FALSE, warning=FALSE, results='hide'-----------------------------
 fit <- stan_glmer(
   cat_pref ~ factor(male) + factor(male) * factor(age) + 
     (1 | state) + (1 | age) + (1 | eth) + (1 | income),
@@ -403,35 +403,35 @@ fit <- stan_glmer(
 ## -----------------------------------------------------------------------------
 print(fit)
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 posterior_prob <- posterior_linpred(fit, transform = TRUE, newdata = poststrat)
 poststrat_prob <- posterior_prob %*% poststrat$N / sum(poststrat$N)
 model_popn_pref <- c(mean = mean(poststrat_prob), sd = sd(poststrat_prob))
 round(model_popn_pref, 3)
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 sample_popn_pref <- mean(sample$cat_pref)
 round(sample_popn_pref, 3)
 
-## ---- message=FALSE,fig.height = 4, fig.width = 8, fig.align = "center"-------
+## ----message=FALSE,fig.height = 4, fig.width = 8, fig.align = "center"--------
 compare2 <- compare2 +
   geom_hline(yintercept = model_popn_pref[1], colour = '#2ca25f', size = 1) +
   geom_text(aes(x = 5.2, y = model_popn_pref[1] + .025), label = "MRP", colour = '#2ca25f')
 bayesplot_grid(compare, compare2, 
                grid_args = list(nrow = 1, widths = c(8, 1)))
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 true_popn_pref <- sum(true_popn$cat_pref * poststrat$N) / sum(poststrat$N)
 round(true_popn_pref, 3)
 
-## ---- echo=FALSE, message=FALSE,fig.height = 4, fig.width = 8, fig.align = "center"----
+## ----echo=FALSE, message=FALSE,fig.height = 4, fig.width = 8, fig.align = "center"----
 compare2 <- compare2 +
   geom_hline(yintercept = mean(true_popn_pref), linetype = 'dashed', size = .8) +
   geom_text(aes(x = 5.2, y = mean(true_popn_pref) - .025), label = "True")
 bayesplot_grid(compare, compare2, 
                grid_args = list(nrow = 1, widths = c(8, 1)))
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 state_df <- data.frame(
   State = 1:50,
   model_state_sd = rep(-1, 50),
@@ -477,7 +477,7 @@ round(100 * c(
   max = max(abs(state_df$model_state_pref-state_df$true_state_pref))
 ))
 
-## ---- message=FALSE, echo=FALSE, fig.height = 4, fig.width = 8, fig.align = "center",warning=FALSE, fig.align = "center"----
+## ----message=FALSE, echo=FALSE, fig.height = 4, fig.width = 8, fig.align = "center",warning=FALSE, fig.align = "center"----
 #Summarise by state
 compare <- compare +
   geom_point(data=state_df, mapping=aes(x=State, y=model_state_pref),
@@ -495,17 +495,17 @@ compare <- compare +
 bayesplot_grid(compare, compare2, 
                grid_args = list(nrow = 1, widths = c(8, 1)))
 
-## ---- eval=FALSE--------------------------------------------------------------
-#  # not evaluated to avoid dependency on tidyverse
-#  sample_alt <- sample %>%
-#    group_by(male, age, income, state, eth) %>%
-#    summarise(N_cat_pref = sum(cat_pref), N = n()) %>%
-#    ungroup()
+## ----eval=FALSE---------------------------------------------------------------
+# # not evaluated to avoid dependency on tidyverse
+# sample_alt <- sample %>%
+#   group_by(male, age, income, state, eth) %>%
+#   summarise(N_cat_pref = sum(cat_pref), N = n()) %>%
+#   ungroup()
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 load("mrp-files/sample_alt.rda")
 
-## ---- message=FALSE, warning=FALSE, results='hide'----------------------------
+## ----message=FALSE, warning=FALSE, results='hide'-----------------------------
 fit2 <- stan_glmer(
   cbind(N_cat_pref, N - N_cat_pref) ~ factor(male) + factor(male) * factor(age) + 
     (1 | state) + (1 | age) + (1 | eth) + (1 | income),
@@ -517,7 +517,7 @@ fit2 <- stan_glmer(
 ## -----------------------------------------------------------------------------
 print(fit2)
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 posterior_prob_alt <- posterior_linpred(fit2, transform = TRUE, newdata = poststrat)
 poststrat_prob_alt <- posterior_prob_alt %*% poststrat$N / sum(poststrat$N)
 model_popn_pref_alt <- c(mean = mean(poststrat_prob_alt), sd = sd(poststrat_prob_alt))

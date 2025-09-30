@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,7 +13,7 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
@@ -46,7 +46,7 @@ head(pbcLong)
 head(pbcSurv)
 
 ## ----datasets_help, eval = FALSE----------------------------------------------
-#  help("datasets", package = "rstanarm")
+# help("datasets", package = "rstanarm")
 
 ## ----univariate_fit, results = "hold", message = FALSE, warning = FALSE-------
 library(rstanarm)
@@ -69,13 +69,13 @@ summary(mod1, probs = c(.025,.975))
 as.data.frame(VarCorr(mod1))
 
 ## ----assoc_etaslope, eval = FALSE---------------------------------------------
-#  mod2 <- stan_jm(formulaLong = logBili ~ sex + trt + year + (year | id),
-#                  dataLong = pbcLong,
-#                  formulaEvent = survival::Surv(futimeYears, death) ~ sex + trt,
-#                  dataEvent = pbcSurv,
-#                  assoc = c("etavalue", "etaslope"),
-#                  time_var = "year",
-#                  chains = 1, refresh = 2000, seed = 12345)
+# mod2 <- stan_jm(formulaLong = logBili ~ sex + trt + year + (year | id),
+#                 dataLong = pbcLong,
+#                 formulaEvent = survival::Surv(futimeYears, death) ~ sex + trt,
+#                 dataEvent = pbcSurv,
+#                 assoc = c("etavalue", "etaslope"),
+#                 time_var = "year",
+#                 chains = 1, refresh = 2000, seed = 12345)
 
 ## ----fitmodel_mv_ev_ev, warning=FALSE, message=FALSE--------------------------
 mod3 <- stan_jm(

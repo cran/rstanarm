@@ -1,4 +1,4 @@
-## ---- knitr-settings, include=FALSE-------------------------------------------
+## ----knitr-settings, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,18 +13,18 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
 
-## ---- load-data---------------------------------------------------------------
+## ----load-data----------------------------------------------------------------
 library(rstanarm)
 data(bball1970)
 bball <- bball1970
 print(bball)
 
-## ---- N-K-y-------------------------------------------------------------------
+## ----N-K-y--------------------------------------------------------------------
 # A few quantities we'll use throughout
 N <- nrow(bball)
 K <- bball$AB
@@ -32,7 +32,7 @@ y <- bball$Hits
 K_new <- bball$RemainingAB
 y_new <- bball$RemainingHits
 
-## ---- create-objects, results="hold"------------------------------------------
+## ----create-objects, results="hold"-------------------------------------------
 batting_avg <- function(x) print(format(round(x, digits = 3), nsmall = 3), quote = FALSE)
 player_avgs <- y / K # player avgs through 45 AB
 tot_avg <- sum(y) / sum(K) # overall avg through 45 AB
@@ -42,7 +42,7 @@ batting_avg(player_avgs)
 cat("Overall average through 45 at-bats:\n")
 batting_avg(tot_avg)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 par(mfrow = c(1,3), las = 1)
 p_alpha <- function(alpha) {
   dnorm(alpha, -1, 1)
@@ -63,13 +63,13 @@ curve2(p_theta, c(0,1), col = "red", add = TRUE)
 text(x = -1, y = 0.65, labels = expression(p(alpha)), cex = 1.5)
 text(x = -0.5, y = 1.5, labels = expression(p(theta)), cex = 1.5, col = "red")
 
-## ---- full-pooling, results="hide"--------------------------------------------
+## ----full-pooling, results="hide"---------------------------------------------
 SEED <- 101
 wi_prior <- normal(-1, 1)  # weakly informative prior on log-odds
 fit_pool <- stan_glm(cbind(Hits, AB - Hits) ~ 1, data = bball, family = binomial("logit"),
                      prior_intercept = wi_prior, seed = SEED)
 
-## ---- summary-stats-function--------------------------------------------------
+## ----summary-stats-function---------------------------------------------------
 invlogit <- plogis  # function(x) 1/(1 + exp(-x))
 summary_stats <- function(posterior) {
   x <- invlogit(posterior)  # log-odds -> probabilities
@@ -82,22 +82,22 @@ pool <- matrix(pool,  # replicate to give each player the same estimates
                dimnames = list(bball$Player, c("10%", "50%", "90%")))
 batting_avg(pool)
 
-## ---- no-pooling, results="hide"----------------------------------------------
+## ----no-pooling, results="hide"-----------------------------------------------
 fit_nopool <- update(fit_pool, formula = . ~ 0 + Player, prior = wi_prior)
 nopool <- summary_stats(as.matrix(fit_nopool))
 rownames(nopool) <- as.character(bball$Player)
 batting_avg(nopool)
 
-## ---- no-pooling-print, echo=FALSE--------------------------------------------
+## ----no-pooling-print, echo=FALSE---------------------------------------------
 batting_avg(nopool)
 
-## ---- partial-pooling, results="hide"-----------------------------------------
+## ----partial-pooling, results="hide"------------------------------------------
 fit_partialpool <- 
   stan_glmer(cbind(Hits, AB - Hits) ~ (1 | Player), data = bball, 
              family = binomial("logit"),
              prior_intercept = wi_prior, seed = SEED)
 
-## ---- partial-pooling-shift-draws---------------------------------------------
+## ----partial-pooling-shift-draws----------------------------------------------
 # shift each player's estimate by intercept (and then drop intercept)
 shift_draws <- function(draws) {
   sweep(draws[, -1], MARGIN = 1, STATS = draws[, 1], FUN = "+")
@@ -108,7 +108,7 @@ partialpool <- partialpool[-nrow(partialpool),]
 rownames(partialpool) <- as.character(bball$Player)
 batting_avg(partialpool)
 
-## ---- plot-observed-vs-estimated----------------------------------------------
+## ----plot-observed-vs-estimated-----------------------------------------------
 library(ggplot2)
 models <- c("complete pooling", "no pooling", "partial pooling")
 estimates <- rbind(pool, nopool, partialpool)
@@ -129,7 +129,7 @@ ggplot(plotdata, aes(x = observed, y = median, ymin = lb, ymax = ub)) +
   labs(x = "Observed Hits / AB", y = "Predicted chance of hit") +
   ggtitle("Posterior Medians and 80% Intervals")
 
-## ---- log_p_new---------------------------------------------------------------
+## ----log_p_new----------------------------------------------------------------
 newdata <- data.frame(Hits = y_new, AB = K_new, Player = bball$Player)
 fits <- list(Pooling = fit_pool, 
              NoPooling = fit_nopool, 
@@ -143,11 +143,11 @@ log_p_new <- sapply(log_p_new_mats, rowSums)
 M <- nrow(log_p_new)
 head(log_p_new)
 
-## ---- log_p_new-mean----------------------------------------------------------
+## ----log_p_new-mean-----------------------------------------------------------
 mean_log_p_new <- colMeans(log_p_new)
 round(sort(mean_log_p_new, decreasing = TRUE), digits = 1)
 
-## ---- log_sum_exp-------------------------------------------------------------
+## ----log_sum_exp--------------------------------------------------------------
 log_sum_exp <- function(u) {
   max_u <- max(u)
   a <- 0
@@ -163,7 +163,7 @@ log_sum_exp <- function(u) {
   max_u + log(sum(exp(u - max_u)))
 }
 
-## ---- log_mean_exp------------------------------------------------------------
+## ----log_mean_exp-------------------------------------------------------------
 log_mean_exp <- function(u) {
   M <- length(u)
   -log(M) + log_sum_exp(u)
@@ -177,10 +177,10 @@ new_lps_sums <- sapply(new_lps, sum)
 
 round(sort(new_lps_sums, decreasing = TRUE), digits = 1)
 
-## ---- loo---------------------------------------------------------------------
+## ----loo----------------------------------------------------------------------
 loo_compare(loo(fit_partialpool), loo(fit_pool), loo(fit_nopool))
 
-## ---- ppd---------------------------------------------------------------------
+## ----ppd----------------------------------------------------------------------
 newdata <- data.frame(Hits = y_new, AB = K_new, Player = bball$Player)
 ppd_pool <- posterior_predict(fit_pool, newdata)
 ppd_nopool <- posterior_predict(fit_nopool, newdata)
@@ -188,12 +188,12 @@ ppd_partialpool <- posterior_predict(fit_partialpool, newdata)
 colnames(ppd_pool) <- colnames(ppd_nopool) <- colnames(ppd_partialpool) <- as.character(bball$Player)
 colMeans(ppd_partialpool)
 
-## ---- clemente----------------------------------------------------------------
+## ----clemente-----------------------------------------------------------------
 z_1 <- ppd_partialpool[, 1]
 clemente_80pct <- (y[1] + quantile(z_1, prob = c(0.1, 0.9))) / (K[1] + K_new[1])
 batting_avg(clemente_80pct)
 
-## ---- ppd-stats---------------------------------------------------------------
+## ----ppd-stats----------------------------------------------------------------
 ppd_intervals <- function(x) t(apply(x, 2, quantile, probs = c(0.25, 0.75)))
 ppd_summaries <- (1 / K_new) * rbind(ppd_intervals(ppd_pool),
                                      ppd_intervals(ppd_nopool),
@@ -204,7 +204,7 @@ df_ppd <- data.frame(player = rep(1:length(y_new), 3),
                      ub = ppd_summaries[, "75%"],
                      model = rep(models, each = length(y_new)))
 
-## ---- plot-ppd----------------------------------------------------------------
+## ----plot-ppd-----------------------------------------------------------------
 ggplot(df_ppd, aes(x=player, y=y, ymin=lb, ymax=ub)) + 
   geom_linerange(color = "gray60", size = 2) + 
   geom_point(size = 2.5, color = "skyblue4") +
@@ -215,7 +215,7 @@ ggplot(df_ppd, aes(x=player, y=y, ymin=lb, ymax=ub)) +
     atop("Posterior Predictions for Batting Average in Remainder of Season",
          atop("50% posterior predictive intervals (gray bars); observed (blue dots)", ""))))
 
-## ---- event-probabilities, results="hold"-------------------------------------
+## ----event-probabilities, results="hold"--------------------------------------
 draws_partialpool <- shift_draws(as.matrix(fit_partialpool))
 thetas_partialpool <- plogis(draws_partialpool)
 thetas_partialpool <- thetas_partialpool[,-ncol(thetas_partialpool)]
@@ -228,19 +228,19 @@ some_gt_350 <- apply(thetas_partialpool, 1, function(x) max(x) > 0.35)
 cat("Pr(at least one theta_n >= 0.350 | y)\n")
 mean(some_gt_350)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 thetas_pool <- plogis(as.matrix(fit_pool))
 thetas_nopool <- plogis(as.matrix(fit_nopool))
 some_gt_350_all <- sapply(list(thetas_pool, thetas_nopool, thetas_partialpool), 
                           function(x) apply(x, 1, max) > 0.35)
 chance_gt_350 <- round(100 * colMeans(some_gt_350_all))
 
-## ---- ranking-----------------------------------------------------------------
+## ----ranking------------------------------------------------------------------
 reverse_rank <- function(x) 1 + length(x) - rank(x) # so lower rank is better
 rank <- apply(thetas_partialpool, 1, reverse_rank)
 t(apply(rank, 1, quantile, prob = c(0.1, 0.5, 0.9)))
 
-## ---- plot-ranks--------------------------------------------------------------
+## ----plot-ranks---------------------------------------------------------------
 df_rank <- data.frame(name = rep(bball$Player, each = M), 
                       rank = c(t(rank)))
 
@@ -252,7 +252,7 @@ ggplot(df_rank, aes(rank)) +
                    labels = c("0.0", "0.1", "0.2")) + 
   ggtitle("Rankings for Partial Pooling Model")
 
-## ---- plot-best-player--------------------------------------------------------
+## ----plot-best-player---------------------------------------------------------
 thetas_nopool <- plogis(as.matrix(fit_nopool))
 colnames(thetas_nopool) <- as.character(bball$Player)
 rank_nopool <- apply(thetas_nopool, 1, reverse_rank)
@@ -270,10 +270,10 @@ ggplot(df_is_best, aes(x=unit, y=is_best)) +
   ggtitle("Who is the Best Player?") + 
   theme(axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0))
 
-## ---- plot-ppc-stats-mean-----------------------------------------------------
+## ----plot-ppc-stats-mean------------------------------------------------------
 pp_check(fit_nopool, plotfun = "stat", stat = "mean")
 
-## ---- plot-ppc-stats----------------------------------------------------------
+## ----plot-ppc-stats-----------------------------------------------------------
 tstat_plots <- function(model, stats) {
   lapply(stats, function(stat) {
     graph <- pp_check(model, plotfun = "stat", stat = stat, 
@@ -294,7 +294,7 @@ if (require(gridExtra)) {
   )
 }
 
-## ---- p-value-----------------------------------------------------------------
+## ----p-value------------------------------------------------------------------
 yrep <- posterior_predict(fit_nopool, seed = SEED) # seed is optional
 Ty <- sd(y)
 Tyrep <- apply(yrep, 1, sd)
@@ -303,7 +303,7 @@ Tyrep <- apply(yrep, 1, sd)
 p <- 1 - mean(Tyrep > Ty)
 print(p)
 
-## ---- plot-ppc-y-vs-yrep------------------------------------------------------
+## ----plot-ppc-y-vs-yrep-------------------------------------------------------
 pp_check(fit_partialpool, plotfun = "hist", nreps = 15, binwidth = 0.025) +
   ggtitle("Model: Partial Pooling")
 

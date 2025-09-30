@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,7 +13,7 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
@@ -31,7 +31,7 @@ post0 <- stan_polr(tobgp ~ agegp + alcgp, data = esoph,
 ## -----------------------------------------------------------------------------
 print(post0, digits = 1)
 
-## ---- polr-tobgp-cutpoints, echo=FALSE----------------------------------------
+## ----polr-tobgp-cutpoints, echo=FALSE-----------------------------------------
 zeta_medians <- round(apply(rstan::extract(post0$stanfit, pars = "zeta")[[1]], 
                             2, median), digits = 2)
 
@@ -55,7 +55,7 @@ post2 <- stan_polr(low ~ smoke + age + race + ptl + ht + ftv, data = birthwt,
                    prior = R2(0.5), prior_counts = dirichlet(c(1,1)), 
                    method = "probit", seed = 12345)
 
-## ---- polr-loo-plot-----------------------------------------------------------
+## ----polr-loo-plot------------------------------------------------------------
 plot(loo(post2))
 
 ## ----polr-birthwt-comparison--------------------------------------------------

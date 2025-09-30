@@ -12,10 +12,23 @@
 
 <meta name="author" content="Jonah Gabry and Ben Goodrich" />
 
-<meta name="date" content="2024-01-16" />
+<meta name="date" content="2025-09-29" />
 
 <title>Prior Distributions for rstanarm Models</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -37,26 +50,28 @@
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -65,15 +80,15 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -86,7 +101,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -324,24 +339,34 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Prior Distributions for rstanarm Models</h1>
+<h1 class="title toc-ignore">Prior Distributions for rstanarm
+Models</h1>
 <h4 class="author">Jonah Gabry and Ben Goodrich</h4>
-<h4 class="date">2024-01-16</h4>
+<h4 class="date">2025-09-29</h4>
 
 
 <div id="TOC">
 <ul>
 <li><a href="#july-2020-update">July 2020 Update</a></li>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#default-weakly-informative-prior-distributions">Default (Weakly Informative) Prior Distributions</a><ul>
-<li><a href="#default-priors-and-scale-adjustments">Default priors and scale adjustments</a></li>
-<li><a href="#disabling-prior-scale-adjustments">Disabling prior scale adjustments</a></li>
+<li><a href="#default-weakly-informative-prior-distributions">Default
+(Weakly Informative) Prior Distributions</a>
+<ul>
+<li><a href="#default-priors-and-scale-adjustments">Default priors and
+scale adjustments</a></li>
+<li><a href="#disabling-prior-scale-adjustments">Disabling prior scale
+adjustments</a></li>
 </ul></li>
-<li><a href="#how-to-specify-flat-priors-and-why-you-typically-shouldnt">How to Specify Flat Priors (and why you typically shouldn’t)</a><ul>
-<li><a href="#uninformative-is-usually-unwarranted-and-unrealistic-flat-is-frequently-frivolous-and-fictional">Uninformative is usually unwarranted and unrealistic (flat is frequently frivolous and fictional)</a></li>
+<li><a href="#how-to-specify-flat-priors-and-why-you-typically-shouldnt">How to
+Specify Flat Priors (and why you typically shouldn’t)</a>
+<ul>
+<li><a href="#uninformative-is-usually-unwarranted-and-unrealistic-flat-is-frequently-frivolous-and-fictional">Uninformative
+is usually unwarranted and unrealistic (flat is frequently frivolous and
+fictional)</a></li>
 <li><a href="#specifying-flat-priors">Specifying flat priors</a></li>
 </ul></li>
-<li><a href="#informative-prior-distributions">Informative Prior Distributions</a></li>
+<li><a href="#informative-prior-distributions">Informative Prior
+Distributions</a></li>
 </ul>
 </div>
 
@@ -349,28 +374,44 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{Prior Distributions}
 -->
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(bayesplot)</a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">theme_set</span>(bayesplot<span class="op">::</span><span class="kw">theme_default</span>())</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(bayesplot<span class="sc">::</span><span class="fu">theme_default</span>())</span></code></pre></div>
 <div id="july-2020-update" class="section level1">
 <h1>July 2020 Update</h1>
 <p>As of July 2020 there are a few changes to prior distributions:</p>
 <ul>
-<li><p>Except for in default priors, <code>autoscale</code> now defaults to <code>FALSE</code>. This means that when specifying custom priors you no longer need to manually set <code>autoscale=FALSE</code> every time you use a distribution.</p></li>
-<li><p>There are minor changes to the default priors on the intercept and (non-hierarchical) regression coefficients. See <strong>Default priors and scale adjustments</strong> below.</p></li>
+<li><p>Except for in default priors, <code>autoscale</code> now defaults
+to <code>FALSE</code>. This means that when specifying custom priors you
+no longer need to manually set <code>autoscale=FALSE</code> every time
+you use a distribution.</p></li>
+<li><p>There are minor changes to the default priors on the intercept
+and (non-hierarchical) regression coefficients. See <strong>Default
+priors and scale adjustments</strong> below.</p></li>
 </ul>
-<p>We recommend the new book <a href="https://avehtari.github.io/ROS-Examples/">Regression and Other Stories</a>, which discusses the background behind the default priors in <strong>rstanarm</strong> and also provides examples of specifying non-default priors.</p>
+<p>We recommend the new book <a href="https://avehtari.github.io/ROS-Examples/">Regression and Other
+Stories</a>, which discusses the background behind the default priors in
+<strong>rstanarm</strong> and also provides examples of specifying
+non-default priors.</p>
 </div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>This vignette provides an overview of how the specification of prior distributions works in the <strong>rstanarm</strong> package. It is still a work in progress and more content will be added in future versions of <strong>rstanarm</strong>. Before reading this vignette it is important to first read the <a href="rstanarm.html">How to Use the <strong>rstanarm</strong> Package</a> vignette, which provides a general overview of the package.</p>
-<p>Every modeling function in <strong>rstanarm</strong> offers a subset of the arguments in the table below which are used for specifying prior distributions for the model parameters.</p>
+<p>This vignette provides an overview of how the specification of prior
+distributions works in the <strong>rstanarm</strong> package. It is
+still a work in progress and more content will be added in future
+versions of <strong>rstanarm</strong>. Before reading this vignette it
+is important to first read the <a href="rstanarm.html">How to Use the
+<strong>rstanarm</strong> Package</a> vignette, which provides a general
+overview of the package.</p>
+<p>Every modeling function in <strong>rstanarm</strong> offers a subset
+of the arguments in the table below which are used for specifying prior
+distributions for the model parameters.</p>
 <p><br></p>
 <table>
 <colgroup>
-<col width="33%"></col>
-<col width="33%"></col>
-<col width="33%"></col>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -382,34 +423,46 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <tbody>
 <tr class="odd">
 <td><code>prior_intercept</code></td>
-<td>All modeling functions except <code>stan_polr</code> and <code>stan_nlmer</code></td>
+<td>All modeling functions except <code>stan_polr</code> and
+<code>stan_nlmer</code></td>
 <td>Model intercept, after centering predictors.</td>
 </tr>
 <tr class="even">
 <td><code>prior</code></td>
 <td>All modeling functions</td>
-<td>Regression coefficients. Does <em>not</em> include coefficients that vary by group in a multilevel model (see <code>prior_covariance</code>).</td>
+<td>Regression coefficients. Does <em>not</em> include coefficients that
+vary by group in a multilevel model (see
+<code>prior_covariance</code>).</td>
 </tr>
 <tr class="odd">
 <td><code>prior_aux</code></td>
-<td><code>stan_glm</code>*, <code>stan_glmer</code>*, <code>stan_gamm4</code>, <code>stan_nlmer</code></td>
-<td>Auxiliary parameter, e.g. error SD (interpretation depends on the GLM).</td>
+<td><code>stan_glm</code>*, <code>stan_glmer</code>*,
+<code>stan_gamm4</code>, <code>stan_nlmer</code></td>
+<td>Auxiliary parameter, e.g. error SD (interpretation depends on the
+GLM).</td>
 </tr>
 <tr class="even">
 <td><code>prior_covariance</code></td>
-<td><code>stan_glmer</code>*, <code>stan_gamm4</code>, <code>stan_nlmer</code></td>
-<td>Covariance matrices in multilevel models with varying slopes and intercepts. See the <a href="https://mc-stan.org/rstanarm/articles/glmer.html"><code>stan_glmer</code> vignette</a> for details on this prior.</td>
+<td><code>stan_glmer</code>*, <code>stan_gamm4</code>,
+<code>stan_nlmer</code></td>
+<td>Covariance matrices in multilevel models with varying slopes and
+intercepts. See the <a href="https://mc-stan.org/rstanarm/articles/glmer.html"><code>stan_glmer</code>
+vignette</a> for details on this prior.</td>
 </tr>
 </tbody>
 </table>
-<p>* <code>stan_glm</code> also implies <code>stan_glm.nb</code>. <code>stan_glmer</code> implies <code>stan_lmer</code> and <code>stan_glmer.nb</code>.</p>
+<p>* <code>stan_glm</code> also implies <code>stan_glm.nb</code>.
+<code>stan_glmer</code> implies <code>stan_lmer</code> and
+<code>stan_glmer.nb</code>.</p>
 <p><br></p>
-<p>The <code>stan_polr</code>, <code>stan_betareg</code>, and <code>stan_gamm4</code> functions also provide additional arguments specific only to those models:</p>
+<p>The <code>stan_polr</code>, <code>stan_betareg</code>, and
+<code>stan_gamm4</code> functions also provide additional arguments
+specific only to those models:</p>
 <table>
 <colgroup>
-<col width="33%"></col>
-<col width="33%"></col>
-<col width="33%"></col>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -422,12 +475,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <tr class="odd">
 <td><code>prior_smooth</code></td>
 <td><code>stan_gamm4</code></td>
-<td>Prior for hyperparameters in GAMs (lower values yield less flexible smooth functions).</td>
+<td>Prior for hyperparameters in GAMs (lower values yield less flexible
+smooth functions).</td>
 </tr>
 <tr class="even">
 <td><code>prior_counts</code></td>
 <td><code>stan_polr</code></td>
-<td>Prior counts of an <em>ordinal</em> outcome (when predictors at sample means).</td>
+<td>Prior counts of an <em>ordinal</em> outcome (when predictors at
+sample means).</td>
 </tr>
 <tr class="odd">
 <td><code>prior_z</code></td>
@@ -447,18 +502,44 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tbody>
 </table>
 <p><br></p>
-<p>To specify these arguments the user provides a call to one of the various available functions for specifying priors (e.g., <code>prior = normal(0, 1)</code>, <code>prior = cauchy(c(0, 1), c(1, 2.5))</code>). The documentation for these functions can be found at <code>help(&quot;priors&quot;)</code>. The <strong>rstanarm</strong> documentation and the other <a href="index.html">vignettes</a> provide many examples of using these arguments to specify priors and the documentation for these arguments on the help pages for the various <strong>rstanarm</strong> modeling functions (e.g., <code>help(&quot;stan_glm&quot;)</code>) also explains which distributions can be used when specifying each of the prior-related arguments.</p>
+<p>To specify these arguments the user provides a call to one of the
+various available functions for specifying priors (e.g.,
+<code>prior = normal(0, 1)</code>,
+<code>prior = cauchy(c(0, 1), c(1, 2.5))</code>). The documentation for
+these functions can be found at <code>help(&quot;priors&quot;)</code>. The
+<strong>rstanarm</strong> documentation and the other <a href="index.html">vignettes</a> provide many examples of using these
+arguments to specify priors and the documentation for these arguments on
+the help pages for the various <strong>rstanarm</strong> modeling
+functions (e.g., <code>help(&quot;stan_glm&quot;)</code>) also explains which
+distributions can be used when specifying each of the prior-related
+arguments.</p>
 <p><br></p>
 </div>
 <div id="default-weakly-informative-prior-distributions" class="section level1">
 <h1>Default (Weakly Informative) Prior Distributions</h1>
-<p>With very few exceptions, the default priors in <strong>rstanarm</strong> —the priors used if the arguments in the tables above are untouched— are <em>not</em> flat priors. Rather, the defaults are intended to be <em>weakly informative</em>. That is, they are designed to provide moderate regularization and help stabilize computation. For many (if not most) applications the defaults will perform well, but this is not guaranteed (there are no default priors that make sense for every possible model specification).</p>
-<p>The way <strong>rstanarm</strong> attempts to make priors weakly informative by default is to internally adjust the scales of the priors. How this works (and, importantly, how to turn it off) is explained below, but first we can look at the default priors in action by fitting a basic linear regression model with the <code>stan_glm</code> function. For specifying priors, the <code>stan_glm</code> function accepts the arguments <code>prior_intercept</code>, <code>prior</code>, and <code>prior_aux</code>. To use the default priors we just leave those arguments at their defaults (i.e., we don’t specify them):</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(<span class="st">&quot;rstanarm&quot;</span>)</a>
-<a class="sourceLine" id="cb2-2" title="2">default_prior_test &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(mpg <span class="op">~</span><span class="st"> </span>wt <span class="op">+</span><span class="st"> </span>am, <span class="dt">data =</span> mtcars, <span class="dt">chains =</span> <span class="dv">1</span>)</a></code></pre></div>
-<p>The <code>prior_summary</code> function provides a concise summary of the priors used:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">prior_summary</span>(default_prior_test)</a></code></pre></div>
-<pre><code>Priors for model 'default_prior_test' 
+<p>With very few exceptions, the default priors in
+<strong>rstanarm</strong> —the priors used if the arguments in the
+tables above are untouched— are <em>not</em> flat priors. Rather, the
+defaults are intended to be <em>weakly informative</em>. That is, they
+are designed to provide moderate regularization and help stabilize
+computation. For many (if not most) applications the defaults will
+perform well, but this is not guaranteed (there are no default priors
+that make sense for every possible model specification).</p>
+<p>The way <strong>rstanarm</strong> attempts to make priors weakly
+informative by default is to internally adjust the scales of the priors.
+How this works (and, importantly, how to turn it off) is explained
+below, but first we can look at the default priors in action by fitting
+a basic linear regression model with the <code>stan_glm</code> function.
+For specifying priors, the <code>stan_glm</code> function accepts the
+arguments <code>prior_intercept</code>, <code>prior</code>, and
+<code>prior_aux</code>. To use the default priors we just leave those
+arguments at their defaults (i.e., we don’t specify them):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;rstanarm&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>default_prior_test <span class="ot">&lt;-</span> <span class="fu">stan_glm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> am, <span class="at">data =</span> mtcars, <span class="at">chains =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p>The <code>prior_summary</code> function provides a concise summary of
+the priors used:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(default_prior_test)</span></code></pre></div>
+<pre><code>Priors for model &#39;default_prior_test&#39; 
 ------
 Intercept (after predictors centered)
   Specified prior:
@@ -478,24 +559,58 @@ Auxiliary (sigma)
   Adjusted prior:
     ~ exponential(rate = 0.17)
 ------
-See help('prior_summary.stanreg') for more details</code></pre>
+See help(&#39;prior_summary.stanreg&#39;) for more details</code></pre>
 <p>Starting from the bottom up, we can see that:</p>
 <ul>
-<li><p><strong>Auxiliary</strong>: <code>sigma</code>, the error standard deviation, has a default prior that is <span class="math inline">\(\mathsf{exponential}(1)\)</span>. However, as a result of the automatic rescaling, the actual scale used was 6.03.</p></li>
-<li><p><strong>Coefficients</strong>: By default the regression coefficients (in this case the coefficients on the <code>wt</code> and <code>am</code> variables) are treated as a priori independent with normal priors centered at 0 and with scale (standard deviation) <span class="math inline">\(2.5\)</span>. Like for <code>sigma</code>, in order for the default to be weakly informative <strong>rstanarm</strong> will adjust the scales of the priors on the coefficients. As a result, the prior scales actually used were 15.40 and 30.20.</p></li>
-<li><p><strong>Intercept</strong>: For the intercept, the default prior is normal with mean <span class="math inline">\(0\)</span> and standard deviation <span class="math inline">\(2.5\)</span>, but in this case the standard deviation was adjusted to 15.07. There is also a note in parentheses informing you that the prior applies to the intercept after all predictors have been centered (a similar note can be found in the documentation of the <code>prior_intercept</code> argument). In many cases the value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=0\)</span> is not meaningful and it is easier to think about the value when <span class="math inline">\(x = \bar{x}\)</span>. Therefore placing a prior on the intercept after centering the predictors typically makes it easier to specify a reasonable prior for the intercept. (Note: the user does <em>not</em> need to manually center the predictors.)</p></li>
+<li><p><strong>Auxiliary</strong>: <code>sigma</code>, the error
+standard deviation, has a default prior that is <span class="math inline">\(\mathsf{exponential}(1)\)</span>. However, as a
+result of the automatic rescaling, the actual scale used was
+6.03.</p></li>
+<li><p><strong>Coefficients</strong>: By default the regression
+coefficients (in this case the coefficients on the <code>wt</code> and
+<code>am</code> variables) are treated as a priori independent with
+normal priors centered at 0 and with scale (standard deviation) <span class="math inline">\(2.5\)</span>. Like for <code>sigma</code>, in
+order for the default to be weakly informative <strong>rstanarm</strong>
+will adjust the scales of the priors on the coefficients. As a result,
+the prior scales actually used were 15.40 and 30.20.</p></li>
+<li><p><strong>Intercept</strong>: For the intercept, the default prior
+is normal with mean <span class="math inline">\(0\)</span> and standard
+deviation <span class="math inline">\(2.5\)</span>, but in this case the
+standard deviation was adjusted to 15.07. There is also a note in
+parentheses informing you that the prior applies to the intercept after
+all predictors have been centered (a similar note can be found in the
+documentation of the <code>prior_intercept</code> argument). In many
+cases the value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=0\)</span> is not meaningful and it is easier to
+think about the value when <span class="math inline">\(x =
+\bar{x}\)</span>. Therefore placing a prior on the intercept after
+centering the predictors typically makes it easier to specify a
+reasonable prior for the intercept. (Note: the user does <em>not</em>
+need to manually center the predictors.)</p></li>
 </ul>
-<p>To disable the centering of the predictors, you need to omit the intercept from the model <code>formula</code> and include a column of ones as a predictor (which cannot be named <code>&quot;(Intercept)&quot;</code> in the <code>data.frame</code>). Then you can specify a prior “coefficient” for the column of ones.</p>
-<p>The next two subsections describe how the rescaling works and how to easily disable it if desired.</p>
+<p>To disable the centering of the predictors, you need to omit the
+intercept from the model <code>formula</code> and include a column of
+ones as a predictor (which cannot be named <code>&quot;(Intercept)&quot;</code> in
+the <code>data.frame</code>). Then you can specify a prior “coefficient”
+for the column of ones.</p>
+<p>The next two subsections describe how the rescaling works and how to
+easily disable it if desired.</p>
 <div id="default-priors-and-scale-adjustments" class="section level3">
 <h3>Default priors and scale adjustments</h3>
 <p>Automatic scale adjustments happen in two cases:</p>
 <ol style="list-style-type: decimal">
 <li>When the default priors are used.</li>
-<li>When the user sets <code>autoscale=TRUE</code> when specifying their own prior (e.g., <code>normal(0, 3, autoscale=TRUE)</code>). See <code>help(&quot;priors&quot;)</code> for a list of distributions to see which have an <code>autoscale</code> argument.</li>
+<li>When the user sets <code>autoscale=TRUE</code> when specifying their
+own prior (e.g., <code>normal(0, 3, autoscale=TRUE)</code>). See
+<code>help(&quot;priors&quot;)</code> for a list of distributions to see which
+have an <code>autoscale</code> argument.</li>
 </ol>
-<p>Here we describe how the default priors work for the intercept, regression coefficients, and (if applicable) auxiliary parameters. Autoscaling when not using default priors works analogously (if <code>autoscale=TRUE</code>).</p>
-<p>Assume we have outcome <span class="math inline">\(y\)</span> and predictors <span class="math inline">\(x_1,\ldots,x_k\)</span> and our model has linear predictor</p>
+<p>Here we describe how the default priors work for the intercept,
+regression coefficients, and (if applicable) auxiliary parameters.
+Autoscaling when not using default priors works analogously (if
+<code>autoscale=TRUE</code>).</p>
+<p>Assume we have outcome <span class="math inline">\(y\)</span> and
+predictors <span class="math inline">\(x_1,\ldots,x_k\)</span> and our
+model has linear predictor</p>
 <p><span class="math display">\[
 \alpha + \beta_1 x_1 + \dots + \beta_K x_K.
 \]</span></p>
@@ -504,55 +619,85 @@ See help('prior_summary.stanreg') for more details</code></pre>
 <p>The default prior on regression coefficients <span class="math inline">\(\beta_k\)</span> is</p>
 <p><span class="math display">\[
 \beta_k \sim \mathsf{Normal}(0, \, 2.5 \cdot s_y/s_x)
-\]</span> where <span class="math inline">\(s_x = \text{sd}(x)\)</span> and <span class="math display">\[ 
+\]</span> where <span class="math inline">\(s_x = \text{sd}(x)\)</span>
+and <span class="math display">\[
 s_y =
 \begin{cases}
 \text{sd}(y) &amp; \text{if } \:\: {\tt family=gaussian(link)}, \\
 1 &amp; \text{otherwise}.
 \end{cases}
 \]</span></p>
-<p>This corresponds to <code>prior = normal(0, 2.5, autoscale = TRUE)</code> in <strong>rstanarm</strong> code.</p>
+<p>This corresponds to
+<code>prior = normal(0, 2.5, autoscale = TRUE)</code> in
+<strong>rstanarm</strong> code.</p>
 </div>
 <div id="intercept" class="section level4">
 <h4>Intercept</h4>
-<p>The intercept is assigned a prior indirectly. The <code>prior_intercept</code> argument refers to the intercept after all predictors have been centered (internally by <strong>rstanarm</strong>). That is, instead of placing the prior on the expected value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=0\)</span>, we place a prior on the expected value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x = \bar{x}\)</span>. The default prior for this centered intercept, say <span class="math inline">\(\alpha_c\)</span>, is</p>
+<p>The intercept is assigned a prior indirectly. The
+<code>prior_intercept</code> argument refers to the intercept after all
+predictors have been centered (internally by <strong>rstanarm</strong>).
+That is, instead of placing the prior on the expected value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=0\)</span>, we place a prior on the expected
+value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x = \bar{x}\)</span>. The default prior for this
+centered intercept, say <span class="math inline">\(\alpha_c\)</span>,
+is</p>
 <p><span class="math display">\[
 \alpha_c \sim \mathsf{Normal}(m_y, \, 2.5 \cdot s_y)
 \]</span> where</p>
 <p><span class="math display">\[
 m_y =
 \begin{cases}
-\bar{y} &amp; \text{if } \:\: {\tt family=gaussian(link=&quot;identity&quot;)}, \\
+\bar{y} &amp; \text{if } \:\: {\tt
+family=gaussian(link=&quot;identity&quot;)}, \\
 0 &amp; \text{otherwise}
 \end{cases}
-\]</span> and <span class="math inline">\(s_y\)</span> is the same as above (either 1 or <span class="math inline">\(\text{sd(y)}\)</span>).</p>
+\]</span> and <span class="math inline">\(s_y\)</span> is the same as
+above (either 1 or <span class="math inline">\(\text{sd(y)}\)</span>).</p>
 </div>
 <div id="auxiliary-parameters" class="section level4">
 <h4>Auxiliary parameters</h4>
-<p>The default prior on the auxiliary parameter (residual standard deviation for Gaussian, shape for gamma, reciprocal dispersion for negative binomial, etc.) is an exponential distribution with rate <span class="math inline">\(1/s_y\)</span></p>
+<p>The default prior on the auxiliary parameter (residual standard
+deviation for Gaussian, shape for gamma, reciprocal dispersion for
+negative binomial, etc.) is an exponential distribution with rate <span class="math inline">\(1/s_y\)</span></p>
 <p><span class="math display">\[
 \text{aux} \sim \mathsf{Exponential}(1/s_y)
-\]</span> where <span class="math inline">\(s_y\)</span> is the same as above (either 1 or <span class="math inline">\(\text{sd(y)}\)</span>).</p>
-<p>This corresponds to <code>prior_aux = exponential(1, autoscale=TRUE)</code> in <strong>rstanarm</strong> code.</p>
+\]</span> where <span class="math inline">\(s_y\)</span> is the same as
+above (either 1 or <span class="math inline">\(\text{sd(y)}\)</span>).</p>
+<p>This corresponds to
+<code>prior_aux = exponential(1, autoscale=TRUE)</code> in
+<strong>rstanarm</strong> code.</p>
 </div>
 <div id="note-on-data-based-priors" class="section level4">
 <h4>Note on data-based priors</h4>
-<p>Because the scaling is based on the scales of the predictors (and possibly the outcome) these are technically data-dependent priors. However, since these priors are quite wide (and in most cases rather conservative), the amount of information used is weak and mainly takes into account the order of magnitude of the variables. This enables <strong>rstanarm</strong> to offer defaults that are reasonable for many models.</p>
+<p>Because the scaling is based on the scales of the predictors (and
+possibly the outcome) these are technically data-dependent priors.
+However, since these priors are quite wide (and in most cases rather
+conservative), the amount of information used is weak and mainly takes
+into account the order of magnitude of the variables. This enables
+<strong>rstanarm</strong> to offer defaults that are reasonable for many
+models.</p>
 </div>
 </div>
 <div id="disabling-prior-scale-adjustments" class="section level3">
 <h3>Disabling prior scale adjustments</h3>
-<p>To disable automatic rescaling simply specify a prior other than the default. <strong>rstanarm</strong> versions up to and including version <code>2.19.3</code> used to require you to explicitly set the <code>autoscale</code> argument to <code>FALSE</code>, but now autoscaling only happens by default for the default priors. To use autoscaling with manually specified priors you have to set <code>autoscale = TRUE</code>. For example, this prior specification will not include any autoscaling:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">test_no_autoscale &lt;-</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="st">  </span><span class="kw">update</span>(</a>
-<a class="sourceLine" id="cb5-3" title="3">    default_prior_test,</a>
-<a class="sourceLine" id="cb5-4" title="4">    <span class="dt">prior =</span> <span class="kw">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>),</a>
-<a class="sourceLine" id="cb5-5" title="5">    <span class="dt">prior_intercept =</span> <span class="kw">student_t</span>(<span class="dv">4</span>, <span class="dv">0</span>, <span class="dv">10</span>),</a>
-<a class="sourceLine" id="cb5-6" title="6">    <span class="dt">prior_aux =</span> <span class="kw">cauchy</span>(<span class="dv">0</span>, <span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb5-7" title="7">  )</a></code></pre></div>
-<p>We can verify that the prior scales weren’t adjusted by checking <code>prior_summary</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">prior_summary</span>(test_no_autoscale)</a></code></pre></div>
-<pre><code>Priors for model 'test_no_autoscale' 
+<p>To disable automatic rescaling simply specify a prior other than the
+default. <strong>rstanarm</strong> versions up to and including version
+<code>2.19.3</code> used to require you to explicitly set the
+<code>autoscale</code> argument to <code>FALSE</code>, but now
+autoscaling only happens by default for the default priors. To use
+autoscaling with manually specified priors you have to set
+<code>autoscale = TRUE</code>. For example, this prior specification
+will not include any autoscaling:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>test_no_autoscale <span class="ot">&lt;-</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    default_prior_test,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior =</span> <span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_intercept =</span> <span class="fu">student_t</span>(<span class="dv">4</span>, <span class="dv">0</span>, <span class="dv">10</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">prior_aux =</span> <span class="fu">cauchy</span>(<span class="dv">0</span>, <span class="dv">3</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>We can verify that the prior scales weren’t adjusted by checking
+<code>prior_summary</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(test_no_autoscale)</span></code></pre></div>
+<pre><code>Priors for model &#39;test_no_autoscale&#39; 
 ------
 Intercept (after predictors centered)
  ~ student_t(df = 4, location = 0, scale = 10)
@@ -563,47 +708,89 @@ Coefficients
 Auxiliary (sigma)
  ~ half-cauchy(location = 0, scale = 3)
 ------
-See help('prior_summary.stanreg') for more details</code></pre>
+See help(&#39;prior_summary.stanreg&#39;) for more details</code></pre>
 <p><br></p>
 </div>
 </div>
 <div id="how-to-specify-flat-priors-and-why-you-typically-shouldnt" class="section level1">
 <h1>How to Specify Flat Priors (and why you typically shouldn’t)</h1>
 <div id="uninformative-is-usually-unwarranted-and-unrealistic-flat-is-frequently-frivolous-and-fictional" class="section level3">
-<h3>Uninformative is usually unwarranted and unrealistic (flat is frequently frivolous and fictional)</h3>
-<p>When “non-informative” or “uninformative” is used in the context of prior distributions, it typically refers to a flat (uniform) distribution or a nearly flat distribution. Sometimes it may also be used to refer to the parameterization-invariant Jeffreys prior. Although <strong>rstanarm</strong> does not prevent you from using very diffuse or flat priors, unless the data is very strong it is wise to avoid them.</p>
-<p>Rarely is it appropriate in any applied setting to use a prior that gives the same (or nearly the same) probability mass to values near zero as it gives values bigger than the age of the universe in nanoseconds. Even a much narrower prior than that, e.g., a normal distribution with <span class="math inline">\(\sigma = 500\)</span>, will tend to put much more probability mass on unreasonable parameter values than reasonable ones. In fact, using the prior <span class="math inline">\(\theta \sim \mathsf{Normal(\mu = 0, \sigma = 500)}\)</span> implies some strange prior beliefs. For example, you believe a priori that <span class="math inline">\(P(|\theta| &lt; 250) &lt; P(|\theta| &gt; 250)\)</span>, which can easily be verified by doing the calculation with the normal CDF</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">p &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(<span class="op">-</span><span class="dv">250</span>, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">500</span>)</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Pr(-250 &lt; theta &lt; 250) =&quot;</span>, <span class="kw">round</span>(p, <span class="dv">2</span>)))</a></code></pre></div>
+<h3>Uninformative is usually unwarranted and unrealistic (flat is
+frequently frivolous and fictional)</h3>
+<p>When “non-informative” or “uninformative” is used in the context of
+prior distributions, it typically refers to a flat (uniform)
+distribution or a nearly flat distribution. Sometimes it may also be
+used to refer to the parameterization-invariant Jeffreys prior. Although
+<strong>rstanarm</strong> does not prevent you from using very diffuse
+or flat priors, unless the data is very strong it is wise to avoid
+them.</p>
+<p>Rarely is it appropriate in any applied setting to use a prior that
+gives the same (or nearly the same) probability mass to values near zero
+as it gives values bigger than the age of the universe in nanoseconds.
+Even a much narrower prior than that, e.g., a normal distribution with
+<span class="math inline">\(\sigma = 500\)</span>, will tend to put much
+more probability mass on unreasonable parameter values than reasonable
+ones. In fact, using the prior <span class="math inline">\(\theta \sim
+\mathsf{Normal(\mu = 0, \sigma = 500)}\)</span> implies some strange
+prior beliefs. For example, you believe a priori that <span class="math inline">\(P(|\theta| &lt; 250) &lt; P(|\theta| &gt;
+250)\)</span>, which can easily be verified by doing the calculation
+with the normal CDF</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="dv">250</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">500</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Pr(-250 &lt; theta &lt; 250) =&quot;</span>, <span class="fu">round</span>(p, <span class="dv">2</span>)))</span></code></pre></div>
 <pre><code>[1] &quot;Pr(-250 &lt; theta &lt; 250) = 0.38&quot;</code></pre>
 <p>or via approximation with Monte Carlo draws:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">theta &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="fl">1e5</span>, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">500</span>)</a>
-<a class="sourceLine" id="cb10-2" title="2">p_approx &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">abs</span>(theta) <span class="op">&lt;</span><span class="st"> </span><span class="dv">250</span>)</a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;Pr(-250 &lt; theta &lt; 250) =&quot;</span>, <span class="kw">round</span>(p_approx, <span class="dv">2</span>)))</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fl">1e5</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">500</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>p_approx <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(theta) <span class="sc">&lt;</span> <span class="dv">250</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Pr(-250 &lt; theta &lt; 250) =&quot;</span>, <span class="fu">round</span>(p_approx, <span class="dv">2</span>)))</span></code></pre></div>
 <pre><code>[1] &quot;Pr(-250 &lt; theta &lt; 250) = 0.38&quot;</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(theta, <span class="dt">clr =</span> <span class="kw">abs</span>(theta) <span class="op">&gt;</span><span class="st"> </span><span class="dv">250</span>)</a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="kw">ggplot</span>(d, <span class="kw">aes</span>(<span class="dt">x =</span> theta, <span class="dt">fill =</span> clr)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">5</span>, <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-5" title="5"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;&quot;</span>, <span class="dt">labels =</span> <span class="ot">NULL</span>, <span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb12-6" title="6"><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">name =</span> <span class="kw">expression</span>(theta), <span class="dt">breaks =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">1000</span>, <span class="dv">-250</span>, <span class="dv">250</span>, <span class="dv">1000</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(theta, <span class="at">clr =</span> <span class="fu">abs</span>(theta) <span class="sc">&gt;</span> <span class="dv">250</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(d, <span class="fu">aes</span>(<span class="at">x =</span> theta, <span class="at">fill =</span> clr)) <span class="sc">+</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">5</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">name =</span> <span class="st">&quot;&quot;</span>, <span class="at">labels =</span> <span class="cn">NULL</span>, <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">name =</span> <span class="fu">expression</span>(theta), <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1000</span>, <span class="sc">-</span><span class="dv">250</span>, <span class="dv">250</span>, <span class="dv">1000</span>))</span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="data:image/png;base64,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" alt="_There is much more probability mass outside the interval (-250, 250)._" width="60%" />
+<img src="data:image/png;base64,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" alt="_There is much more probability mass outside the interval (-250, 250)._" width="60%" />
 <p class="caption">
-<em>There is much more probability mass outside the interval (-250, 250).</em>
+<em>There is much more probability mass outside the interval (-250,
+250).</em>
 </p>
 </div>
-<p><br> This will almost never correspond to the prior beliefs of a researcher about a parameter in a well-specified applied regression model and yet priors like <span class="math inline">\(\theta \sim \mathsf{Normal(\mu = 0, \sigma = 500)}\)</span> (and more extreme) remain quite popular.</p>
-<p>Even when you know very little, a flat or very wide prior will almost never be the best approximation to your beliefs about the parameters in your model that you can express using <strong>rstanarm</strong> (or other software). <em>Some</em> amount of prior information will be available. For example, even if there is nothing to suggest a priori that a particular coefficient will be positive or negative, there is almost always enough information to suggest that different orders of magnitude are not equally likely. Making use of this information when setting a prior scale parameter is simple —one heuristic is to set the scale an order of magnitude bigger than you suspect it to be— and has the added benefit of helping to stabilize computations.</p>
-<p>A more in-depth discussion of non-informative vs weakly informative priors is available in the case study <a href="https://mc-stan.org/users/documentation/case-studies/weakly_informative_shapes.html"><em>How the Shape of a Weakly Informative Prior Affects Inferences</em></a>.</p>
+<p><br> This will almost never correspond to the prior beliefs of a
+researcher about a parameter in a well-specified applied regression
+model and yet priors like <span class="math inline">\(\theta \sim
+\mathsf{Normal(\mu = 0, \sigma = 500)}\)</span> (and more extreme)
+remain quite popular.</p>
+<p>Even when you know very little, a flat or very wide prior will almost
+never be the best approximation to your beliefs about the parameters in
+your model that you can express using <strong>rstanarm</strong> (or
+other software). <em>Some</em> amount of prior information will be
+available. For example, even if there is nothing to suggest a priori
+that a particular coefficient will be positive or negative, there is
+almost always enough information to suggest that different orders of
+magnitude are not equally likely. Making use of this information when
+setting a prior scale parameter is simple —one heuristic is to set the
+scale an order of magnitude bigger than you suspect it to be— and has
+the added benefit of helping to stabilize computations.</p>
+<p>A more in-depth discussion of non-informative vs weakly informative
+priors is available in the case study <a href="https://mc-stan.org/users/documentation/case-studies/weakly_informative_shapes.html"><em>How
+the Shape of a Weakly Informative Prior Affects Inferences</em></a>.</p>
 </div>
 <div id="specifying-flat-priors" class="section level3">
 <h3>Specifying flat priors</h3>
-<p><strong>rstanarm</strong> will use flat priors if <code>NULL</code> is specified rather than a distribution. For example, to use a flat prior on regression coefficients you would specify <code>prior=NULL</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">flat_prior_test &lt;-<span class="st"> </span><span class="kw">stan_glm</span>(mpg <span class="op">~</span><span class="st"> </span>wt, <span class="dt">data =</span> mtcars, <span class="dt">prior =</span> <span class="ot">NULL</span>)</a></code></pre></div>
-<p>In this case we let <strong>rstanarm</strong> use the default priors for the intercept and error standard deviation (we could change that if we wanted), but the coefficient on the <code>wt</code> variable will have a flat prior. To double check that indeed a flat prior was used for the coefficient on <code>wt</code> we can call <code>prior_summary</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">prior_summary</span>(flat_prior_test)</a></code></pre></div>
-<pre><code>Priors for model 'flat_prior_test' 
+<p><strong>rstanarm</strong> will use flat priors if <code>NULL</code>
+is specified rather than a distribution. For example, to use a flat
+prior on regression coefficients you would specify
+<code>prior=NULL</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>flat_prior_test <span class="ot">&lt;-</span> <span class="fu">stan_glm</span>(mpg <span class="sc">~</span> wt, <span class="at">data =</span> mtcars, <span class="at">prior =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p>In this case we let <strong>rstanarm</strong> use the default priors
+for the intercept and error standard deviation (we could change that if
+we wanted), but the coefficient on the <code>wt</code> variable will
+have a flat prior. To double check that indeed a flat prior was used for
+the coefficient on <code>wt</code> we can call
+<code>prior_summary</code>:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(flat_prior_test)</span></code></pre></div>
+<pre><code>Priors for model &#39;flat_prior_test&#39; 
 ------
 Intercept (after predictors centered)
   Specified prior:
@@ -620,23 +807,40 @@ Auxiliary (sigma)
   Adjusted prior:
     ~ exponential(rate = 0.17)
 ------
-See help('prior_summary.stanreg') for more details</code></pre>
+See help(&#39;prior_summary.stanreg&#39;) for more details</code></pre>
 <p><br></p>
 </div>
 </div>
 <div id="informative-prior-distributions" class="section level1">
 <h1>Informative Prior Distributions</h1>
-<p>Although the default priors tend to work well, prudent use of more informative priors is encouraged. For example, suppose we have a linear regression model <span class="math display">\[y_i \sim \mathsf{Normal}\left(\alpha + \beta_1 x_{1,i} + \beta_2 x_{2,i}, \, \sigma\right)\]</span> and we have evidence (perhaps from previous research on the same topic) that approximately <span class="math inline">\(\beta_1 \in (-15, -5)\)</span> and <span class="math inline">\(\beta_2 \in (-1, 1)\)</span>. An example of an informative prior for <span class="math inline">\(\boldsymbol{\beta} = (\beta_1, \beta_2)'\)</span> could be</p>
+<p>Although the default priors tend to work well, prudent use of more
+informative priors is encouraged. For example, suppose we have a linear
+regression model <span class="math display">\[y_i \sim
+\mathsf{Normal}\left(\alpha + \beta_1 x_{1,i} + \beta_2 x_{2,i}, \,
+\sigma\right)\]</span> and we have evidence (perhaps from previous
+research on the same topic) that approximately <span class="math inline">\(\beta_1 \in (-15, -5)\)</span> and <span class="math inline">\(\beta_2 \in (-1, 1)\)</span>. An example of an
+informative prior for <span class="math inline">\(\boldsymbol{\beta} =
+(\beta_1, \beta_2)&#39;\)</span> could be</p>
 <p><span class="math display">\[
-\boldsymbol{\beta} \sim \mathsf{Normal} \left( 
+\boldsymbol{\beta} \sim \mathsf{Normal} \left(
   \begin{pmatrix} -10 \\ 0 \end{pmatrix},
   \begin{pmatrix} 5^2 &amp; 0 \\ 0 &amp; 2^2 \end{pmatrix}
 \right),
-\]</span> which sets the prior means at the midpoints of the intervals and then allows for some wiggle room on either side. If the data are highly informative about the parameter values (enough to overwhelm the prior) then this prior will yield similar results to a non-informative prior. But as the amount of data and/or the signal-to-noise ratio decrease, using a more informative prior becomes increasingly important.</p>
-<p>If the variables <code>y</code>, <code>x1</code>, and <code>x2</code> are in the data frame <code>dat</code> then this model can be specified as</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">my_prior &lt;-<span class="st"> </span><span class="kw">normal</span>(<span class="dt">location =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">10</span>, <span class="dv">0</span>), <span class="dt">scale =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb16-2" title="2"><span class="kw">stan_glm</span>(y <span class="op">~</span><span class="st"> </span>x1 <span class="op">+</span><span class="st"> </span>x2, <span class="dt">data =</span> dat, <span class="dt">prior =</span> my_prior)</a></code></pre></div>
-<p>We left the priors for the intercept and error standard deviation at their defaults, but informative priors can be specified for those parameters in an analogous manner.</p>
+\]</span> which sets the prior means at the midpoints of the intervals
+and then allows for some wiggle room on either side. If the data are
+highly informative about the parameter values (enough to overwhelm the
+prior) then this prior will yield similar results to a non-informative
+prior. But as the amount of data and/or the signal-to-noise ratio
+decrease, using a more informative prior becomes increasingly
+important.</p>
+<p>If the variables <code>y</code>, <code>x1</code>, and <code>x2</code>
+are in the data frame <code>dat</code> then this model can be specified
+as</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>my_prior <span class="ot">&lt;-</span> <span class="fu">normal</span>(<span class="at">location =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">0</span>), <span class="at">scale =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">2</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stan_glm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> dat, <span class="at">prior =</span> my_prior)</span></code></pre></div>
+<p>We left the priors for the intercept and error standard deviation at
+their defaults, but informative priors can be specified for those
+parameters in an analogous manner.</p>
 </div>
 
 

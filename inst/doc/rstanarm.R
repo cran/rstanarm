@@ -1,4 +1,4 @@
-## ---- SETTINGS-knitr, include=FALSE-------------------------------------------
+## ----SETTINGS-knitr, include=FALSE--------------------------------------------
 stopifnot(require(knitr))
 opts_chunk$set(
   comment=NA, 
@@ -13,7 +13,7 @@ opts_chunk$set(
   fig.align = "center"
 )
 
-## ---- SETTINGS-gg, include=TRUE-----------------------------------------------
+## ----SETTINGS-gg, include=TRUE------------------------------------------------
 library(ggplot2)
 library(bayesplot)
 theme_set(bayesplot::theme_default())
@@ -35,7 +35,7 @@ womensrole_bglm_1 <- stan_glm(cbind(agree, disagree) ~ education + gender,
                               cores = 2, seed = 12345)
 womensrole_bglm_1
 
-## ---- echo=FALSE, eval = TRUE-------------------------------------------------
+## ----echo=FALSE, eval = TRUE--------------------------------------------------
 print(womensrole_bglm_1)
 
 ## ----rstanarm-ci, eval = TRUE-------------------------------------------------
@@ -48,7 +48,7 @@ summary(residuals(womensrole_bglm_1)) # not deviance residuals
 cov2cor(vcov(womensrole_bglm_1))
 
 ## ----rstanarm-shinystan, eval = FALSE-----------------------------------------
-#  launch_shinystan(womensrole_bglm_1, ppd = FALSE)
+# launch_shinystan(womensrole_bglm_1, ppd = FALSE)
 
 ## ----rstanarm-posterior_predict, eval = TRUE----------------------------------
 y_rep <- posterior_predict(womensrole_bglm_1)
@@ -76,10 +76,10 @@ with(womensrole[womensrole$gender == "Female",],
      points(education + 1,  agree / (agree + disagree), 
             pch = 16, col = "red"))
 
-## ---- rstanarm-update, results="hide", eval = TRUE----------------------------
+## ----rstanarm-update, results="hide", eval = TRUE-----------------------------
 (womensrole_bglm_2 <- update(womensrole_bglm_1, formula. = . ~ . + I(education^2)))
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 print(womensrole_bglm_2)
 
 ## ----rstanarm-loo, eval = TRUE------------------------------------------------
@@ -91,13 +91,13 @@ par(mfrow = 1:2, mar = c(5,3.8,1,0) + 0.1, las = 3)
 plot(loo_bglm_1, label_points = TRUE)
 plot(loo_bglm_2, label_points = TRUE)
 
-## ---- rstanarm-loo-compare, eval = TRUE---------------------------------------
+## ----rstanarm-loo-compare, eval = TRUE----------------------------------------
 loo_compare(loo_bglm_1, loo_bglm_2)
 
-## ---- rstanarm-loo-print, eval = TRUE-----------------------------------------
+## ----rstanarm-loo-print, eval = TRUE------------------------------------------
 loo_bglm_1
 
-## ---- rstanarm-posterior_predict-manipulate, eval = TRUE----------------------
+## ----rstanarm-posterior_predict-manipulate, eval = TRUE-----------------------
 # note: in newdata we want agree and disagree to sum to the number of people we
 # want to predict for. the values of agree and disagree don't matter so long as
 # their sum is the desired number of trials. we need to explicitly imply the
@@ -109,14 +109,14 @@ newdata <- data.frame(agree = c(0,0), disagree = c(100,100), education = c(12,16
 y_rep <- posterior_predict(womensrole_bglm_2, newdata)
 summary(apply(y_rep, 1, diff))
 
-## ---- rstanarm-rhat-fit, results='hide', warning=TRUE, eval = TRUE------------
+## ----rstanarm-rhat-fit, results='hide', warning=TRUE, eval = TRUE-------------
 bad_rhat <- stan_glm(mpg ~ ., data = mtcars, iter = 20, chains = 2, seed = 12345)
 good_rhat <- update(bad_rhat, iter = 1000, chains = 2, seed = 12345)
 
-## ---- rstasnarm-rhat-bad, eval = TRUE-----------------------------------------
+## ----rstasnarm-rhat-bad, eval = TRUE------------------------------------------
 rhat <- summary(bad_rhat)[, "Rhat"]
 rhat[rhat > 1.1]
 
-## ---- rstasnarm-rhat-good, eval = TRUE----------------------------------------
+## ----rstasnarm-rhat-good, eval = TRUE-----------------------------------------
 any(summary(good_rhat)[, "Rhat"] > 1.1)
 
